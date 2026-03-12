@@ -1,33 +1,102 @@
+# Railway inyecta DATABASE_URL y REDIS_URL desde sus plugins gestionados.
+# Si se despliega sin Railway (docker compose -f docker-compose.prod.yml up -d),
+# esas variables deben estar definidas en el .env.
+
+x-api-base: &api-base
+  build:
+    context: ./apps/api
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  env_file:
+    - .env
+
 services:
   db:
-    restart: always
+    image: postgis/postgis:16-3.4-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports: []
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
-    restart: always
-    ports: []
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api:
-    restart: always
-    volumes: []
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
+    <<: *api-base
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 2
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${PORT:-8000}/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   worker:
-    restart: always
-    volumes: []
+    <<: *api-base
+    depends_on:
+      redis:
+        condition: service_healthy
     command: celery -A app.workers.celerity_app.celery_app worker --loglevel=warning --concurrency 2
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.workers.celerity_app.celery_app inspect ping --timeout 5 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   beat:
-    restart: always
-    volumes: []
+    <<: *api-base
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: celery -A app.workers.celerity_app.celery_app beat --loglevel=warning
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A app.workers.celerity_app.celery_app inspect ping --timeout 5 || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
 
   web:
-    restart: always
-    volumes: []
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
-    command: node .next/standalone/server.js
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL}
+    depends_on:
+      api:
+        condition: service_healthy
+    command: sh -c "npm run build && npm start"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${PORT:-3000} || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
