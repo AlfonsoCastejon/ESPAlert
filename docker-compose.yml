@@ -1,3 +1,16 @@
+x-api-base: &api-base
+  build:
+    context: ./apps/api
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  volumes:
+    - ./apps/api:/app
+  env_file:
+    - .env
+  environment:
+    DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-espalert}:${POSTGRES_PASSWORD:-espalert}@db:5432/${POSTGRES_DB:-espalert}
+    REDIS_URL: redis://redis:6379/0
+
 services:
   db:
     image: postgis/postgis:16-3.4-alpine
@@ -28,19 +41,9 @@ services:
       retries: 5
 
   api:
-    build:
-      context: ./apps/api
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    volumes:
-      - ./apps/api:/app
+    <<: *api-base
     ports:
       - "8000:8000"
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-espalert}:${POSTGRES_PASSWORD:-espalert}@db:5432/${POSTGRES_DB:-espalert}
-      REDIS_URL: redis://redis:6379/0
     depends_on:
       db:
         condition: service_healthy
@@ -49,36 +52,14 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   worker:
-    build:
-      context: ./apps/api
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    volumes:
-      - ./apps/api:/app
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-espalert}:${POSTGRES_PASSWORD:-espalert}@db:5432/${POSTGRES_DB:-espalert}
-      REDIS_URL: redis://redis:6379/0
+    <<: *api-base
     depends_on:
-      db:
-        condition: service_healthy
       redis:
         condition: service_healthy
     command: celery -A app.workers.celerity_app.celery_app worker --loglevel=info
 
   beat:
-    build:
-      context: ./apps/api
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    volumes:
-      - ./apps/api:/app
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-espalert}:${POSTGRES_PASSWORD:-espalert}@db:5432/${POSTGRES_DB:-espalert}
-      REDIS_URL: redis://redis:6379/0
+    <<: *api-base
     depends_on:
       redis:
         condition: service_healthy
