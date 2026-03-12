@@ -19,14 +19,7 @@ class WsAlertPayload(BaseModel):
 
 
 class WsEvent(BaseModel):
-    """Mensaje emitido por el servidor a través del WebSocket.
-
-    Tipos de evento:
-    - ``alert.new``     — nueva alerta insertada en la base de datos.
-    - ``alert.updated`` — alerta existente modificada.
-    - ``alert.expired`` — alerta marcada como expirada.
-    - ``ping``          — latido periódico del servidor (sin data).
-    """
+    """Evento emitido por el servidor vía WebSocket."""
 
     event: Literal["alert.new", "alert.updated", "alert.expired", "ping"] = Field(
         ...,

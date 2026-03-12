@@ -63,5 +63,4 @@ class WebSocketManager:
         return len(self._connections)
 
 
-# Instancia global compartida
 ws_manager = WebSocketManager()
