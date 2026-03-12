@@ -1,0 +1,33 @@
+services:
+  db:
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports: []
+
+  redis:
+    restart: always
+    ports: []
+
+  api:
+    restart: always
+    volumes: []
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
+
+  worker:
+    restart: always
+    volumes: []
+    command: celery -A app.workers.celerity_app.celery_app worker --loglevel=warning --concurrency 2
+
+  beat:
+    restart: always
+    volumes: []
+
+  web:
+    restart: always
+    volumes: []
+    environment:
+      NODE_ENV: production
+    command: node .next/standalone/server.js
