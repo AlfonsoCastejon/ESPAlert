@@ -1,0 +1,11 @@
+name: Deploy
+
+on:
+  workflow_dispatch: # Permite ejecución manual por ahora hasta que se defina la estrategia
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "Deploy pipeline will be implemented here"
