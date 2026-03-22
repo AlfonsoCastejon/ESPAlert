@@ -5,14 +5,16 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.config import settings
 
+# Engine asíncrono con PostgreSQL (asyncpg)
 engine = create_async_engine(
-    settings.database_url,
-    echo=settings.debug,
+    settings.DATABASE_URL,
+    echo=settings.ENV == "development",
     pool_pre_ping=True,
     pool_size=10,
     max_overflow=20,
 )
 
+# Fábrica de sesiones
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
     class_=AsyncSession,
@@ -20,11 +22,11 @@ AsyncSessionLocal = async_sessionmaker(
     autoflush=False,
 )
 
-
+# Base declarativa para modelos
 class Base(DeclarativeBase):
     pass
 
-
+# Generador de dependencias para FastAPI
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         try:
@@ -33,3 +35,6 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
+        finally:
+            await session.close()
+
