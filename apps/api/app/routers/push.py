@@ -1,19 +1,13 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from fastapi import APIRouter, HTTPException, status
 from app.dependencies import DBSessionDep
-from app.models.push_subscription import PushSubscription
 from app.schemas.push_subscription import (
     SubscriptionCreate,
     PushSubscribeResponse,
     PushUnsubscribeRequest,
 )
+from app.services import push_service
 
 router = APIRouter(prefix="/push", tags=["push"])
-
 
 @router.post(
     "/subscribe",
@@ -26,34 +20,16 @@ router = APIRouter(prefix="/push", tags=["push"])
         "Si el endpoint ya existe se actualiza sin crear un duplicado."
     ),
     responses={
-        201: {"description": "Suscripción registrada correctamente"},
+        201: {"description": "Suscripción registrada o actualizada correctamente"},
         422: {"description": "Payload inválido"},
-    },
+    }
 )
 async def subscribe(
     body: SubscriptionCreate,
     db: DBSessionDep,
 ) -> PushSubscribeResponse:
-    existing = await db.scalar(
-        select(PushSubscription).where(PushSubscription.endpoint == body.endpoint)
-    )
-
-    if existing:
-        existing.p256dh = body.p256dh
-        existing.auth = body.auth
-        await db.flush()
-        return PushSubscribeResponse(ok=True, message="Suscripción actualizada")
-
-    db.add(
-        PushSubscription(
-            endpoint=body.endpoint,
-            p256dh=body.p256dh,
-            auth=body.auth,
-        )
-    )
-    await db.flush()
-    return PushSubscribeResponse(ok=True, message="Suscripción registrada")
-
+    await push_service.subscribe(db, body)
+    return PushSubscribeResponse(ok=True, message="Suscripción registrada o actualizada correctamente")
 
 @router.delete(
     "/subscribe",
@@ -64,20 +40,18 @@ async def subscribe(
         200: {"description": "Suscripción eliminada correctamente"},
         404: {"description": "Suscripción no encontrada"},
         422: {"description": "Payload inválido"},
-    },
+    }
 )
 async def unsubscribe(
     body: PushUnsubscribeRequest,
     db: DBSessionDep,
 ) -> PushSubscribeResponse:
-    result = await db.execute(
-        delete(PushSubscription).where(PushSubscription.endpoint == body.endpoint)
-    )
-
-    if result.rowcount == 0:
+    eliminado = await push_service.unsubscribe(db, body.endpoint)
+    
+    if not eliminado:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="No existe ninguna suscripción para ese endpoint",
+            detail="No existe ninguna suscripción para ese endpoint"
         )
-
-    return PushSubscribeResponse(ok=True, message="Suscripción eliminada")
+        
+    return PushSubscribeResponse(ok=True, message="Suscripción eliminada correctamente")
