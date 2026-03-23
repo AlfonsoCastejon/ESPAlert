@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_db
+from app.dependencies import DBSessionDep
 from app.models.mesh_message import MeshMessage
 from app.schemas.mesh_message import MeshMessageListResponse, MeshMessageResponse
 
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/mesh", tags=["mesh"])
     },
 )
 async def get_mesh_messages(
-    db: Annotated[AsyncSession, Depends(get_db)],
+    db: DBSessionDep,
     node_id: Annotated[
         str | None,
         Query(description="Filtrar por identificador hexadecimal del nodo emisor"),

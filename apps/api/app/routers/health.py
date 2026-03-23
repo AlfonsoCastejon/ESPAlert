@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_db
+from app.dependencies import DBSessionDep
 from app.models.enums import AlertSource, FetchStatus
 from app.models.fetch_log import FetchLog
 from app.schemas.fetch_log import HealthResponse, SourceHealthResponse
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/health", tags=["health"])
     },
 )
 async def get_health(
-    db: Annotated[AsyncSession, Depends(get_db)],
+    db: DBSessionDep,
 ) -> HealthResponse:
     sources_health: list[SourceHealthResponse] = []
 

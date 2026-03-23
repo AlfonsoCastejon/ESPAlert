@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_db
+from app.dependencies import DBSessionDep
 from app.models.push_subscription import PushSubscription
 from app.schemas.push_subscripion import (
     PushSubscribeRequest,
@@ -32,7 +32,7 @@ router = APIRouter(prefix="/push", tags=["push"])
 )
 async def subscribe(
     body: PushSubscribeRequest,
-    db: Annotated[AsyncSession, Depends(get_db)],
+    db: DBSessionDep,
 ) -> PushSubscribeResponse:
     existing = await db.scalar(
         select(PushSubscription).where(PushSubscription.endpoint == body.endpoint)
@@ -68,7 +68,7 @@ async def subscribe(
 )
 async def unsubscribe(
     body: PushUnsubscribeRequest,
-    db: Annotated[AsyncSession, Depends(get_db)],
+    db: DBSessionDep,
 ) -> PushSubscribeResponse:
     result = await db.execute(
         delete(PushSubscription).where(PushSubscription.endpoint == body.endpoint)

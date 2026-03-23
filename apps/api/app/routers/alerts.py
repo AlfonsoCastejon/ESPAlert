@@ -7,7 +7,7 @@ from geoalchemy2.functions import ST_Intersects, ST_MakeEnvelope
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_db
+from app.dependencies import DBSessionDep
 from app.models.alert import Alert
 from app.models.enums import AlertSeverity, AlertSource, AlertStatus, AlertType
 from app.schemas.alerts import AlertListResponse, AlertResponse
@@ -29,7 +29,7 @@ router = APIRouter(prefix="/alerts", tags=["alerts"])
     },
 )
 async def get_active_alerts(
-    db: Annotated[AsyncSession, Depends(get_db)],
+    db: DBSessionDep,
     source: Annotated[AlertSource | None, Query(description="Fuente de datos")] = None,
     alert_type: Annotated[AlertType | None, Query(description="Tipo de alerta")] = None,
     severity: Annotated[AlertSeverity | None, Query(description="Nivel de severidad")] = None,
@@ -67,7 +67,7 @@ async def get_active_alerts(
     },
 )
 async def get_alert_history(
-    db: Annotated[AsyncSession, Depends(get_db)],
+    db: DBSessionDep,
     source: Annotated[AlertSource | None, Query(description="Fuente de datos")] = None,
     alert_type: Annotated[AlertType | None, Query(description="Tipo de alerta")] = None,
     severity: Annotated[AlertSeverity | None, Query(description="Nivel de severidad")] = None,
@@ -107,7 +107,7 @@ async def get_alert_history(
 )
 async def get_alert_by_id(
     alert_id: uuid.UUID,
-    db: Annotated[AsyncSession, Depends(get_db)],
+    db: DBSessionDep,
 ) -> AlertResponse:
     row = await db.get(Alert, alert_id)
     if row is None:
