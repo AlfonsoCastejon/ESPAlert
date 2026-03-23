@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import DBSessionDep
 from app.models.alert import Alert
 from app.models.enums import AlertSeverity, AlertSource, AlertStatus, AlertType
-from app.schemas.alerts import AlertListResponse, AlertResponse
+from app.schemas.alert import AlertListResponse, AlertResponse, AlertGeoJSON
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])
 
@@ -51,7 +51,7 @@ async def get_active_alerts(
 
     total = await db.scalar(select(func.count()).select_from(stmt.subquery()))
     rows = await db.scalars(stmt.order_by(Alert.created_at.desc()).limit(limit).offset(offset))
-    items = [AlertResponse.model_validate(r) for r in rows.all()]
+    items = [AlertGeoJSON.model_validate(r) for r in rows.all()]
 
     return AlertListResponse(total=total or 0, items=items, limit=limit, offset=offset)
 
@@ -91,14 +91,14 @@ async def get_alert_history(
 
     total = await db.scalar(select(func.count()).select_from(stmt.subquery()))
     rows = await db.scalars(stmt.order_by(Alert.created_at.desc()).limit(limit).offset(offset))
-    items = [AlertResponse.model_validate(r) for r in rows.all()]
+    items = [AlertGeoJSON.model_validate(r) for r in rows.all()]
 
     return AlertListResponse(total=total or 0, items=items, limit=limit, offset=offset)
 
 
 @router.get(
     "/{alert_id}",
-    response_model=AlertResponse,
+    response_model=AlertGeoJSON,
     summary="Detalle de una alerta",
     responses={
         200: {"description": "Alerta encontrada"},
@@ -108,11 +108,11 @@ async def get_alert_history(
 async def get_alert_by_id(
     alert_id: uuid.UUID,
     db: DBSessionDep,
-) -> AlertResponse:
+) -> AlertGeoJSON:
     row = await db.get(Alert, alert_id)
     if row is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alerta no encontrada")
-    return AlertResponse.model_validate(row)
+    return AlertGeoJSON.model_validate(row)
 
 
 # ---------------------------------------------------------------------------

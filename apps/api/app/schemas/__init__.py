@@ -1,8 +1,8 @@
-from app.schemas.alerts import AlertListResponse, AlertResponse
+from app.schemas.alert import AlertListResponse, AlertResponse
 from app.schemas.fetch_log import FetchLogResponse, HealthResponse, SourceHealthResponse
 from app.schemas.mesh_message import MeshMessageListResponse, MeshMessageResponse
-from app.schemas.push_subscripion import (
-    PushSubscribeRequest,
+from app.schemas.push_subscription import (
+    SubscriptionCreate,
     PushSubscribeResponse,
     PushUnsubscribeRequest,
 )
@@ -15,7 +15,7 @@ __all__ = [
     "HealthResponse",
     "MeshMessageListResponse",
     "MeshMessageResponse",
-    "PushSubscribeRequest",
+    "SubscriptionCreate",
     "PushSubscribeResponse",
     "PushUnsubscribeRequest",
     "SourceHealthResponse",

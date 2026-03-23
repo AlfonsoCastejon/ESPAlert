@@ -1,7 +1,10 @@
-from pydantic import BaseModel, Field
+import uuid
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class PushSubscribeRequest(BaseModel):
+class SubscriptionCreate(BaseModel):
     endpoint: str = Field(
         ...,
         description="URL del endpoint push del navegador",
@@ -22,6 +25,17 @@ class PushUnsubscribeRequest(BaseModel):
         ...,
         description="Endpoint de la suscripción a eliminar",
     )
+
+
+class SubscriptionResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    endpoint: str
+    p256dh: str
+    auth: str
+    created_at: datetime
+    updated_at: datetime
 
 
 class PushSubscribeResponse(BaseModel):
