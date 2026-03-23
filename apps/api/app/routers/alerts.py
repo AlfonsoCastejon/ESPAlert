@@ -3,14 +3,13 @@ from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from geoalchemy2.functions import ST_Intersects, ST_MakeEnvelope
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
+# We removed geoalchemy and direct sqlalchemy imports from here because they are well wrapped inside our alert_service.
 
 from app.dependencies import DBSessionDep
 from app.models.alert import Alert
 from app.models.enums import AlertSeverity, AlertSource, AlertStatus, AlertType
 from app.schemas.alert import AlertListResponse, AlertResponse, AlertGeoJSON
+from app.services import alert_service
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])
 
@@ -43,17 +42,24 @@ async def get_active_alerts(
     limit: Annotated[int, Query(ge=1, le=200, description="Número máximo de resultados")] = 50,
     offset: Annotated[int, Query(ge=0, description="Desplazamiento para paginación")] = 0,
 ) -> AlertListResponse:
-    stmt = select(Alert).where(
-        Alert.status == AlertStatus.ACTUAL,
-        (Alert.expires_at.is_(None)) | (Alert.expires_at > datetime.now(UTC)),
-    )
-    stmt = _apply_common_filters(stmt, source, alert_type, severity, bbox)
+    filters = {
+        "source": source,
+        "alert_type": alert_type,
+        "severity": severity,
+        "bbox": bbox
+    }
+    
+    try:
+        total, rows = await alert_service.get_active_alerts(db, filters, limit, offset)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="bbox debe tener el formato: minLon,minLat,maxLon,maxLat",
+        ) from exc
 
-    total = await db.scalar(select(func.count()).select_from(stmt.subquery()))
-    rows = await db.scalars(stmt.order_by(Alert.created_at.desc()).limit(limit).offset(offset))
-    items = [AlertGeoJSON.model_validate(r) for r in rows.all()]
+    items = [AlertGeoJSON.model_validate(r) for r in rows]
 
-    return AlertListResponse(total=total or 0, items=items, limit=limit, offset=offset)
+    return AlertListResponse(total=total, items=items, limit=limit, offset=offset)
 
 
 @router.get(
@@ -81,19 +87,26 @@ async def get_alert_history(
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> AlertListResponse:
-    stmt = select(Alert)
-    stmt = _apply_common_filters(stmt, source, alert_type, severity, bbox)
+    filters = {
+        "source": source,
+        "alert_type": alert_type,
+        "severity": severity,
+        "bbox": bbox,
+        "date_from": date_from,
+        "date_to": date_to
+    }
 
-    if date_from:
-        stmt = stmt.where(Alert.created_at >= date_from)
-    if date_to:
-        stmt = stmt.where(Alert.created_at <= date_to)
+    try:
+        total, rows = await alert_service.get_alert_history(db, filters, limit, offset)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="bbox debe tener el formato: minLon,minLat,maxLon,maxLat",
+        ) from exc
 
-    total = await db.scalar(select(func.count()).select_from(stmt.subquery()))
-    rows = await db.scalars(stmt.order_by(Alert.created_at.desc()).limit(limit).offset(offset))
-    items = [AlertGeoJSON.model_validate(r) for r in rows.all()]
+    items = [AlertGeoJSON.model_validate(r) for r in rows]
 
-    return AlertListResponse(total=total or 0, items=items, limit=limit, offset=offset)
+    return AlertListResponse(total=total, items=items, limit=limit, offset=offset)
 
 
 @router.get(
@@ -109,37 +122,7 @@ async def get_alert_by_id(
     alert_id: uuid.UUID,
     db: DBSessionDep,
 ) -> AlertGeoJSON:
-    row = await db.get(Alert, alert_id)
+    row = await alert_service.get_alert_by_id(db, alert_id)
     if row is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Alerta no encontrada")
     return AlertGeoJSON.model_validate(row)
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _apply_common_filters(
-    stmt,
-    source: AlertSource | None,
-    alert_type: AlertType | None,
-    severity: AlertSeverity | None,
-    bbox: str | None,
-):
-    if source:
-        stmt = stmt.where(Alert.source == source)
-    if alert_type:
-        stmt = stmt.where(Alert.alert_type == alert_type)
-    if severity:
-        stmt = stmt.where(Alert.severity == severity)
-    if bbox:
-        try:
-            min_lon, min_lat, max_lon, max_lat = (float(v) for v in bbox.split(","))
-        except ValueError as exc:
-            raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                detail="bbox debe tener el formato: minLon,minLat,maxLon,maxLat",
-            ) from exc
-        envelope = ST_MakeEnvelope(min_lon, min_lat, max_lon, max_lat, 4326)
-        stmt = stmt.where(ST_Intersects(Alert.geometry, envelope))
-    return stmt
