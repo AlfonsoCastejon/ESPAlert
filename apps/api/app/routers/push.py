@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import DBSessionDep
 from app.models.push_subscription import PushSubscription
-from app.schemas.push_subscripion import (
-    PushSubscribeRequest,
+from app.schemas.push_subscription import (
+    SubscriptionCreate,
     PushSubscribeResponse,
     PushUnsubscribeRequest,
 )
@@ -31,7 +31,7 @@ router = APIRouter(prefix="/push", tags=["push"])
     },
 )
 async def subscribe(
-    body: PushSubscribeRequest,
+    body: SubscriptionCreate,
     db: DBSessionDep,
 ) -> PushSubscribeResponse:
     existing = await db.scalar(
