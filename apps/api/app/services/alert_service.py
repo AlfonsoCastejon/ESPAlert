@@ -95,7 +95,7 @@ async def expire_old_alerts(db: AsyncSession) -> int:
             Alert.status == AlertStatus.ACTUAL,
             Alert.expires_at < now
         )
-        .values(status=AlertStatus.TEST) # Nota: Usar el enum de expirado correcto. # Actualiza a un status de archivo (por defecto TEST, DRAFT o el apropiado para expiradas) o simplemente se marca
+        .values(status=AlertStatus.EXPIRED)
     )
     result = await db.execute(stmt)
     await db.flush()
