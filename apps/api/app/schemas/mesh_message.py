@@ -26,3 +26,16 @@ class MeshMessageListResponse(BaseModel):
     items: list[MeshMessageResponse]
     limit: int = Field(default=50)
     offset: int = Field(default=0)
+
+class MeshMessageCreate(BaseModel):
+    node_id: str
+    channel: str | None = None
+    packet_id: int | None = None
+    message: str
+    latitude: float | None = None
+    longitude: float | None = None
+    altitude: int | None = None
+    snr: float | None = None
+    rssi: int | None = None
+    raw_payload: dict | None = None
+    alert_id: uuid.UUID | None = None
