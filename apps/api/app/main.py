@@ -11,7 +11,8 @@ from app.services.websocket_manager import ws_manager
 from app.connectors.meshtastic import meshtastic_connector
 
 is_debug = settings.ENV == "development"
-logging.basicConfig(level=logging.DEBUG if is_debug else logging.INFO)    
+logging.basicConfig(level=logging.DEBUG if is_debug else logging.INFO)
+logger = logging.getLogger(__name__)    
 async def lifespan(app: FastAPI):
     # --- Startup ---
     logger.info("Iniciando ESPAlert API y servicios...")
