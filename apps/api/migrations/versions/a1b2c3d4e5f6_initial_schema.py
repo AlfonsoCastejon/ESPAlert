@@ -37,7 +37,7 @@ def upgrade() -> None:
         create_type=False,
     )
     alert_status = postgresql.ENUM(
-        "actual", "exercise", "system", "test", "draft",
+        "actual", "exercise", "system", "test", "draft", "expired",
         name="alert_status",
         create_type=False,
     )

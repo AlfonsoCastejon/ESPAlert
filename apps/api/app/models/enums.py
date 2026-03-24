@@ -31,6 +31,7 @@ class AlertStatus(str, enum.Enum):
     SYSTEM = "system"
     TEST = "test"
     DRAFT = "draft"
+    EXPIRED = "expired"
 
 
 class FetchStatus(str, enum.Enum):
