@@ -8,11 +8,12 @@ from app.workers.celery_app import celery_app
 from app.database import AsyncSessionLocal
 from app.models.alert import Alert
 from app.models.enums import AlertStatus
+from app.services.alert_service import upsert_alert
 
 try:
-    from app.connectors.aemet import AEMETConnector
+    from app.connectors.aemet import AemetConnector
 except ImportError:
-    AEMETConnector = None
+    AemetConnector = None
 
 try:
     from app.connectors.ign import IGNConnector
@@ -20,14 +21,14 @@ except ImportError:
     IGNConnector = None
 
 try:
-    from app.connectors.dgt import DGTConnector
+    from app.connectors.dgt import DgtConnector
 except ImportError:
-    DGTConnector = None
+    DgtConnector = None
 
 try:
-    from app.connectors.meteoalarm import MeteoalarmConnector
+    from app.connectors.meteoalarm import MeteoAlarmConnector
 except ImportError:
-    MeteoalarmConnector = None
+    MeteoAlarmConnector = None
 
 logger = logging.getLogger(__name__)
 
@@ -39,29 +40,30 @@ def run_async(coro):
     finally:
         loop.close()
 
-async def async_fetch_aemet():
+async def _fetch_and_persist(connector_cls, name: str):
+    if connector_cls is None:
+        return
+    connector = connector_cls()
+    alerts = await connector.fetch()
+    if not alerts:
+        return
     async with AsyncSessionLocal() as db:
-        if AEMETConnector is not None:
-            connector = AEMETConnector(db)
-            await connector.fetch()
+        for alert_data in alerts:
+            await upsert_alert(db, alert_data)
+        await db.commit()
+    logger.info(f"{name}: {len(alerts)} alertas persistidas.")
+
+async def async_fetch_aemet():
+    await _fetch_and_persist(AemetConnector, "AEMET")
 
 async def async_fetch_ign():
-    async with AsyncSessionLocal() as db:
-        if IGNConnector is not None:
-            connector = IGNConnector(db)
-            await connector.fetch()
+    await _fetch_and_persist(IGNConnector, "IGN")
 
 async def async_fetch_dgt():
-    async with AsyncSessionLocal() as db:
-        if DGTConnector is not None:
-            connector = DGTConnector(db)
-            await connector.fetch()
+    await _fetch_and_persist(DgtConnector, "DGT")
 
 async def async_fetch_meteoalarm():
-    async with AsyncSessionLocal() as db:
-        if MeteoalarmConnector is not None:
-            connector = MeteoalarmConnector(db)
-            await connector.fetch()
+    await _fetch_and_persist(MeteoAlarmConnector, "MeteoAlarm")
 
 async def async_expire_alerts():
     async with AsyncSessionLocal() as db:
@@ -74,7 +76,7 @@ async def async_expire_alerts():
         )
         result = await db.execute(stmt)
         await db.commit()
-        logger.info(f"Alertas expiradas automáticamentes: {result.rowcount}")
+        logger.info(f"Alertas expiradas automáticamente: {result.rowcount}")
 
 @celery_app.task(name="app.workers.tasks.fetch_aemet_task", ignore_result=True)
 def fetch_aemet_task():

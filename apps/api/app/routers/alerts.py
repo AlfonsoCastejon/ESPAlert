@@ -3,7 +3,6 @@ from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-# We removed geoalchemy and direct sqlalchemy imports from here because they are well wrapped inside our alert_service.
 
 from app.dependencies import DBSessionDep
 from app.models.alert import Alert

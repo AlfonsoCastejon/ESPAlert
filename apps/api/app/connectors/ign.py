@@ -1,5 +1,4 @@
 import logging
-from typing import List
 from datetime import datetime, timedelta, timezone
 
 from app.connectors.base import BaseConnector
@@ -16,7 +15,7 @@ class IGNConnector(BaseConnector):
     
     BASE_URL = "https://www.ign.es/ign/fdsnws/event/1/query"
 
-    async def _fetch(self) -> List[AlertCreate]:
+    async def _fetch(self) -> list[AlertCreate]:
         client = self.get_client()
         
         # Calcular ventana de tiempo (últimas 24h)

@@ -1,6 +1,6 @@
 import abc
 import logging
-from typing import List, Any
+from typing import Any
 import httpx
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class BaseConnector(abc.ABC):
             )
         return cls._client
 
-    async def fetch(self) -> List[Any]:
+    async def fetch(self) -> list[Any]:
         """
         Método público para obtener la lista de alertas normalizadas.
         Implementa el manejo de errores global para evitar que fallen
@@ -38,7 +38,7 @@ class BaseConnector(abc.ABC):
             return []
 
     @abc.abstractmethod
-    async def _fetch(self) -> List[Any]:
+    async def _fetch(self) -> list[Any]:
         """
         Método abstracto que deben implementar todos los conectores hijos.
         Aquí reside la lógica específica de HTTP (usando self.client) 

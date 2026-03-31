@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import logging
 
 from app.connectors.base import BaseConnector
@@ -10,15 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class DgtConnector(BaseConnector):
-    """
-    Conector para el feed NAP de la DGT en formato DATEX2/XML.
-    Fetch, parse, map to alert schemas with traffic type, and extract loc.
-    """
+    """Conector para el feed NAP de la DGT (formato DATEX2/XML)."""
     
     DATEX2_URL = "https://infocar.dgt.es/datex2/dgt/SituationPublication/all/content.xml"
 
     def _map_severity(self, severity_str: str | None) -> AlertSeverity:
-        """Map DATEX2 severity to AlertSeverity."""
         if not severity_str:
             return AlertSeverity.UNKNOWN
             
@@ -41,10 +37,11 @@ class DgtConnector(BaseConnector):
 
         situations = parse_datex2_xml(response.content)
         alerts = []
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
 
         for sit in situations:
             try:
-                # Reject without location
+                # Descartar si no tiene ubicación
                 if not sit.get("location"):
                     continue
 
@@ -66,9 +63,12 @@ class DgtConnector(BaseConnector):
                 time_str = sit.get("versionTime") or sit.get("creationTime")
                 if time_str:
                     try:
-                        alert_dict["effective_at"] = datetime.fromisoformat(time_str.replace("Z", "+00:00"))
+                        effective_at = datetime.fromisoformat(time_str.replace("Z", "+00:00"))
+                        if effective_at < cutoff:
+                            continue
+                        alert_dict["effective_at"] = effective_at
                     except ValueError:
-                        pass
+                        logger.debug(f"Fecha en formato no reconocido DGT: {time_str}")
                 
                 alerts.append(AlertCreate(**alert_dict))
                 

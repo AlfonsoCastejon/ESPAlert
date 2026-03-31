@@ -1,6 +1,6 @@
 import xml.etree.ElementTree as ET
 import logging
-from typing import Dict, Any, List, Union
+from typing import Any, Union
 
 logger = logging.getLogger(__name__)
 
@@ -10,7 +10,7 @@ def _get_text(element: ET.Element, xpath: str) -> Union[str, None]:
     el = element.find(xpath)
     return el.text.strip() if el is not None and el.text else None
 
-def extract_geometry_from_cap(element: ET.Element) -> Union[Dict[str, Any], None]:
+def extract_geometry_from_cap(element: ET.Element) -> Union[dict[str, Any], None]:
     """
     Extrae un polígono o círculo en formato GeoJSON-compatible a partir de un elemento area en un CAP XML.
     """
@@ -55,7 +55,7 @@ def extract_geometry_from_cap(element: ET.Element) -> Union[Dict[str, Any], None
         
     return None
 
-def parse_cap_xml(content: Union[str, bytes]) -> List[Dict[str, Any]]:
+def parse_cap_xml(content: Union[str, bytes]) -> list[dict[str, Any]]:
     """
     Parsea contenido XML en formato CAP (Common Alerting Protocol).
     Usado por AEMET y MeteoAlarm. Devuelve lista de diccionarios de alertas.
@@ -96,6 +96,8 @@ def parse_cap_xml(content: Union[str, bytes]) -> List[Dict[str, Any]]:
                     "headline": _get_text(info, './/{*}headline'),
                     "description": _get_text(info, './/{*}description'),
                     "instruction": _get_text(info, './/{*}instruction'),
+                    "effective": _get_text(info, './/{*}effective'),
+                    "expires": _get_text(info, './/{*}expires'),
                     "areas": []
                 }
                 
@@ -116,7 +118,7 @@ def parse_cap_xml(content: Union[str, bytes]) -> List[Dict[str, Any]]:
         
     return alerts
 
-def parse_datex2_xml(content: Union[str, bytes]) -> List[Dict[str, Any]]:
+def parse_datex2_xml(content: Union[str, bytes]) -> list[dict[str, Any]]:
     """
     Parsea XML en formato DATEX2 (DGT).
     """

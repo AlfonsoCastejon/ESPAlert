@@ -12,7 +12,9 @@ from app.connectors.meshtastic import meshtastic_connector
 
 is_debug = settings.ENV == "development"
 logging.basicConfig(level=logging.DEBUG if is_debug else logging.INFO)
-logger = logging.getLogger(__name__)    
+logger = logging.getLogger(__name__)
+
+_PING_INTERVAL_SECONDS = 30    
 async def lifespan(app: FastAPI):
     # --- Startup ---
     logger.info("Iniciando ESPAlert API y servicios...")
@@ -63,7 +65,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS if isinstance(settings.ALLOWED_ORIGINS, list) else settings.ALLOWED_ORIGINS.split(","),
+    allow_origins=settings.allowed_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

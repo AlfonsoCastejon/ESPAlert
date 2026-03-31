@@ -6,6 +6,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from app.config import settings
 from app.database import Base
 
 # Importar todos los modelos para que Alembic los detecte en autogenerate
@@ -15,6 +16,9 @@ config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+# Usar DATABASE_URL de la configuración en vez del valor hardcodeado en alembic.ini
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
 target_metadata = Base.metadata
 

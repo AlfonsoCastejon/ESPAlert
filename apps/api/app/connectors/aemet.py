@@ -1,5 +1,4 @@
 import logging
-from typing import List
 from datetime import datetime
 
 from app.config import settings
@@ -18,7 +17,7 @@ class AemetConnector(BaseConnector):
     
     BASE_URL = "https://opendata.aemet.es/opendata/api/avisos_cap/ultimoelaborado/todasareas/"
 
-    async def _fetch(self) -> List[AlertCreate]:
+    async def _fetch(self) -> list[AlertCreate]:
         client = self.get_client()
         api_key = settings.AEMET_API_KEY.get_secret_value()
         
@@ -68,16 +67,22 @@ class AemetConnector(BaseConnector):
             else:
                 severity = AlertSeverity.UNKNOWN
 
-            # Parsing de fechas ("sent")
+            # Parsing de fechas
             sent_str = alert_dict.get("sent")
             effective_at = None
             if sent_str:
                 try:
-                    # ISO 8601 parsing asumiendo que el parser original no la casteó
-                    effective_at = datetime.fromisoformat(sent_str)
+                    effective_at = datetime.fromisoformat(sent_str.replace("Z", "+00:00"))
                 except ValueError:
                     logger.debug(f"Fecha en formato no reconocido AEMET: {sent_str}")
-                    pass
+
+            expires_str = alert_dict.get("expires")
+            expires_at = None
+            if expires_str:
+                try:
+                    expires_at = datetime.fromisoformat(expires_str.replace("Z", "+00:00"))
+                except ValueError:
+                    logger.debug(f"Fecha expires en formato no reconocido AEMET: {expires_str}")
 
             # Generamos un AlertCreate por cada área afectada devuelta
             for area in alert_dict.get("areas", []):
@@ -98,7 +103,7 @@ class AemetConnector(BaseConnector):
                     area_description=area.get("areaDesc"),
                     geometry=geometry,
                     effective_at=effective_at,
-                    expires_at=None, # Podemos inferir si "expires" está en el CAP, omitido basándonos en tu parseador actual
+                    expires_at=expires_at,
                     raw_data=alert_dict
                 )
                 normalized_alerts.append(alert)

@@ -1,5 +1,4 @@
 import logging
-from typing import List
 from datetime import datetime
 import hashlib
 
@@ -17,7 +16,7 @@ class MeteoAlarmConnector(BaseConnector):
     
     BASE_URL = "https://feeds.meteoalarm.org/api/v1/warnings/feeds-spain"
 
-    async def _fetch(self) -> List[AlertCreate]:
+    async def _fetch(self) -> list[AlertCreate]:
         client = self.get_client()
         
         response = await client.get(self.BASE_URL)

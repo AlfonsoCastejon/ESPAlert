@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 import paho.mqtt.client as mqtt
 from paho.mqtt.enums import CallbackAPIVersion
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import get_settings
@@ -56,7 +56,6 @@ async def get_mesh_messages(db: AsyncSession, limit: int = 50, offset: int = 0, 
 
 async def get_mesh_messages_count(db: AsyncSession, node_id: str | None = None) -> int:
     """Devuelve el total de mensajes para paginación"""
-    from sqlalchemy import func
     stmt = select(func.count(MeshMessage.id))
     if node_id:
         stmt = stmt.where(MeshMessage.node_id == node_id)
