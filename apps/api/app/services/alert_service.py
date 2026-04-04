@@ -1,9 +1,10 @@
+import json
 import uuid
 from datetime import UTC, datetime
 from typing import Any
 
 from geoalchemy2.functions import ST_Intersects, ST_MakeEnvelope
-from sqlalchemy import func, select, update
+from sqlalchemy import func, select, text, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +12,13 @@ from app.models.alert import Alert
 from app.models.enums import AlertSeverity, AlertSource, AlertStatus, AlertType
 from app.schemas.alert import AlertCreate
 from app.utils.regions import REGION_BBOX, Region
+
+
+def _geojson_to_wke(geom: Any) -> Any:
+    """Convierte un dict GeoJSON a una expresión SQL ST_GeomFromGeoJSON."""
+    if isinstance(geom, dict):
+        return func.ST_SetSRID(func.ST_GeomFromGeoJSON(json.dumps(geom)), 4326)
+    return geom
 
 async def get_active_alerts(
     db: AsyncSession,
@@ -59,9 +67,11 @@ async def get_alert_by_id(db: AsyncSession, alert_id: uuid.UUID) -> Alert | None
 async def upsert_alert(db: AsyncSession, alert_data: AlertCreate) -> Alert:
     """Inserta una alerta o la actualiza automáticamente si el external_id ya existe."""
     data_dict = alert_data.model_dump(exclude_unset=True)
+
+    if "geometry" in data_dict and data_dict["geometry"] is not None:
+        data_dict["geometry"] = _geojson_to_wke(data_dict["geometry"])
+
     if not data_dict.get("external_id"):
-        # Si no provino referenciada de un external_id no podemos hacer upsert seguro sin arriesgar duplicados,
-        # así que hacemos un insert directo.
         alert = Alert(**data_dict)
         db.add(alert)
         await db.flush()

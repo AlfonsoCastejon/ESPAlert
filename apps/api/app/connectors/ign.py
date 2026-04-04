@@ -13,7 +13,7 @@ class IGNConnector(BaseConnector):
     Utiliza el servicio FDSNWS Event.
     """
     
-    BASE_URL = "https://www.ign.es/ign/fdsnws/event/1/query"
+    BASE_URL = "https://fdsnws.sismologia.ign.es/fdsnws/event/1/query"
 
     async def _fetch(self) -> list[AlertCreate]:
         client = self.get_client()
@@ -29,6 +29,9 @@ class IGNConnector(BaseConnector):
         }
         
         response = await client.get(self.BASE_URL, params=params)
+        if response.status_code == 404:
+            logger.info("IGN: Sin sismos en las últimas 24h (FDSNWS 404 = sin resultados).")
+            return []
         response.raise_for_status()
         
         text_data = response.text

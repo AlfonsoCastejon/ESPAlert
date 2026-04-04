@@ -145,9 +145,11 @@ def parse_datex2_xml(content: Union[str, bytes]) -> list[dict[str, Any]]:
             }
             
             point = record.find('.//{*}pointByCoordinates/{*}pointCoordinates')
-            if point is None: # otra ubicación en datex2
+            if point is None:
                 point = record.find('.//{*}locationForDisplay')
-            
+            if point is None:
+                point = record.find('.//{*}pointCoordinates')
+
             if point is not None:
                 lat = _get_text(point, './/{*}latitude')
                 lon = _get_text(point, './/{*}longitude')

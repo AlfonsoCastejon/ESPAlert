@@ -19,13 +19,15 @@ class FetchLog(Base):
         server_default=text("gen_random_uuid()"),
     )
     source: Mapped[AlertSource] = mapped_column(
-        Enum(AlertSource, name="alert_source", create_type=False),
+        Enum(AlertSource, name="alert_source", create_type=False,
+             values_callable=lambda e: [x.value for x in e]),
         nullable=False,
         index=True,
         comment="Fuente de datos consultada",
     )
     status: Mapped[FetchStatus] = mapped_column(
-        Enum(FetchStatus, name="fetch_status", create_type=True),
+        Enum(FetchStatus, name="fetch_status", create_type=True,
+             values_callable=lambda e: [x.value for x in e]),
         nullable=False,
         default=FetchStatus.RUNNING,
     )
