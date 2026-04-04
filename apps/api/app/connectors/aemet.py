@@ -1,4 +1,6 @@
+import io
 import logging
+import tarfile
 from datetime import datetime
 
 from app.config import settings
@@ -15,7 +17,7 @@ class AemetConnector(BaseConnector):
     Requiere una API key preconfigurada.
     """
     
-    BASE_URL = "https://opendata.aemet.es/opendata/api/avisos_cap/ultimoelaborado/todasareas/"
+    BASE_URL = "https://opendata.aemet.es/opendata/api/avisos_cap/ultimoelaborado/area/esp"
 
     async def _fetch(self) -> list[AlertCreate]:
         client = self.get_client()
@@ -41,14 +43,23 @@ class AemetConnector(BaseConnector):
             logger.error("AEMET no devolvió una URL de datos válida en el payload.")
             return []
             
-        # 2. Descargar el archivo CAP/XML desde la URL proporcionada
+        # 2. Descargar el archivo tar con los CAP/XML
         cap_response = await client.get(data_url)
         cap_response.raise_for_status()
-        
-        xml_content = cap_response.content
-        
-        # 3. Parsear el XML usando la utilidad general
-        parsed_alerts = parse_cap_xml(xml_content)
+
+        raw_content = cap_response.content
+
+        # 3. AEMET devuelve un tar con múltiples XML dentro
+        parsed_alerts = []
+        try:
+            tar = tarfile.open(fileobj=io.BytesIO(raw_content))
+            for member in tar.getmembers():
+                if member.name.endswith(".xml"):
+                    xml_content = tar.extractfile(member).read()
+                    parsed_alerts.extend(parse_cap_xml(xml_content))
+            tar.close()
+        except tarfile.TarError:
+            parsed_alerts = parse_cap_xml(raw_content)
         
         # 4. Normalizar y mapear al schema de la base de datos
         normalized_alerts = []

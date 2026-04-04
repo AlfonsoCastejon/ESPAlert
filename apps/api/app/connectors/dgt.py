@@ -1,4 +1,4 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 import logging
 
 from app.connectors.base import BaseConnector
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class DgtConnector(BaseConnector):
     """Conector para el feed NAP de la DGT (formato DATEX2/XML)."""
     
-    DATEX2_URL = "https://infocar.dgt.es/datex2/dgt/SituationPublication/all/content.xml"
+    DATEX2_URL = "https://nap.dgt.es/datex2/v3/dgt/SituationPublication/datex2_v36.xml"
 
     def _map_severity(self, severity_str: str | None) -> AlertSeverity:
         if not severity_str:
@@ -37,17 +37,15 @@ class DgtConnector(BaseConnector):
 
         situations = parse_datex2_xml(response.content)
         alerts = []
-        cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
 
         for sit in situations:
             try:
-                # Descartar si no tiene ubicación
                 if not sit.get("location"):
                     continue
 
                 severity = self._map_severity(sit.get("severity"))
                 summary = sit.get("summary") or "Incidencia de tráfico DGT"
-                
+
                 alert_dict = {
                     "external_id": sit.get("id"),
                     "source": AlertSource.DGT,
@@ -59,17 +57,15 @@ class DgtConnector(BaseConnector):
                     "status": AlertStatus.ACTUAL,
                     "raw_data": sit
                 }
-                
+
                 time_str = sit.get("versionTime") or sit.get("creationTime")
                 if time_str:
                     try:
                         effective_at = datetime.fromisoformat(time_str.replace("Z", "+00:00"))
-                        if effective_at < cutoff:
-                            continue
                         alert_dict["effective_at"] = effective_at
                     except ValueError:
                         logger.debug(f"Fecha en formato no reconocido DGT: {time_str}")
-                
+
                 alerts.append(AlertCreate(**alert_dict))
                 
             except Exception as e:

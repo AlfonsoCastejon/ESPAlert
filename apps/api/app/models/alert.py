@@ -28,23 +28,27 @@ class Alert(Base):
         comment="Identificador original en la fuente externa",
     )
     source: Mapped[AlertSource] = mapped_column(
-        Enum(AlertSource, name="alert_source", create_type=True),
+        Enum(AlertSource, name="alert_source", create_type=True,
+             values_callable=lambda e: [x.value for x in e]),
         nullable=False,
         index=True,
     )
     alert_type: Mapped[AlertType] = mapped_column(
-        Enum(AlertType, name="alert_type", create_type=True),
+        Enum(AlertType, name="alert_type", create_type=True,
+             values_callable=lambda e: [x.value for x in e]),
         nullable=False,
         index=True,
     )
     severity: Mapped[AlertSeverity] = mapped_column(
-        Enum(AlertSeverity, name="alert_severity", create_type=True),
+        Enum(AlertSeverity, name="alert_severity", create_type=True,
+             values_callable=lambda e: [x.value for x in e]),
         nullable=False,
         default=AlertSeverity.UNKNOWN,
         index=True,
     )
     status: Mapped[AlertStatus] = mapped_column(
-        Enum(AlertStatus, name="alert_status", create_type=True),
+        Enum(AlertStatus, name="alert_status", create_type=True,
+             values_callable=lambda e: [x.value for x in e]),
         nullable=False,
         default=AlertStatus.ACTUAL,
     )

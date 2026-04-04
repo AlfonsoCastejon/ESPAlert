@@ -5,12 +5,13 @@ uvicorn[standard]>=0.30.0
 sqlalchemy[asyncio]>=2.0.0
 asyncpg>=0.29.0
 geoalchemy2>=0.15.0
+shapely>=2.0.0
 
 # Migraciones
 alembic>=1.13.0
 
 # Validación y configuración
-pydantic>=2.9.0
+pydantic[email]>=2.9.0
 pydantic-settings>=2.5.0
 
 # Tareas asíncronas
