@@ -1,0 +1,14 @@
+// ITCSS: de generico a especifico
+@use 'generic/reset';
+@use 'elements/base';
+@use 'objects/layouts';
+@use 'components/header';
+@use 'components/footer';
+@use 'components/cookie-banner';
+@use 'components/filters';
+@use 'components/alert-card';
+@use 'components/alert-badge';
+@use 'components/popup';
+@use 'components/pagina-legal';
+@use 'components/auth';
+@use 'utilities/helpers';

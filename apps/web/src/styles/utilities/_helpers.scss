@@ -1,0 +1,11 @@
+@use '../tools/mixins' as *;
+
+.sr-only {
+  @include oculto-visualmente;
+}
+
+// Utilidad de ultima capa ITCSS — especificidad alta por contexto
+.oculto[hidden],
+.oculto {
+  display: none;
+}
