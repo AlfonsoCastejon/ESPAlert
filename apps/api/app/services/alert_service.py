@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.alert import Alert
 from app.models.enums import AlertSeverity, AlertSource, AlertStatus, AlertType
 from app.schemas.alert import AlertCreate
+from app.utils.regions import REGION_BBOX, Region
 
 async def get_active_alerts(
     db: AsyncSession,
@@ -112,6 +113,14 @@ def _apply_common_filters(stmt, filters: dict[str, Any]):
         # Se asume que el input ha sido validado (por ej. en el router o schema)
         # o que lanzará ValueError si no son 4 floats válidos.
         min_lon, min_lat, max_lon, max_lat = (float(v) for v in bbox.split(","))
+        envelope = ST_MakeEnvelope(min_lon, min_lat, max_lon, max_lat, 4326)
+        stmt = stmt.where(ST_Intersects(Alert.geometry, envelope))
+    # Si nos pasan una CCAA y no hay bbox explícito, usamos su bounding box.
+    # El bbox explícito tiene prioridad porque permite zooms más finos.
+    elif region := filters.get("region"):
+        if isinstance(region, str):
+            region = Region(region)
+        min_lon, min_lat, max_lon, max_lat = REGION_BBOX[region]
         envelope = ST_MakeEnvelope(min_lon, min_lat, max_lon, max_lat, 4326)
         stmt = stmt.where(ST_Intersects(Alert.geometry, envelope))
     return stmt

@@ -9,6 +9,7 @@ from app.models.alert import Alert
 from app.models.enums import AlertSeverity, AlertSource, AlertStatus, AlertType
 from app.schemas.alert import AlertListResponse, AlertResponse, AlertGeoJSON
 from app.services import alert_service
+from app.utils.regions import Region
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])
 
@@ -38,6 +39,10 @@ async def get_active_alerts(
             examples=["minLon,minLat,maxLon,maxLat"],
         ),
     ] = None,
+    region: Annotated[
+        Region | None,
+        Query(description="Comunidad autónoma (aplica su bounding box)"),
+    ] = None,
     limit: Annotated[int, Query(ge=1, le=200, description="Número máximo de resultados")] = 50,
     offset: Annotated[int, Query(ge=0, description="Desplazamiento para paginación")] = 0,
 ) -> AlertListResponse:
@@ -45,7 +50,8 @@ async def get_active_alerts(
         "source": source,
         "alert_type": alert_type,
         "severity": severity,
-        "bbox": bbox
+        "bbox": bbox,
+        "region": region,
     }
     
     try:
@@ -83,6 +89,10 @@ async def get_alert_history(
         datetime | None, Query(description="Fin del rango temporal (ISO 8601)")
     ] = None,
     bbox: Annotated[str | None, Query(description="Bounding box: minLon,minLat,maxLon,maxLat")] = None,
+    region: Annotated[
+        Region | None,
+        Query(description="Comunidad autónoma (aplica su bounding box)"),
+    ] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
 ) -> AlertListResponse:
@@ -91,8 +101,9 @@ async def get_alert_history(
         "alert_type": alert_type,
         "severity": severity,
         "bbox": bbox,
+        "region": region,
         "date_from": date_from,
-        "date_to": date_to
+        "date_to": date_to,
     }
 
     try:

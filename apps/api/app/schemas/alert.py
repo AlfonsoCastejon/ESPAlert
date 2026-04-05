@@ -1,10 +1,20 @@
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, computed_field, model_validator
 
 from app.models.enums import AlertSeverity, AlertSource, AlertStatus, AlertType
+
+
+# Mapeo severidad -> color lógico. El frontend se encarga de traducir a hex del Figma.
+_SEVERITY_COLOR: dict[AlertSeverity, str] = {
+    AlertSeverity.UNKNOWN: "green",
+    AlertSeverity.MINOR: "green",
+    AlertSeverity.MODERATE: "yellow",
+    AlertSeverity.SEVERE: "orange",
+    AlertSeverity.EXTREME: "red",
+}
 
 
 class AlertCreate(BaseModel):
@@ -39,6 +49,15 @@ class AlertResponse(BaseModel):
     expires_at: datetime | None = None
     fetched_at: datetime
     created_at: datetime
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def color(self) -> Literal["green", "yellow", "orange", "red", "purple"]:
+        # Las alertas que vienen de la red mesh tienen su propio color,
+        # independientemente de la severidad declarada.
+        if self.source == AlertSource.MESHTASTIC:
+            return "purple"
+        return _SEVERITY_COLOR.get(self.severity, "green")  # type: ignore[return-value]
 
 
 class AlertGeoJSON(AlertResponse):
