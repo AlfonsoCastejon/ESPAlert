@@ -1,0 +1,67 @@
+@use '../settings/variables' as *;
+
+:root {
+  --color-fondo: #{$color-fondo};
+  --color-fondo-suave: #{$color-fondo-suave};
+  --color-texto: #{$color-texto};
+  --color-gris: #{$color-gris};
+  --color-naranja-marca: #{$color-naranja-marca};
+  --color-boton-registro: #{$color-boton-registro};
+  --color-verde-alerta: #{$color-verde-alerta};
+  --color-amarillo-alerta: #{$color-amarillo-alerta};
+  --color-naranja-alerta: #{$color-naranja-alerta};
+  --color-rojo-alerta: #{$color-rojo-alerta};
+  --color-morado-mesh: #{$color-morado-mesh};
+}
+
+[data-theme="dark"] {
+  --color-fondo: #{$color-fondo-dark};
+  --color-fondo-suave: #{$color-fondo-suave-dark};
+  --color-texto: #{$color-texto-dark};
+  --color-gris: #{$color-gris-dark};
+  --color-naranja-marca: #{$color-naranja-marca-dark};
+  --color-boton-registro: #{$color-boton-registro-dark};
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  font-family: $fuente-base;
+  font-size: $texto-base;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--color-texto);
+  background: transparent;
+  padding: $espacio-sm $espacio-md;
+  border-radius: $borde-radio;
+  font-size: $texto-sm;
+}
+
+h1 {
+  font-size: $texto-2xl;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: $texto-xl;
+  font-weight: 700;
+  margin-top: $espacio-xl;
+  margin-bottom: $espacio-sm;
+}
+
+p {
+  margin-bottom: $espacio-md;
+}
+
+label {
+  cursor: pointer;
+}

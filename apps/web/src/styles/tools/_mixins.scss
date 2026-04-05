@@ -1,0 +1,41 @@
+@use '../settings/variables' as *;
+
+@mixin desde($bp) {
+  @media (min-width: $bp) { @content; }
+}
+
+@mixin hasta($bp) {
+  @media (max-width: $bp) { @content; }
+}
+
+@mixin solo-escritorio {
+  @media (min-width: $bp-tablet) { @content; }
+}
+
+@mixin solo-movil {
+  @media (max-width: $bp-tablet) { @content; }
+}
+
+@mixin oculto-visualmente {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@mixin truncar {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin flex-centro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

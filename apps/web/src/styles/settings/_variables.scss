@@ -1,0 +1,99 @@
+// ==========================================================================
+// Tokens de diseno — paleta oficial Figma ESPAlert
+// ==========================================================================
+
+// Modo claro
+$color-fondo: #F5FDF7;
+$color-fondo-suave: #DFF9E9;
+$color-texto: #142426;
+$color-gris: #696969;
+$color-naranja-marca: #7C3D05;
+$color-boton-registro: #B8FFD3;
+
+// Severidades (iguales en claro y oscuro)
+$color-verde-alerta: #B8FFD3;
+$color-amarillo-alerta: #F6FF98;
+$color-naranja-alerta: #FFCA68;
+$color-rojo-alerta: #FF8181;
+$color-morado-mesh: #A35DFF;
+
+// Tonos oscuros para puntos de severidad
+$color-verde-oscuro: #2d7a4f;
+$color-amarillo-oscuro: #8a8a00;
+$color-naranja-oscuro: #b06800;
+$color-rojo-oscuro: #b00020;
+$color-morado-oscuro: #5a1dab;
+
+// Modo oscuro
+$color-fondo-dark: #142426;
+$color-fondo-suave-dark: #080F10;
+$color-texto-dark: #F5FDF7;
+$color-gris-dark: #EFEFEF;
+$color-naranja-marca-dark: #FB8C2A;
+$color-boton-registro-dark: #080F10;
+
+// Breakpoints
+$bp-movil: 30rem;    // 480px
+$bp-tablet: 48rem;   // 768px
+$bp-escritorio: 64rem; // 1024px
+
+// Z-indexes
+$z-mapa: 1;
+$z-lateral: 10;
+$z-cabecera: 20;
+$z-cookies: 30;
+$z-modal: 40;
+
+// Tipografia
+$fuente-base: 'Segoe UI', system-ui, -apple-system, sans-serif;
+$texto-xs: 0.75rem;   // 12px
+$texto-sm: 0.875rem;  // 14px
+$texto-base: 1rem;    // 16px
+$texto-lg: 1.125rem;  // 18px
+$texto-xl: 1.5rem;    // 24px
+$texto-2xl: 2rem;     // 32px
+$texto-3xl: 3rem;     // 48px
+$texto-6xl: 6rem;     // 96px
+
+// Espaciado
+$espacio-2xs: 0.125rem; // 2px
+$espacio-xs: 0.25rem;   // 4px
+$espacio-sm: 0.5rem;    // 8px
+$espacio-md: 1rem;      // 16px
+$espacio-lg: 1.5rem;    // 24px
+$espacio-xl: 2rem;      // 32px
+$espacio-2xl: 3rem;     // 48px
+$espacio-5xl: 5rem;     // 80px
+
+// Bordes
+$borde-radio: 0.25rem;  // 4px
+$borde-radio-lg: 0.5rem; // 8px
+$borde-radio-pill: 62.5rem; // pill
+
+// Tamanos
+$tamano-icono-sm: 0.5rem;
+$tamano-icono-md: 0.625rem;
+$tamano-logo: 2.25rem;
+$tamano-logo-movil: 1.75rem;
+$alto-cabecera: 3.75rem;
+$tamano-burger: 1.75rem;
+$tamano-tema: 1.25rem;
+
+// Ancho lateral
+$ancho-lateral: 16.25rem; // 260px
+
+// Opacidades
+$opacidad-inactivo: 0.3;
+$opacidad-placeholder: 0.5;
+$opacidad-hover: 0.85;
+$opacidad-overlay: 0.4;
+$opacidad-sombra: 0.2;
+$opacidad-sombra-suave: 0.15;
+
+// Tracking
+$tracking-ancho: 0.05em;
+
+// Bandeja movil
+$bandeja-max-alto: 70vh;
+$bandeja-asa-ancho: 2.5rem;
+$bandeja-asa-alto: 0.25rem;
