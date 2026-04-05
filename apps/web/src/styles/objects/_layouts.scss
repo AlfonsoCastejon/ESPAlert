@@ -1,0 +1,174 @@
+@use '../settings/variables' as *;
+@use '../tools/mixins' as *;
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.contenido-principal {
+  flex: 1;
+  display: flex;
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.contenedor-mapa {
+  flex: 1;
+  position: relative;
+  z-index: $z-mapa;
+}
+
+// Lateral visible solo en escritorio
+.lateral {
+  display: flex;
+  flex-direction: column;
+  width: $ancho-lateral;
+  padding: $espacio-sm $espacio-md $espacio-md;
+  background: var(--color-fondo);
+  border-right: 1px solid var(--color-texto);
+  z-index: $z-lateral;
+  flex-shrink: 0;
+  min-height: 0;
+  overflow: hidden;
+
+  @include solo-movil {
+    display: none;
+  }
+}
+
+// Bandeja de filtros desde abajo (solo movil)
+.bandeja {
+  display: none;
+
+  @include solo-movil {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: $bandeja-max-alto;
+    background: var(--color-fondo);
+    border-top: 1px solid var(--color-texto);
+    border-radius: $borde-radio-lg $borde-radio-lg 0 0;
+    z-index: $z-lateral;
+    transform: translateY(calc(100% - 0rem));
+    transition: transform 0.3s ease;
+
+    &--abierta {
+      transform: translateY(0);
+    }
+  }
+
+  &__asa {
+    display: flex;
+    justify-content: center;
+    padding: $espacio-sm 0;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  &__asa-linea {
+    width: $bandeja-asa-ancho;
+    height: $bandeja-asa-alto;
+    border-radius: $borde-radio-pill;
+    background: var(--color-gris);
+    opacity: 0.5;
+  }
+
+  &__contenido {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 $espacio-md $espacio-md;
+  }
+}
+
+// Boton flotante para abrir filtros (solo movil)
+.boton-filtros {
+  display: none;
+
+  @include solo-movil {
+    display: block;
+    position: absolute;
+    bottom: $espacio-lg;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: $z-lateral - 1;
+    padding: $espacio-sm $espacio-xl;
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    border: 1px solid var(--color-texto);
+    border-radius: $borde-radio-pill;
+    font-size: $texto-sm;
+    font-weight: 600;
+    box-shadow: 0 $espacio-xs $espacio-md rgba(0, 0, 0, $opacidad-sombra);
+  }
+}
+
+// Overlay
+.overlay {
+  display: none;
+
+  @include solo-movil {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, $opacidad-overlay);
+    z-index: $z-lateral - 1;
+  }
+}
+
+.pagina-contenido {
+  padding: $espacio-xl;
+  max-width: 50rem;
+  margin: 0 auto;
+  width: 100%;
+  overflow-y: auto;
+
+  &__subtitulo {
+    color: var(--color-gris);
+    margin-bottom: $espacio-xl;
+  }
+}
+
+.pagina-estado {
+  text-align: center;
+  padding: $espacio-5xl $espacio-lg;
+  width: 100%;
+
+  &--centrado {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+  }
+
+  &__codigo {
+    font-size: $texto-6xl;
+    font-weight: 900;
+    margin: 0;
+  }
+
+  &__titulo {
+    font-size: $texto-2xl;
+    font-weight: 900;
+  }
+
+  &__texto {
+    margin: $espacio-lg 0;
+  }
+
+  &__enlace {
+    display: inline-block;
+    margin-top: $espacio-xl;
+    padding: $espacio-sm $espacio-lg;
+    border: 1px solid var(--color-texto);
+    border-radius: $borde-radio;
+  }
+}
