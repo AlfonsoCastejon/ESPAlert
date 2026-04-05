@@ -25,7 +25,7 @@ app.dependency_overrides[get_db] = lambda: AsyncMock()
 
 with TestClient(app, raise_server_exceptions=False) as client:
     print("--------------------------------------------------")
-    print("🔬 TESTEANDO ROUTERS ESPALERT API...")
+    print("TESTEANDO ROUTERS ESPALERT API...")
     print("--------------------------------------------------\n")
 
     print("[ALERTS]")

@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import alerts, health, mesh, push, ws
+from app.routers import alerts, auth, health, mesh, push, ws
 from app.services.websocket_manager import ws_manager
 from app.connectors.meshtastic import meshtastic_connector
 
@@ -74,6 +74,7 @@ app.add_middleware(
 API_PREFIX = "/api"
 
 app.include_router(alerts.router, prefix=API_PREFIX)
+app.include_router(auth.router, prefix=API_PREFIX)
 app.include_router(push.router, prefix=API_PREFIX)
 app.include_router(mesh.router, prefix=API_PREFIX)
 app.include_router(health.router, prefix=API_PREFIX)

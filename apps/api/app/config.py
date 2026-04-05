@@ -22,6 +22,11 @@ class Settings(BaseSettings):
     VAPID_PRIVATE_KEY: SecretStr
     MQTT_BROKER_URL: str
 
+    JWT_SECRET: SecretStr
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRE_DAYS: int = 7
+    SESSION_COOKIE_NAME: str = "espalert_session"
+
     @property
     def allowed_origins_list(self) -> list[str]:
         return [o.strip() for o in self.ALLOWED_ORIGINS.split(",") if o.strip()]
