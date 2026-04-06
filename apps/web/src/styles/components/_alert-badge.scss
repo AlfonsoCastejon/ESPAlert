@@ -1,0 +1,53 @@
+@use '../settings/variables' as *;
+
+.badge-alerta {
+  display: inline-flex;
+  align-items: center;
+  gap: $espacio-xs;
+  font-size: $texto-xs;
+  font-weight: 600;
+  padding: $espacio-2xs $espacio-sm;
+  border-radius: $borde-radio-pill;
+  white-space: nowrap;
+
+  &__punto {
+    width: $tamano-icono-sm;
+    height: $tamano-icono-sm;
+    border-radius: 50%;
+  }
+
+  &--verde {
+    background: var(--color-verde-alerta);
+    color: $color-texto;
+
+    .badge-alerta__punto { background: $color-verde-oscuro; }
+  }
+
+  &--amarillo {
+    background: var(--color-amarillo-alerta);
+    color: $color-texto;
+
+    .badge-alerta__punto { background: $color-amarillo-oscuro; }
+  }
+
+  &--naranja {
+    background: var(--color-naranja-alerta);
+    color: $color-texto;
+
+    .badge-alerta__punto { background: $color-naranja-oscuro; }
+  }
+
+  &--rojo {
+    background: var(--color-rojo-alerta);
+    color: $color-texto;
+
+    .badge-alerta__punto { background: $color-rojo-oscuro; }
+  }
+
+  &--morado {
+    background: var(--color-morado-mesh);
+    color: $color-texto-dark;
+
+    .badge-alerta__punto { background: $color-morado-oscuro; }
+  }
+}
