@@ -1,0 +1,44 @@
+@use '../settings/variables' as *;
+
+.popup-alerta {
+  &__titulo {
+    display: block;
+    font-size: $texto-sm;
+    font-weight: 700;
+    margin-bottom: $espacio-xs;
+    color: var(--color-texto);
+  }
+
+  &__descripcion {
+    font-size: $texto-xs;
+    color: var(--color-gris);
+    margin-bottom: $espacio-xs;
+    line-height: 1.4;
+  }
+
+  &__origen {
+    font-size: $texto-xs;
+    color: var(--color-gris);
+    font-style: italic;
+  }
+}
+
+// MapLibre inyecta background:white inline, necesitamos sobreescribirlo
+.maplibregl-popup .maplibregl-popup-content {
+  padding: $espacio-sm $espacio-md;
+  border-radius: $borde-radio;
+  border: 1px solid var(--color-texto);
+  box-shadow: 0 $espacio-2xs $espacio-sm rgba(0, 0, 0, $opacidad-sombra-suave);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+.maplibregl-popup .maplibregl-popup-tip {
+  border-top-color: var(--color-fondo);
+}
+
+.maplibregl-popup .maplibregl-popup-close-button {
+  font-size: $texto-lg;
+  color: var(--color-gris);
+  padding: $espacio-2xs $espacio-xs;
+}
