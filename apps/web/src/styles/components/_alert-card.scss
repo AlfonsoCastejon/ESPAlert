@@ -1,0 +1,33 @@
+@use '../settings/variables' as *;
+
+.tarjeta-alerta {
+  border: 1px solid var(--color-texto);
+  border-left: 0.25rem solid var(--color-gris);
+  border-radius: $borde-radio;
+  padding: $espacio-sm $espacio-md;
+  margin-bottom: $espacio-sm;
+  background: var(--color-fondo);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--color-fondo-suave);
+  }
+
+  &--verde { border-left-color: var(--color-verde-alerta); }
+  &--amarillo { border-left-color: var(--color-amarillo-alerta); }
+  &--naranja { border-left-color: var(--color-naranja-alerta); }
+  &--rojo { border-left-color: var(--color-rojo-alerta); }
+  &--morado { border-left-color: var(--color-morado-mesh); }
+
+  &__titulo {
+    font-size: $texto-sm;
+    font-weight: 600;
+    margin-bottom: $espacio-2xs;
+  }
+
+  &__fuente {
+    font-size: $texto-xs;
+    color: var(--color-gris);
+  }
+}

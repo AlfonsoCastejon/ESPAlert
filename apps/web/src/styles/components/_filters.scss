@@ -1,0 +1,132 @@
+@use '../settings/variables' as *;
+
+.filtros {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+
+  &__titulo {
+    font-size: $texto-base;
+    font-weight: 700;
+    padding-bottom: $espacio-xs;
+    border-bottom: 1px solid var(--color-texto);
+    margin-top: 0;
+    margin-bottom: $espacio-sm;
+    flex-shrink: 0;
+  }
+
+  &__seccion {
+    margin-bottom: $espacio-md;
+    flex-shrink: 0;
+  }
+
+  &__etiqueta {
+    display: block;
+    font-size: $texto-xs;
+    color: var(--color-gris);
+    text-transform: uppercase;
+    letter-spacing: $tracking-ancho;
+    margin-bottom: $espacio-sm;
+    font-weight: 600;
+  }
+
+  &__opcion {
+    display: flex;
+    align-items: center;
+    gap: $espacio-sm;
+    margin-bottom: $espacio-xs;
+    font-size: $texto-sm;
+    padding: $espacio-xs $espacio-sm;
+    border-radius: $borde-radio;
+    transition: background-color 0.15s;
+
+    &:hover {
+      background-color: var(--color-fondo-suave);
+    }
+
+    input[type="checkbox"] {
+      width: $espacio-md;
+      height: $espacio-md;
+      accent-color: var(--color-naranja-marca);
+    }
+  }
+
+  &__opcion-severidad {
+    display: flex;
+    align-items: center;
+    gap: $espacio-sm;
+    margin-bottom: $espacio-xs;
+    font-size: $texto-sm;
+    cursor: pointer;
+    padding: $espacio-xs $espacio-sm;
+    border-radius: $borde-radio;
+    color: var(--color-gris);
+    transition: background-color 0.15s, color 0.15s;
+
+    &:hover {
+      background-color: var(--color-fondo-suave);
+    }
+
+    &--activo {
+      color: var(--color-texto);
+      font-weight: 600;
+    }
+  }
+
+  &__check-oculto {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  &__indicador {
+    width: 0.875rem;
+    height: 0.875rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-color: var(--color-gris);
+    border: 1px solid transparent;
+    opacity: $opacidad-inactivo;
+    transition: opacity 0.15s, border-color 0.15s;
+
+    .filtros__opcion-severidad--activo & {
+      opacity: 1;
+      border-color: var(--color-texto);
+    }
+
+    &--verde { background-color: var(--color-verde-alerta); }
+    &--amarillo { background-color: var(--color-amarillo-alerta); }
+    &--naranja { background-color: var(--color-naranja-alerta); }
+    &--rojo { background-color: var(--color-rojo-alerta); }
+  }
+
+  &__select {
+    width: 100%;
+    padding: $espacio-sm;
+    border: 1px solid var(--color-texto);
+    border-radius: $borde-radio;
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    font-size: $texto-sm;
+    cursor: pointer;
+  }
+
+  &__contador {
+    font-size: $texto-xs;
+    color: var(--color-gris);
+    text-transform: uppercase;
+    letter-spacing: $tracking-ancho;
+    font-weight: 600;
+    margin-top: $espacio-md;
+    margin-bottom: $espacio-sm;
+    flex-shrink: 0;
+  }
+
+  &__lista {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+  }
+}
