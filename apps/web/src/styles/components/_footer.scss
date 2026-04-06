@@ -1,0 +1,40 @@
+@use '../settings/variables' as *;
+@use '../tools/mixins' as *;
+
+.pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $espacio-sm $espacio-lg;
+  background: var(--color-fondo);
+  border-top: $espacio-2xs solid var(--color-texto);
+  font-size: $texto-sm;
+
+  @include solo-movil {
+    flex-direction: column;
+    gap: $espacio-xs;
+    padding: $espacio-sm $espacio-md;
+    text-align: center;
+  }
+
+  &__marca {
+    font-weight: 700;
+  }
+
+  &__marca-esp {
+    color: var(--color-naranja-marca);
+  }
+
+  &__enlaces {
+    display: flex;
+    gap: $espacio-lg;
+
+    @include solo-movil {
+      gap: $espacio-md;
+    }
+
+    a {
+      color: var(--color-texto);
+    }
+  }
+}

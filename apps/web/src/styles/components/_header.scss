@@ -1,0 +1,144 @@
+@use '../settings/variables' as *;
+@use '../tools/mixins' as *;
+
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $espacio-sm $espacio-lg;
+  background: var(--color-fondo);
+  border-bottom: 0.125rem solid var(--color-texto);
+  z-index: $z-cabecera;
+  height: $alto-cabecera;
+  position: relative;
+  flex-wrap: wrap;
+
+  @include solo-movil {
+    padding: $espacio-sm $espacio-md;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: $espacio-sm;
+    font-size: $texto-xl;
+    font-weight: 700;
+
+    img {
+      height: $tamano-logo;
+      width: auto;
+    }
+
+    @include solo-movil {
+      font-size: $texto-lg;
+
+      img {
+        height: $tamano-logo-movil;
+        width: auto;
+      }
+    }
+  }
+
+  &__marca-esp {
+    color: var(--color-naranja-marca);
+  }
+
+  &__acciones {
+    display: flex;
+    align-items: center;
+    gap: $espacio-md;
+
+    @include solo-movil {
+      display: none;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: $espacio-lg;
+
+    a {
+      font-size: $texto-base;
+      color: var(--color-texto);
+    }
+  }
+
+  &__tema {
+    background: none;
+    border: none;
+    font-size: $tamano-tema;
+    padding: $espacio-xs;
+    color: var(--color-texto);
+  }
+
+  &__btn {
+    padding: $espacio-xs $espacio-md;
+    font-size: $texto-sm;
+    border-radius: $borde-radio;
+
+    &--login {
+      border: 1px solid var(--color-texto);
+      background: transparent;
+    }
+
+    &--registro {
+      border: 1px solid var(--color-texto);
+      background: var(--color-boton-registro);
+    }
+  }
+
+  &__movil {
+    display: none;
+    align-items: center;
+    gap: $espacio-sm;
+
+    @include solo-movil {
+      display: flex;
+    }
+  }
+
+  &__burger {
+    background: none;
+    border: none;
+    font-size: $tamano-burger;
+    color: var(--color-texto);
+    padding: $espacio-xs;
+  }
+
+  &__desplegable {
+    display: none;
+
+    @include solo-movil {
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--color-fondo);
+      border-bottom: $espacio-2xs solid var(--color-texto);
+      padding: $espacio-sm 0;
+      z-index: $z-cabecera;
+    }
+  }
+
+  &__desplegable-enlace {
+    padding: $espacio-sm $espacio-lg;
+    font-size: $texto-base;
+    color: var(--color-texto);
+    transition: background-color 0.15s;
+
+    &:hover {
+      background-color: var(--color-fondo-suave);
+      text-decoration: none;
+    }
+  }
+
+  &__desplegable-separador {
+    border: none;
+    border-top: 1px solid var(--color-gris);
+    margin: $espacio-xs $espacio-lg;
+    opacity: $opacidad-inactivo;
+  }
+}
