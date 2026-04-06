@@ -1,0 +1,50 @@
+@use '../settings/variables' as *;
+@use '../tools/mixins' as *;
+
+.banner-cookies {
+  position: fixed;
+  bottom: $espacio-2xl;
+  left: $espacio-lg;
+  right: $espacio-lg;
+  background: var(--color-fondo-suave);
+  border: 1px solid var(--color-texto);
+  padding: $espacio-md $espacio-lg;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $espacio-lg;
+  z-index: $z-cookies;
+  border-radius: $borde-radio;
+
+  @include solo-movil {
+    flex-direction: column;
+    text-align: center;
+    bottom: $alto-cabecera;
+    left: $espacio-md;
+    right: $espacio-md;
+  }
+
+  &__texto {
+    font-size: $texto-sm;
+    flex: 1;
+  }
+
+  &__acciones {
+    display: flex;
+    align-items: center;
+    gap: $espacio-md;
+    white-space: nowrap;
+  }
+
+  &__enlace {
+    color: var(--color-texto);
+    font-size: $texto-sm;
+  }
+
+  &__aceptar {
+    padding: $espacio-sm $espacio-md;
+    border: 1px solid var(--color-texto);
+    background: transparent;
+    font-size: $texto-sm;
+  }
+}
