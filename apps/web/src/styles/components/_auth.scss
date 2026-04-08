@@ -1,0 +1,107 @@
+@use '../settings/variables' as *;
+@use '../tools/mixins' as *;
+
+.pagina-auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: $espacio-xl $espacio-md;
+  overflow-y: auto;
+}
+
+.auth {
+  width: 100%;
+  max-width: 24rem;
+
+  &__titulo {
+    font-size: $texto-2xl;
+    font-weight: 900;
+    margin: 0 0 $espacio-xs;
+  }
+
+  &__subtitulo {
+    font-size: $texto-sm;
+    color: var(--color-gris);
+    margin-bottom: $espacio-xl;
+  }
+
+  &__error {
+    font-size: $texto-sm;
+    color: $color-rojo-alerta;
+    background: rgba($color-rojo-alerta, 0.12);
+    border: 1px solid $color-rojo-alerta;
+    border-radius: $borde-radio;
+    padding: $espacio-sm $espacio-md;
+    margin-bottom: $espacio-md;
+  }
+
+  &__campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: $espacio-md;
+  }
+
+  &__etiqueta {
+    font-size: $texto-xs;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: $tracking-ancho;
+    color: var(--color-gris);
+    margin-bottom: $espacio-xs;
+  }
+
+  &__input {
+    padding: $espacio-sm $espacio-md;
+    border: 1px solid var(--color-texto);
+    border-radius: $borde-radio;
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    font-size: $texto-base;
+    transition: border-color 0.15s;
+
+    &::placeholder {
+      color: var(--color-gris);
+      opacity: $opacidad-placeholder;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-naranja-marca);
+    }
+  }
+
+  &__boton {
+    width: 100%;
+    padding: $espacio-sm $espacio-md;
+    margin-top: $espacio-sm;
+    background: var(--color-naranja-marca);
+    color: var(--color-fondo);
+    border: none;
+    border-radius: $borde-radio;
+    font-size: $texto-base;
+    font-weight: 600;
+    transition: opacity 0.15s;
+
+    &:hover {
+      opacity: $opacidad-hover;
+    }
+
+    &:disabled {
+      opacity: $opacidad-placeholder;
+      cursor: not-allowed;
+    }
+  }
+
+  &__enlace {
+    text-align: center;
+    font-size: $texto-sm;
+    margin-top: $espacio-lg;
+    color: var(--color-gris);
+
+    a {
+      color: var(--color-naranja-marca);
+      font-weight: 600;
+    }
+  }
+}
