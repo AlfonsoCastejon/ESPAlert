@@ -1,3 +1,5 @@
+"""Clase base abstracta para todos los conectores de fuentes externas."""
+
 import abc
 import logging
 from typing import Any

@@ -1,3 +1,5 @@
+"""Endpoints de suscripciones push: alta, baja y clave pública VAPID."""
+
 from fastapi import APIRouter, HTTPException, status
 from app.dependencies import DBSessionDep
 from app.schemas.push_subscription import (

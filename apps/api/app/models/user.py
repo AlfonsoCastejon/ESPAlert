@@ -1,3 +1,5 @@
+"""Modelo de usuario para autenticación y preferencias."""
+
 import uuid
 from datetime import datetime
 
@@ -9,6 +11,7 @@ from app.database import Base
 
 
 class User(Base):
+    """Tabla de usuarios registrados en la plataforma."""
     __tablename__ = "users"
 
     id: Mapped[uuid.UUID] = mapped_column(

@@ -1,3 +1,5 @@
+/** Estado de los filtros del panel lateral y listado de regiones */
+
 import type { TipoAlerta } from "./alert";
 
 export interface EstadoFiltros {

@@ -1,3 +1,5 @@
+"""Tareas periódicas de Celery: recolección de alertas y expiración."""
+
 import asyncio
 import logging
 from datetime import datetime, timezone
@@ -33,6 +35,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 def run_async(coro):
+    """Ejecuta una corutina en un event loop nuevo (Celery no tiene uno propio)."""
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
@@ -41,6 +44,7 @@ def run_async(coro):
         loop.close()
 
 async def _fetch_and_persist(connector_cls, name: str):
+    """Descarga alertas del conector indicado y las persiste en BD."""
     if connector_cls is None:
         return
     connector = connector_cls()

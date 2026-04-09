@@ -1,3 +1,5 @@
+"""Schemas Pydantic para la serialización de alertas en la API."""
+
 import uuid
 from datetime import datetime
 from typing import Any, Literal

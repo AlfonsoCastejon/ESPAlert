@@ -1,3 +1,5 @@
+"""Conector IGN: consulta sismos recientes vía FDSNWS (QuakeML)."""
+
 import logging
 from datetime import datetime, timedelta, timezone
 

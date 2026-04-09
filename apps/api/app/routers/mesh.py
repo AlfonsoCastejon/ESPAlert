@@ -1,4 +1,6 @@
-﻿from typing import Annotated
+﻿"""Endpoints de mensajes Meshtastic: listado y envío."""
+
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 

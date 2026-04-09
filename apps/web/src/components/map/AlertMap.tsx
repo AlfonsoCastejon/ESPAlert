@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Mapa interactivo de España con capas de CCAA, provincias y alertas.
+ * Usa MapLibre GL con teselas vectoriales de OpenFreeMap y GeoJSON de OpenDataSoft.
+ */
+
 import { useRef, useEffect } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -63,6 +68,7 @@ interface AlertMapProps {
   alertas: Alerta[];
 }
 
+/** Transforma el array de alertas en una FeatureCollection para MapLibre */
 function construirGeoJSON(alertas: Alerta[]): GeoJSON.FeatureCollection {
   return {
     type: "FeatureCollection",
@@ -83,6 +89,7 @@ function construirGeoJSON(alertas: Alerta[]): GeoJSON.FeatureCollection {
   };
 }
 
+/** Añade o actualiza la fuente y capas de alertas en el mapa */
 function actualizarAlertas(map: maplibregl.Map, geojson: GeoJSON.FeatureCollection) {
   const source = map.getSource("alertas") as maplibregl.GeoJSONSource | undefined;
   if (source) {
@@ -172,6 +179,7 @@ function actualizarAlertas(map: maplibregl.Map, geojson: GeoJSON.FeatureCollecti
   }
 }
 
+/** Carga los contornos de CCAA y provincias desde OpenDataSoft */
 async function cargarCapasEspana(map: maplibregl.Map) {
   const [geoCcaa, geoProv] = await Promise.all([
     fetch(URL_CCAA).then((r) => r.json()),

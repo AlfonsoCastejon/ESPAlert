@@ -1,3 +1,5 @@
+"""Conector Meshtastic: suscripción MQTT para mensajes de la red mesh."""
+
 import json
 import logging
 import asyncio

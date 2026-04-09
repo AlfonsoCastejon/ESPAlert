@@ -1,3 +1,5 @@
+"""Enumeraciones compartidas por los modelos de alerta y fetch_log."""
+
 import enum
 
 

@@ -1,5 +1,7 @@
 "use client";
 
+/** Banner de cookies: se muestra hasta que el usuario acepta. */
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 

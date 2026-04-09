@@ -1,3 +1,5 @@
+"""Endpoint de health check para monitorización y despliegue."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends

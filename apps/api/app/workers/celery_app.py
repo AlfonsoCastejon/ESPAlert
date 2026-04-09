@@ -1,3 +1,5 @@
+"""Instancia de Celery y planificación de tareas periódicas (beat)."""
+
 import os
 from celery import Celery
 from celery.schedules import crontab

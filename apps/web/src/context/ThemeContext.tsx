@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Contexto de tema claro/oscuro.
+ * Lee la preferencia guardada en localStorage o la del sistema operativo.
+ */
+
 import { createContext, useContext, useEffect, useState } from "react";
 
 type Tema = "light" | "dark";

@@ -1,3 +1,5 @@
+/** Tipos e interfaces de las alertas recibidas desde la API */
+
 export type TipoAlerta = "meteorologico" | "sismico" | "trafico" | "mesh";
 export type Severidad = "minor" | "moderate" | "severe" | "extreme" | "unknown";
 export type ColorAlerta = "green" | "yellow" | "orange" | "red" | "purple";

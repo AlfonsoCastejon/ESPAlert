@@ -1,3 +1,5 @@
+"""Conector DGT: parsea incidencias de tráfico desde DATEX2 v3.6 del NAP."""
+
 from datetime import datetime
 import logging
 

@@ -1,3 +1,5 @@
+"""Endpoints de autenticación: registro, login, logout y perfil."""
+
 from fastapi import APIRouter, HTTPException, Response, status
 from sqlalchemy.exc import IntegrityError
 

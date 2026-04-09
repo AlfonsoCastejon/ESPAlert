@@ -1,3 +1,5 @@
+"""Endpoints REST de alertas: listado activo, historial y detalle."""
+
 import uuid
 from datetime import UTC, datetime
 from typing import Annotated

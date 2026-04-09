@@ -1,5 +1,7 @@
 "use client";
 
+/** Formulario de registro: email, contraseña y confirmación. */
+
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

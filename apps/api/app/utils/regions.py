@@ -1,3 +1,5 @@
+"""Enum de CCAA y sus bounding boxes para filtrado geográfico."""
+
 import enum
 
 

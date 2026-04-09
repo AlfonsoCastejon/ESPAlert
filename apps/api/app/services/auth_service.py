@@ -1,3 +1,5 @@
+"""Servicio de autenticación: hashing, JWT y gestión de usuarios."""
+
 import uuid
 from datetime import UTC, datetime, timedelta
 

@@ -1,5 +1,7 @@
 "use client";
 
+/** Cabecera con logo, navegación, botones de auth y menú hamburguesa en móvil. */
+
 import { useState } from "react";
 import Link from "next/link";
 import { useTheme } from "@/context/ThemeContext";

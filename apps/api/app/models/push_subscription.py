@@ -1,3 +1,5 @@
+"""Modelo de suscripción push (Web Push API) asociada a un usuario."""
+
 import uuid
 from datetime import datetime
 

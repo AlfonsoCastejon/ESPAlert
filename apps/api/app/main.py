@@ -1,3 +1,5 @@
+"""Punto de entrada de la API FastAPI: lifespan, CORS y routers."""
+
 import asyncio
 import logging
 from contextlib import asynccontextmanager

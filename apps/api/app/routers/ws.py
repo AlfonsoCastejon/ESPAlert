@@ -1,3 +1,5 @@
+"""WebSocket para recibir alertas y mensajes mesh en tiempo real."""
+
 import logging
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect

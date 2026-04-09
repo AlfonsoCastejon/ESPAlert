@@ -1,3 +1,5 @@
+"""Modelo de mensaje recibido por la red Meshtastic vía MQTT."""
+
 from __future__ import annotations
 
 import uuid

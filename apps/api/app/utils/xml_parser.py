@@ -1,3 +1,5 @@
+"""Parsers de XML: CAP (AEMET/MeteoAlarm), QuakeML (IGN) y DATEX2 (DGT)."""
+
 import xml.etree.ElementTree as ET
 import logging
 from typing import Any, Union

@@ -1,3 +1,5 @@
+"""Conector AEMET: descarga avisos CAP en formato tar desde la API de datos abiertos."""
+
 import io
 import logging
 import tarfile

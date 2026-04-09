@@ -1,3 +1,5 @@
+"""Servicio de alertas: consultas, upsert y expiración automática."""
+
 import json
 import uuid
 from datetime import UTC, datetime
@@ -24,8 +26,9 @@ async def get_active_alerts(
     db: AsyncSession,
     filters: dict[str, Any],
     limit: int = 50,
-    offset: int = 0
+    offset: int = 0,
 ) -> tuple[int, list[Alert]]:
+    """Devuelve alertas activas (no expiradas) aplicando los filtros recibidos."""
     stmt = select(Alert).where(
         Alert.status == AlertStatus.ACTUAL,
         (Alert.expires_at.is_(None)) | (Alert.expires_at > datetime.now(UTC)),
@@ -42,8 +45,9 @@ async def get_alert_history(
     db: AsyncSession,
     filters: dict[str, Any],
     limit: int = 50,
-    offset: int = 0
+    offset: int = 0,
 ) -> tuple[int, list[Alert]]:
+    """Devuelve el historial completo de alertas, sin filtrar por estado."""
     stmt = select(Alert)
     stmt = _apply_common_filters(stmt, filters)
 
@@ -62,6 +66,7 @@ async def get_alert_history(
     return total, list(rows.all())
 
 async def get_alert_by_id(db: AsyncSession, alert_id: uuid.UUID) -> Alert | None:
+    """Busca una alerta por su UUID. Devuelve None si no existe."""
     return await db.get(Alert, alert_id)
 
 async def upsert_alert(db: AsyncSession, alert_data: AlertCreate) -> Alert:
@@ -113,6 +118,7 @@ async def expire_old_alerts(db: AsyncSession) -> int:
     return result.rowcount
 
 def _apply_common_filters(stmt, filters: dict[str, Any]):
+    """Aplica filtros de fuente, tipo, severidad y zona geográfica al query."""
     if source := filters.get("source"):
         stmt = stmt.where(Alert.source == source)
     if alert_type := filters.get("alert_type"):

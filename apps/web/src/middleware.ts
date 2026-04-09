@@ -1,3 +1,7 @@
+/**
+ * Middleware de Next.js: añade cabeceras de seguridad a todas las respuestas.
+ */
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 

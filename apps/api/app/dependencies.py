@@ -1,3 +1,5 @@
+"""Dependencias inyectables de FastAPI: sesión de BD y usuario autenticado."""
+
 from typing import Annotated
 
 from fastapi import Cookie, Depends, HTTPException, status

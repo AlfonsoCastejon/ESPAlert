@@ -1,13 +1,20 @@
 "use client";
 
+/**
+ * Página principal: mapa de alertas con panel lateral de filtros.
+ * Carga 200 alertas por fuente cada 60 s y las ordena por severidad.
+ */
+
 import { useState, useEffect, useCallback } from "react";
 import AlertMap from "@/components/map/AlertMap";
 import AlertFilters from "@/components/filters/AlertFilters";
 import { FILTROS_INICIALES } from "@/types/filters";
 import type { EstadoFiltros } from "@/types/filters";
 import type { Alerta, ColorAlerta } from "@/types/alert";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+/** Mapeo de severidad del filtro (español) a los colores de la API (inglés) */
 const COLOR_A_SEVERIDAD: Record<string, ColorAlerta[]> = {
   verde: ["green"],
   amarillo: ["yellow"],
@@ -15,6 +22,7 @@ const COLOR_A_SEVERIDAD: Record<string, ColorAlerta[]> = {
   rojo: ["red"],
 };
 
+/** Mapeo del tipo que devuelve la API al nombre interno del filtro */
 const TIPO_API_A_FILTRO: Record<string, keyof EstadoFiltros["tipos"]> = {
   meteorological: "meteorologico",
   seismic: "sismico",

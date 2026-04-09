@@ -1,3 +1,5 @@
+"""Modelo de preferencias del usuario: filtros, regiones y notificaciones."""
+
 import uuid
 from datetime import datetime
 from typing import Any

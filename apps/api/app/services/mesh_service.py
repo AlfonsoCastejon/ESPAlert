@@ -1,3 +1,5 @@
+"""Servicio Meshtastic: persistencia de mensajes y difusión por WebSocket."""
+
 import asyncio
 import logging
 from typing import Sequence

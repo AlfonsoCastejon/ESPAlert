@@ -1,3 +1,5 @@
+"""Servicio de notificaciones push vía Web Push Protocol (VAPID)."""
+
 import asyncio
 import json
 import logging

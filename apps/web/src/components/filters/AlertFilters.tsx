@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Panel de filtros del sidebar: tipo de alerta, severidad y zona geográfica.
+ * Muestra debajo un listado de las alertas graves (roja y naranja).
+ */
+
 import type { Alerta } from "@/types/alert";
 import type { EstadoFiltros } from "@/types/filters";
 import { REGIONES } from "@/types/filters";
@@ -134,6 +139,7 @@ export default function AlertFilters({
   );
 }
 
+/** Traduce el color de la API (green, red...) al nombre CSS en español */
 function colorACss(color: string): string {
   const mapa: Record<string, string> = {
     green: "verde",
@@ -145,6 +151,7 @@ function colorACss(color: string): string {
   return mapa[color] || "verde";
 }
 
+/** Nombre legible de cada fuente para mostrar en la tarjeta */
 function fuenteTexto(source: string): string {
   const mapa: Record<string, string> = {
     aemet: "AEMET",

@@ -1,3 +1,5 @@
+"""Schemas de autenticación: peticiones de login/registro y respuesta de usuario."""
+
 import re
 import uuid
 from datetime import datetime

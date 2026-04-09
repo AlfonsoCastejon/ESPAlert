@@ -1,3 +1,5 @@
+"""Conector MeteoAlarm: obtiene avisos meteorológicos europeos vía API REST."""
+
 import logging
 from datetime import datetime
 import hashlib
