@@ -18,7 +18,7 @@ class DgtConnector(BaseConnector):
 
     def _map_severity(self, severity_str: str | None) -> AlertSeverity:
         if not severity_str:
-            return AlertSeverity.UNKNOWN
+            return AlertSeverity.MINOR
             
         sev = severity_str.lower()
         if sev in ("highest", "severe", "critical", "extreme"):

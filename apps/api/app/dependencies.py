@@ -60,3 +60,16 @@ async def get_current_user_optional(
 
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
 CurrentUserOptionalDep = Annotated[User | None, Depends(get_current_user_optional)]
+
+
+async def get_current_admin(user: CurrentUserDep) -> User:
+    from app.models.user import UserRole
+    if user.role != UserRole.admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Se requieren permisos de administrador",
+        )
+    return user
+
+
+CurrentAdminDep = Annotated[User, Depends(get_current_admin)]

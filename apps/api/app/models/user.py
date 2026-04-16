@@ -1,13 +1,20 @@
 """Modelo de usuario para autenticación y preferencias."""
 
+import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, String, text
+from sqlalchemy import Boolean, Enum, String, text
 from sqlalchemy.dialects.postgresql import TIMESTAMP, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+
+class UserRole(str, enum.Enum):
+    """Roles disponibles en la plataforma."""
+    user = "user"
+    admin = "admin"
 
 
 class User(Base):
@@ -29,6 +36,11 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(
         String(255),
         nullable=False,
+    )
+    role: Mapped[UserRole] = mapped_column(
+        Enum(UserRole, name="user_role", native_enum=True),
+        nullable=False,
+        server_default=text("'user'"),
     )
     is_active: Mapped[bool] = mapped_column(
         Boolean,
