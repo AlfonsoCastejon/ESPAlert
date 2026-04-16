@@ -5,50 +5,43 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { useAuth } from "@/context/AuthContext";
 
 export default function RegistroPage() {
   const router = useRouter();
+  const { registro } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmar, setConfirmar] = useState("");
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
 
+  const tieneMinLength = password.length >= 8;
+  const tieneMayuscula = /[A-Z]/.test(password);
+  const tieneMinuscula = /[a-z]/.test(password);
+  const tieneNumero = /\d/.test(password);
+  const passwordValida = tieneMinLength && tieneMayuscula && tieneMinuscula && tieneNumero;
+  const noCoinciden = confirmar.length > 0 && password !== confirmar;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
+    if (!passwordValida) return;
     if (password !== confirmar) {
       setError("Las contraseñas no coinciden");
-      return;
-    }
-
-    if (password.length < 8) {
-      setError("La contraseña debe tener al menos 8 caracteres");
       return;
     }
 
     setCargando(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        setError(data?.detail || "Error al crear la cuenta");
-        return;
+      const err = await registro(email, password);
+      if (err) {
+        setError(err);
+      } else {
+        router.push("/");
       }
-
-      router.push("/");
-    } catch {
-      setError("Error de conexión con el servidor");
     } finally {
       setCargando(false);
     }
@@ -88,6 +81,22 @@ export default function RegistroPage() {
             required
             autoComplete="new-password"
           />
+          {password.length > 0 && (
+            <ul className="auth__requisitos">
+              <li className={tieneMinLength ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
+                Mínimo 8 caracteres
+              </li>
+              <li className={tieneMayuscula ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
+                Una letra mayúscula
+              </li>
+              <li className={tieneMinuscula ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
+                Una letra minúscula
+              </li>
+              <li className={tieneNumero ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
+                Un número
+              </li>
+            </ul>
+          )}
         </label>
 
         <label className="auth__campo">
@@ -101,9 +110,12 @@ export default function RegistroPage() {
             required
             autoComplete="new-password"
           />
+          {noCoinciden && (
+            <span className="auth__requisito--pendiente">Las contraseñas no coinciden</span>
+          )}
         </label>
 
-        <button className="auth__boton" type="submit" disabled={cargando}>
+        <button className="auth__boton" type="submit" disabled={cargando || !passwordValida || noCoinciden}>
           {cargando ? "Creando cuenta..." : "Registrarse"}
         </button>
 

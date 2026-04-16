@@ -5,11 +5,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,22 +21,12 @@ export default function LoginPage() {
     setCargando(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        setError(data?.detail || "Credenciales inválidas");
-        return;
+      const err = await login(email, password);
+      if (err) {
+        setError(err);
+      } else {
+        router.push("/");
       }
-
-      router.push("/");
-    } catch {
-      setError("Error de conexión con el servidor");
     } finally {
       setCargando(false);
     }

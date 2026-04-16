@@ -34,6 +34,7 @@ export default function Home() {
   const [filtros, setFiltros] = useState<EstadoFiltros>(FILTROS_INICIALES);
   const [alertas, setAlertas] = useState<Alerta[]>([]);
   const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
+  const [errorConexion, setErrorConexion] = useState(false);
 
   const cargarAlertas = useCallback(async () => {
     try {
@@ -57,8 +58,9 @@ export default function Home() {
       todas.sort((a, b) => (ordenSeveridad[a.color] ?? 9) - (ordenSeveridad[b.color] ?? 9));
 
       setAlertas(todas);
+      setErrorConexion(false);
     } catch {
-      // Sin conexion al backend
+      setErrorConexion(true);
     }
   }, [filtros.region]);
 
@@ -112,6 +114,9 @@ export default function Home() {
       )}
 
       <div className="contenedor-mapa">
+        {errorConexion && (
+          <div className="mapa-error">Sin conexión con el servidor</div>
+        )}
         <AlertMap alertas={alertasFiltradas} />
         <button
           className="boton-filtros"

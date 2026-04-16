@@ -151,17 +151,29 @@ function actualizarAlertas(map: maplibregl.Map, geojson: GeoJSON.FeatureCollecti
       const area = props.area_description || "";
       const origen = area ? `${fuente} — ${area}` : fuente;
 
-      const html = `
-        <div class="popup-alerta">
-          <strong class="popup-alerta__titulo">${props.headline}</strong>
-          ${props.description ? `<p class="popup-alerta__descripcion">${props.description}</p>` : ""}
-          <span class="popup-alerta__origen">${origen}</span>
-        </div>
-      `;
+      const contenedor = document.createElement("div");
+      contenedor.className = "popup-alerta";
+
+      const titulo = document.createElement("strong");
+      titulo.className = "popup-alerta__titulo";
+      titulo.textContent = props.headline || "";
+      contenedor.appendChild(titulo);
+
+      if (props.description) {
+        const desc = document.createElement("p");
+        desc.className = "popup-alerta__descripcion";
+        desc.textContent = props.description;
+        contenedor.appendChild(desc);
+      }
+
+      const origenEl = document.createElement("span");
+      origenEl.className = "popup-alerta__origen";
+      origenEl.textContent = origen;
+      contenedor.appendChild(origenEl);
 
       const popup = new maplibregl.Popup({ closeButton: true, maxWidth: "18rem", className: "popup-tema" })
         .setLngLat(e.lngLat)
-        .setHTML(html)
+        .setDOMContent(contenedor)
         .addTo(map);
 
       const el = popup.getElement()?.querySelector(".maplibregl-popup-content") as HTMLElement | null;
