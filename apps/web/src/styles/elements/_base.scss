@@ -12,6 +12,24 @@
   --color-naranja-alerta: #{$color-naranja-alerta};
   --color-rojo-alerta: #{$color-rojo-alerta};
   --color-morado-mesh: #{$color-morado-mesh};
+
+  --tabla-cabecera: hsl(151, 46%, 33%);
+  --tabla-cabecera-borde: hsl(149, 43%, 42%);
+  --tabla-periodo: hsl(149, 43%, 42%);
+  --tabla-periodo-borde: hsl(149, 37%, 54%);
+  --tabla-cabecera-texto: hsl(0, 0%, 100%);
+  --tabla-etiqueta-fondo: hsl(144, 72%, 94%);
+  --tabla-etiqueta-texto: hsl(151, 46%, 33%);
+  --tabla-etiqueta-borde: hsl(149, 56%, 78%);
+  --tabla-celda-fondo: hsl(140, 71%, 97%);
+  --tabla-celda-fondo-alt: hsl(0, 0%, 100%);
+  --tabla-celda-borde: hsl(147, 60%, 86%);
+  --tabla-celda-borde-suave: hsl(144, 62%, 91%);
+  --tabla-etiqueta-fondo-alt: hsl(143, 82%, 95%);
+  --tabla-cielo-texto: hsl(151, 26%, 48%);
+  --tabla-borde-ext: hsl(149, 56%, 78%);
+  --color-temp-min: hsl(224, 80%, 53%);
+  --color-temp-max: hsl(0, 72%, 51%);
 }
 
 [data-theme="dark"] {
@@ -21,6 +39,24 @@
   --color-gris: #{$color-gris-dark};
   --color-naranja-marca: #{$color-naranja-marca-dark};
   --color-boton-registro: #{$color-boton-registro-dark};
+
+  --tabla-cabecera: hsl(151, 39%, 13%);
+  --tabla-cabecera-borde: hsl(149, 42%, 20%);
+  --tabla-periodo: hsl(149, 42%, 20%);
+  --tabla-periodo-borde: hsl(149, 39%, 27%);
+  --tabla-cabecera-texto: hsl(147, 60%, 86%);
+  --tabla-etiqueta-fondo: hsl(151, 49%, 11%);
+  --tabla-etiqueta-texto: hsl(149, 37%, 54%);
+  --tabla-etiqueta-borde: hsl(149, 42%, 20%);
+  --tabla-celda-fondo: hsl(150, 44%, 8%);
+  --tabla-celda-fondo-alt: hsl(150, 43%, 11%);
+  --tabla-celda-borde: hsl(151, 39%, 13%);
+  --tabla-celda-borde-suave: hsl(150, 39%, 12%);
+  --tabla-etiqueta-fondo-alt: hsl(149, 42%, 13%);
+  --tabla-cielo-texto: hsl(149, 37%, 63%);
+  --tabla-borde-ext: hsl(149, 42%, 20%);
+  --color-temp-min: hsl(213, 94%, 68%);
+  --color-temp-max: hsl(0, 90%, 71%);
 }
 
 html, body {

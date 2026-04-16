@@ -1,0 +1,196 @@
+@use '../settings/variables' as *;
+@use '../tools/mixins' as *;
+
+.admin {
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: $espacio-xl $espacio-md;
+  overflow-y: auto;
+  flex: 1;
+
+  &__cabecera {
+    margin-bottom: $espacio-xl;
+  }
+
+  &__titulo {
+    font-size: $texto-2xl;
+    font-weight: 900;
+    margin: 0 0 $espacio-xs;
+  }
+
+  &__subtitulo {
+    font-size: $texto-sm;
+    color: var(--color-gris);
+  }
+
+  &__tabs {
+    display: flex;
+    gap: $espacio-sm;
+    margin-bottom: $espacio-lg;
+    border-bottom: 1px solid var(--color-gris);
+    padding-bottom: $espacio-sm;
+  }
+
+  &__tab {
+    padding: $espacio-sm $espacio-md;
+    border: none;
+    background: none;
+    font-size: $texto-sm;
+    font-weight: 600;
+    color: var(--color-gris);
+    cursor: pointer;
+    border-radius: $borde-radio $borde-radio 0 0;
+    transition: color 0.15s, background 0.15s;
+
+    &:hover {
+      color: var(--color-texto);
+    }
+
+    &--activo {
+      color: var(--color-naranja-marca);
+      border-bottom: 2px solid var(--color-naranja-marca);
+    }
+  }
+
+  &__error {
+    font-size: $texto-sm;
+    color: $color-rojo-alerta;
+    background: rgba($color-rojo-alerta, 0.12);
+    border: 1px solid $color-rojo-alerta;
+    border-radius: $borde-radio;
+    padding: $espacio-sm $espacio-md;
+    margin-bottom: $espacio-md;
+  }
+
+  &__exito {
+    font-size: $texto-sm;
+    color: $color-verde-oscuro;
+    background: rgba($color-verde-oscuro, 0.12);
+    border: 1px solid $color-verde-oscuro;
+    border-radius: $borde-radio;
+    padding: $espacio-sm $espacio-md;
+    margin-bottom: $espacio-md;
+  }
+
+  &__estado {
+    text-align: center;
+    color: var(--color-gris);
+    padding: $espacio-xl;
+  }
+
+  &__seccion {
+    margin-top: $espacio-md;
+  }
+
+  &__tabla-contenedor {
+    overflow-x: auto;
+  }
+
+  &__tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: $texto-sm;
+
+    th, td {
+      text-align: left;
+      padding: $espacio-sm $espacio-md;
+      border-bottom: 1px solid var(--color-gris);
+    }
+
+    th {
+      font-weight: 600;
+      font-size: $texto-xs;
+      text-transform: uppercase;
+      letter-spacing: $tracking-ancho;
+      color: var(--color-gris);
+    }
+
+    tr:hover td {
+      background: var(--color-fondo-suave);
+    }
+  }
+
+  &__badge {
+    display: inline-block;
+    padding: $espacio-2xs $espacio-sm;
+    border-radius: $borde-radio-pill;
+    font-size: $texto-xs;
+    font-weight: 600;
+
+    &--admin {
+      background: rgba($color-naranja-alerta, 0.2);
+      color: $color-naranja-oscuro;
+    }
+
+    &--user {
+      background: rgba($color-verde-alerta, 0.3);
+      color: $color-verde-oscuro;
+    }
+  }
+
+  &__btn-accion {
+    padding: $espacio-2xs $espacio-sm;
+    border: 1px solid var(--color-naranja-marca);
+    background: none;
+    color: var(--color-naranja-marca);
+    border-radius: $borde-radio;
+    font-size: $texto-xs;
+    cursor: pointer;
+    transition: background 0.15s;
+
+    &:hover {
+      background: var(--color-naranja-marca);
+      color: var(--color-fondo);
+    }
+  }
+
+  &__bloque {
+    background: var(--color-fondo-suave);
+    border-radius: $borde-radio-lg;
+    padding: $espacio-lg;
+    margin-bottom: $espacio-md;
+  }
+
+  &__bloque-titulo {
+    font-size: $texto-base;
+    font-weight: 700;
+    margin: 0 0 $espacio-xs;
+  }
+
+  &__bloque-desc {
+    font-size: $texto-sm;
+    color: var(--color-gris);
+    margin-bottom: $espacio-md;
+  }
+
+  &__fila-input {
+    display: flex;
+    gap: $espacio-sm;
+  }
+
+  &__input {
+    flex: 1;
+    padding: $espacio-sm $espacio-md;
+    border: 1px solid var(--color-gris);
+    border-radius: $borde-radio;
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    font-size: $texto-sm;
+  }
+
+  &__btn-danger {
+    padding: $espacio-sm $espacio-md;
+    border: none;
+    background: $color-rojo-alerta;
+    color: white;
+    border-radius: $borde-radio;
+    font-size: $texto-sm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &:hover {
+      opacity: $opacidad-hover;
+    }
+  }
+}

@@ -3,34 +3,34 @@
 // ==========================================================================
 
 // Modo claro
-$color-fondo: #F5FDF7;
-$color-fondo-suave: #DFF9E9;
-$color-texto: #142426;
-$color-gris: #696969;
-$color-naranja-marca: #7C3D05;
-$color-boton-registro: #B8FFD3;
+$color-fondo: hsl(138, 73%, 97%);
+$color-fondo-suave: hsl(144, 78%, 93%);
+$color-texto: hsl(187, 31%, 11%);
+$color-gris: hsl(0, 0%, 41%);
+$color-naranja-marca: hsl(28, 92%, 25%);
+$color-boton-registro: hsl(149, 100%, 86%);
 
 // Severidades (iguales en claro y oscuro)
-$color-verde-alerta: #B8FFD3;
-$color-amarillo-alerta: #F6FF98;
-$color-naranja-alerta: #FFCA68;
-$color-rojo-alerta: #FF8181;
-$color-morado-mesh: #A35DFF;
+$color-verde-alerta: hsl(149, 100%, 86%);
+$color-amarillo-alerta: hsl(65, 100%, 80%);
+$color-naranja-alerta: hsl(37, 100%, 70%);
+$color-rojo-alerta: hsl(0, 100%, 75%);
+$color-morado-mesh: hsl(266, 100%, 68%);
 
 // Tonos oscuros para puntos de severidad
-$color-verde-oscuro: #2d7a4f;
-$color-amarillo-oscuro: #8a8a00;
-$color-naranja-oscuro: #b06800;
-$color-rojo-oscuro: #b00020;
-$color-morado-oscuro: #5a1dab;
+$color-verde-oscuro: hsl(151, 46%, 33%);
+$color-amarillo-oscuro: hsl(60, 100%, 27%);
+$color-naranja-oscuro: hsl(36, 100%, 35%);
+$color-rojo-oscuro: hsl(349, 100%, 35%);
+$color-morado-oscuro: hsl(264, 72%, 39%);
 
 // Modo oscuro
-$color-fondo-dark: #142426;
-$color-fondo-suave-dark: #080F10;
-$color-texto-dark: #F5FDF7;
-$color-gris-dark: #EFEFEF;
-$color-naranja-marca-dark: #FB8C2A;
-$color-boton-registro-dark: #080F10;
+$color-fondo-dark: hsl(187, 31%, 11%);
+$color-fondo-suave-dark: hsl(188, 33%, 5%);
+$color-texto-dark: hsl(138, 73%, 97%);
+$color-gris-dark: hsl(0, 0%, 94%);
+$color-naranja-marca-dark: hsl(28, 96%, 57%);
+$color-boton-registro-dark: hsl(188, 33%, 5%);
 
 // Breakpoints
 $bp-movil: 30rem;    // 480px

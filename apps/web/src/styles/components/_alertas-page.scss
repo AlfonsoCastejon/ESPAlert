@@ -1,0 +1,227 @@
+@use '../settings/variables' as *;
+@use '../tools/mixins' as *;
+
+.alertas-page {
+  padding: $espacio-lg $espacio-xl;
+  max-width: 60rem;
+  margin: 0 auto;
+  width: 100%;
+
+  @include solo-movil {
+    padding: $espacio-md;
+  }
+
+  &__cabecera {
+    margin-bottom: $espacio-lg;
+  }
+
+  &__titulo {
+    font-size: $texto-2xl;
+    font-weight: 900;
+    margin: 0 0 $espacio-xs;
+  }
+
+  &__subtitulo {
+    font-size: $texto-sm;
+    color: var(--color-gris);
+  }
+
+  &__filtros {
+    display: flex;
+    gap: $espacio-sm;
+    margin-bottom: $espacio-lg;
+    flex-wrap: wrap;
+  }
+
+  &__select {
+    padding: $espacio-xs $espacio-sm;
+    border: 1px solid var(--color-gris);
+    border-radius: $borde-radio;
+    background: var(--color-fondo);
+    color: var(--color-texto);
+    font-size: $texto-sm;
+    min-width: 10rem;
+
+    @include solo-movil {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  &__estado {
+    text-align: center;
+    padding: $espacio-2xl $espacio-md;
+    color: var(--color-gris);
+    font-size: $texto-base;
+  }
+
+  &__error {
+    text-align: center;
+    padding: $espacio-xl $espacio-md;
+    color: var(--color-rojo-alerta);
+    font-size: $texto-base;
+  }
+
+  &__lista {
+    display: flex;
+    flex-direction: column;
+    gap: $espacio-sm;
+  }
+
+  &__paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: $espacio-md;
+    margin-top: $espacio-xl;
+    padding-bottom: $espacio-lg;
+
+    button:disabled {
+      opacity: $opacidad-inactivo;
+      cursor: not-allowed;
+    }
+  }
+
+  &__pagina {
+    font-size: $texto-sm;
+    color: var(--color-gris);
+  }
+}
+
+.alerta-fila {
+  border: 1px solid var(--color-gris);
+  border-radius: $borde-radio-lg;
+  background: var(--color-fondo);
+  cursor: pointer;
+  transition: background 0.15s;
+  overflow: hidden;
+
+  &:hover {
+    background: var(--color-fondo-suave);
+  }
+
+  &__principal {
+    display: flex;
+    align-items: center;
+    gap: $espacio-md;
+    padding: $espacio-md $espacio-lg;
+
+    @include solo-movil {
+      padding: $espacio-sm $espacio-md;
+      gap: $espacio-sm;
+    }
+  }
+
+  &__indicador {
+    width: $espacio-xs;
+    align-self: stretch;
+    border-radius: $borde-radio;
+    flex-shrink: 0;
+
+    &--verde { background: var(--color-verde-alerta); }
+    &--amarillo { background: var(--color-amarillo-alerta); }
+    &--naranja { background: var(--color-naranja-alerta); }
+    &--rojo { background: var(--color-rojo-alerta); }
+    &--morado { background: var(--color-morado-mesh); }
+  }
+
+  &__contenido {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__titulo {
+    font-size: $texto-base;
+    font-weight: 600;
+    margin: 0 0 $espacio-2xs;
+    @include truncar;
+
+    @include solo-movil {
+      font-size: $texto-sm;
+    }
+  }
+
+  &__meta {
+    font-size: $texto-xs;
+    color: var(--color-gris);
+    display: flex;
+    flex-wrap: wrap;
+    gap: $espacio-2xs;
+  }
+
+  &__fuente {
+    font-weight: 600;
+  }
+
+  &__separador {
+    opacity: $opacidad-inactivo;
+  }
+
+  &__acciones {
+    display: flex;
+    align-items: center;
+    gap: $espacio-sm;
+    flex-shrink: 0;
+  }
+
+  &__fav {
+    border: none;
+    background: none;
+    font-size: $texto-lg;
+    cursor: pointer;
+    color: var(--color-gris);
+    padding: 0;
+    line-height: 1;
+    transition: color 0.15s;
+
+    &:hover {
+      color: $color-naranja-alerta;
+    }
+
+    &--activo {
+      color: $color-naranja-alerta;
+    }
+  }
+
+  &__fecha {
+    font-size: $texto-xs;
+    color: var(--color-gris);
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    @include solo-movil {
+      display: none;
+    }
+  }
+
+  &__detalle {
+    padding: 0 $espacio-lg $espacio-md;
+    border-top: 1px solid var(--color-gris);
+    margin: 0 $espacio-lg;
+    padding-top: $espacio-md;
+
+    @include solo-movil {
+      margin: 0 $espacio-md;
+      padding: $espacio-sm 0 $espacio-sm;
+    }
+  }
+
+  &__descripcion {
+    font-size: $texto-sm;
+    line-height: 1.5;
+    margin-bottom: $espacio-sm;
+    color: var(--color-texto);
+  }
+
+  &__info {
+    display: flex;
+    gap: $espacio-lg;
+    font-size: $texto-xs;
+    color: var(--color-gris);
+
+    @include solo-movil {
+      flex-direction: column;
+      gap: $espacio-2xs;
+    }
+  }
+}

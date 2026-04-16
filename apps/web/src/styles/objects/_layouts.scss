@@ -22,6 +22,20 @@
   z-index: $z-mapa;
 }
 
+.mapa-error {
+  position: absolute;
+  top: $espacio-md;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: $z-mapa + 1;
+  background: var(--color-rojo-alerta);
+  color: #fff;
+  padding: $espacio-xs $espacio-lg;
+  border-radius: $borde-radio;
+  font-size: $texto-sm;
+  font-weight: 600;
+}
+
 // Lateral visible solo en escritorio
 .lateral {
   display: flex;

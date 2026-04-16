@@ -93,6 +93,34 @@
     }
   }
 
+  &__requisitos {
+    list-style: none;
+    padding: 0;
+    margin: $espacio-xs 0 0;
+    font-size: $texto-xs;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__requisito--ok {
+    color: $color-verde-oscuro;
+
+    &::before {
+      content: "✓ ";
+    }
+  }
+
+  &__requisito--pendiente {
+    color: $color-rojo-alerta;
+    font-size: $texto-xs;
+    margin-top: $espacio-xs;
+
+    &::before {
+      content: "✗ ";
+    }
+  }
+
   &__enlace {
     text-align: center;
     font-size: $texto-sm;

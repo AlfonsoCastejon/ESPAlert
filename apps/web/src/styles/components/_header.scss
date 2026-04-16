@@ -86,6 +86,22 @@
       border: 1px solid var(--color-texto);
       background: var(--color-boton-registro);
     }
+
+    &--admin {
+      border: 1px solid $color-naranja-alerta;
+      background: rgba($color-naranja-alerta, 0.15);
+      color: $color-naranja-oscuro;
+      font-weight: 600;
+    }
+  }
+
+  &__usuario {
+    font-size: $texto-sm;
+    color: var(--color-gris);
+    max-width: 12rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   &__movil {
