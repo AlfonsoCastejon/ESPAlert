@@ -36,11 +36,17 @@ logger = logging.getLogger(__name__)
 
 def run_async(coro):
     """Ejecuta una corutina en un event loop nuevo (Celery no tiene uno propio)."""
+    from app.database import engine
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
         return loop.run_until_complete(coro)
     finally:
+        # Libera el pool para que las conexiones no queden atadas al loop cerrado
+        try:
+            loop.run_until_complete(engine.dispose())
+        except Exception:
+            pass
         loop.close()
 
 async def _fetch_and_persist(connector_cls, name: str):
