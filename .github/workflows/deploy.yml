@@ -43,6 +43,9 @@ jobs:
         with:
           context: ./apps/web
           push: true
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://espalert.app/api
+            NEXT_PUBLIC_WS_URL=wss://espalert.app/ws
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:latest,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-web:${{ github.sha }}
 
   deploy:
