@@ -101,6 +101,47 @@ async def eliminar_alerta(
 # ──────────────────── Mensajes Mesh ────────────────────
 
 
+@router.get(
+    "/mesh",
+    summary="Listar mensajes mesh recibidos",
+)
+async def listar_mensajes_mesh(
+    _admin: CurrentAdminDep,
+    db: DBSessionDep,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+):
+    total_q = await db.execute(select(func.count(MeshMessage.id)))
+    total = total_q.scalar() or 0
+
+    q = (
+        select(MeshMessage)
+        .order_by(MeshMessage.received_at.desc())
+        .limit(limit)
+        .offset(offset)
+    )
+    result = await db.execute(q)
+    mensajes = result.scalars().all()
+
+    return {
+        "total": total,
+        "items": [
+            {
+                "id": str(m.id),
+                "node_id": m.node_id,
+                "channel": m.channel,
+                "message": m.message,
+                "latitude": m.latitude,
+                "longitude": m.longitude,
+                "snr": m.snr,
+                "rssi": m.rssi,
+                "received_at": m.received_at.isoformat() if m.received_at else None,
+            }
+            for m in mensajes
+        ],
+    }
+
+
 @router.delete(
     "/mesh/{message_id}",
     status_code=status.HTTP_204_NO_CONTENT,

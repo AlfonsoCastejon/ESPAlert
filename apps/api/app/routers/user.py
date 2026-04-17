@@ -10,7 +10,7 @@ from app.dependencies import CurrentUserDep, DBSessionDep
 from app.models.alert import Alert
 from app.models.user_favorite import UserFavorite
 from app.models.user_preferences import UserPreferences
-from app.schemas.alert import AlertResponse
+from app.schemas.alert import AlertGeoJSON
 
 router = APIRouter(tags=["user"])
 
@@ -43,7 +43,7 @@ async def listar_favoritos(
 
     return {
         "total": total,
-        "items": [AlertResponse.model_validate(a) for a in alerts],
+        "items": [AlertGeoJSON.model_validate(a) for a in alerts],
     }
 
 
