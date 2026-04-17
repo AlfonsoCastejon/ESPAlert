@@ -1,6 +1,6 @@
 """Conector DGT: parsea incidencias de tráfico desde DATEX2 v3.6 del NAP."""
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import logging
 
 from app.connectors.base import BaseConnector
@@ -16,10 +16,12 @@ class DgtConnector(BaseConnector):
     
     DATEX2_URL = "https://nap.dgt.es/datex2/v3/dgt/SituationPublication/datex2_v36.xml"
 
+    MAX_AGE_HOURS = 24
+
     def _map_severity(self, severity_str: str | None) -> AlertSeverity:
         if not severity_str:
-            return AlertSeverity.MINOR
-            
+            return AlertSeverity.UNKNOWN
+
         sev = severity_str.lower()
         if sev in ("highest", "severe", "critical", "extreme"):
             return AlertSeverity.EXTREME
@@ -29,7 +31,7 @@ class DgtConnector(BaseConnector):
             return AlertSeverity.MODERATE
         elif sev in ("low", "minor"):
             return AlertSeverity.MINOR
-            
+
         return AlertSeverity.UNKNOWN
 
     async def _fetch(self) -> list[AlertCreate]:
@@ -61,12 +63,18 @@ class DgtConnector(BaseConnector):
                 }
 
                 time_str = sit.get("versionTime") or sit.get("creationTime")
+                effective_at = None
                 if time_str:
                     try:
                         effective_at = datetime.fromisoformat(time_str.replace("Z", "+00:00"))
                         alert_dict["effective_at"] = effective_at
                     except ValueError:
                         logger.debug(f"Fecha en formato no reconocido DGT: {time_str}")
+
+                if effective_at is not None:
+                    age = datetime.now(timezone.utc) - effective_at
+                    if age > timedelta(hours=self.MAX_AGE_HOURS):
+                        continue
 
                 alerts.append(AlertCreate(**alert_dict))
                 
