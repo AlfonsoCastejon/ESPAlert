@@ -30,6 +30,21 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=72)
+
+    @field_validator("new_password")
+    @classmethod
+    def _check_strength(cls, v: str) -> str:
+        if not _PASSWORD_RE.match(v):
+            raise ValueError(
+                "La contraseña debe tener al menos 8 caracteres, una mayúscula, "
+                "una minúscula y un número"
+            )
+        return v
+
+
 class UserResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
