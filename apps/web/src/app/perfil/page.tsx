@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { REGIONES } from "@/types/filters";
@@ -278,6 +279,16 @@ export default function PerfilPage() {
             >
               Activar notificaciones
             </button>
+          </div>
+
+          <div className="perfil__bloque">
+            <h3 className="perfil__bloque-titulo">Mi cuenta</h3>
+            <p className="perfil__bloque-desc">
+              Datos de la cuenta y cambio de contraseña.
+            </p>
+            <Link href="/perfil/cuenta" className="perfil__enlace">
+              Ir a mi cuenta
+            </Link>
           </div>
 
           <div className="perfil__bloque">
