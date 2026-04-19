@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 
@@ -222,6 +223,9 @@ export default function AdminPage() {
             <button className="admin__btn-danger" onClick={eliminarTodosMesh}>
               Eliminar todos los mensajes mesh
             </button>
+            <Link href="/admin/mesh" className="admin__enlace">
+              Ver mensajes mesh individuales
+            </Link>
           </div>
         </div>
       )}

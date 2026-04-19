@@ -5,7 +5,12 @@ from sqlalchemy.exc import IntegrityError
 
 from app.config import settings
 from app.dependencies import CurrentUserDep, DBSessionDep
-from app.schemas.auth import LoginRequest, RegisterRequest, UserResponse
+from app.schemas.auth import (
+    ChangePasswordRequest,
+    LoginRequest,
+    RegisterRequest,
+    UserResponse,
+)
 from app.services import auth_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -97,3 +102,24 @@ async def logout(response: Response) -> Response:
 )
 async def me(user: CurrentUserDep) -> UserResponse:
     return UserResponse.model_validate(user)
+
+
+@router.patch(
+    "/password",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Cambiar la contraseña del usuario autenticado",
+)
+async def change_password(
+    payload: ChangePasswordRequest,
+    user: CurrentUserDep,
+    db: DBSessionDep,
+) -> Response:
+    if not auth_service.verify_password(payload.current_password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Contraseña actual incorrecta",
+        )
+    user.password_hash = auth_service.hash_password(payload.new_password)
+    db.add(user)
+    await db.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

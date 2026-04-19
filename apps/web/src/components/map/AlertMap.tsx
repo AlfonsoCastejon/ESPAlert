@@ -245,7 +245,12 @@ async function cargarCapasEspana(map: maplibregl.Map) {
       }
     }
 
-    if (!bbox.isEmpty()) map.fitBounds(bbox, { padding: 40, maxZoom: 9 });
+    if (!bbox.isEmpty()) {
+      // Calculamos el encuadre y forzamos zoom mínimo para ver provincias
+      const camara = map.cameraForBounds(bbox, { padding: 40, maxZoom: 9 });
+      const zoomFinal = Math.max(camara?.zoom ?? 7, 6.6);
+      map.flyTo({ center: camara?.center ?? map.getCenter(), zoom: zoomFinal });
+    }
   });
 
   map.on("mouseenter", "ccaa-fill", () => {
