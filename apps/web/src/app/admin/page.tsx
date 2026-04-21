@@ -15,7 +15,7 @@ interface UsuarioAdmin {
   created_at: string;
 }
 
-type Seccion = "usuarios" | "alertas";
+type Seccion = "usuarios" | "meshtastic";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -25,7 +25,6 @@ export default function AdminPage() {
   const [totalUsuarios, setTotalUsuarios] = useState(0);
   const [cargandoDatos, setCargandoDatos] = useState(true);
   const [error, setError] = useState("");
-  const [alertaIdEliminar, setAlertaIdEliminar] = useState("");
   const [mensajeExito, setMensajeExito] = useState("");
 
   useEffect(() => {
@@ -74,28 +73,6 @@ export default function AdminPage() {
     }
   }
 
-  async function eliminarAlerta() {
-    if (!alertaIdEliminar.trim()) return;
-    setError("");
-    setMensajeExito("");
-    try {
-      const res = await fetch(`${API_URL}/api/admin/alerts/${alertaIdEliminar.trim()}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      if (res.status === 204) {
-        setMensajeExito("Alerta eliminada");
-        setAlertaIdEliminar("");
-      } else if (res.status === 404) {
-        setError("Alerta no encontrada.");
-      } else {
-        throw new Error();
-      }
-    } catch {
-      setError("Error al eliminar la alerta.");
-    }
-  }
-
   async function eliminarTodosMesh() {
     setError("");
     setMensajeExito("");
@@ -141,10 +118,10 @@ export default function AdminPage() {
           Usuarios
         </button>
         <button
-          className={`admin__tab ${seccion === "alertas" ? "admin__tab--activo" : ""}`}
-          onClick={() => setSeccion("alertas")}
+          className={`admin__tab ${seccion === "meshtastic" ? "admin__tab--activo" : ""}`}
+          onClick={() => setSeccion("meshtastic")}
         >
-          Gestión de alertas
+          Meshtastic
         </button>
       </div>
 
@@ -197,24 +174,8 @@ export default function AdminPage() {
         </div>
       )}
 
-      {seccion === "alertas" && (
+      {seccion === "meshtastic" && (
         <div className="admin__seccion">
-          <div className="admin__bloque">
-            <h3 className="admin__bloque-titulo">Eliminar alerta por ID</h3>
-            <div className="admin__fila-input">
-              <input
-                className="admin__input"
-                type="text"
-                value={alertaIdEliminar}
-                onChange={(e) => setAlertaIdEliminar(e.target.value)}
-                placeholder="UUID de la alerta"
-              />
-              <button className="admin__btn-danger" onClick={eliminarAlerta}>
-                Eliminar
-              </button>
-            </div>
-          </div>
-
           <div className="admin__bloque">
             <h3 className="admin__bloque-titulo">Mensajes Meshtastic</h3>
             <p className="admin__bloque-desc">

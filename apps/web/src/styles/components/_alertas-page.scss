@@ -6,6 +6,9 @@
   max-width: 60rem;
   margin: 0 auto;
   width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 
   @include solo-movil {
     padding: $espacio-md;
@@ -86,6 +89,28 @@
     font-size: $texto-sm;
     color: var(--color-gris);
   }
+
+  &__toast {
+    position: fixed;
+    top: $espacio-lg;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-texto);
+    color: var(--color-fondo);
+    padding: $espacio-sm $espacio-md;
+    border-radius: $borde-radio-lg;
+    font-size: $texto-sm;
+    font-weight: 600;
+    box-shadow: 0 4px 12px hsl(0 0% 0% / 0.2);
+    z-index: 1000;
+    animation: toast-fade 2s ease-in-out;
+  }
+}
+
+@keyframes toast-fade {
+  0% { opacity: 0; transform: translate(-50%, -10px); }
+  15%, 85% { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -10px); }
 }
 
 .alerta-fila {
@@ -118,11 +143,20 @@
     border-radius: $borde-radio;
     flex-shrink: 0;
 
-    &--verde { background: var(--color-verde-alerta); }
-    &--amarillo { background: var(--color-amarillo-alerta); }
-    &--naranja { background: var(--color-naranja-alerta); }
-    &--rojo { background: var(--color-rojo-alerta); }
-    &--morado { background: var(--color-morado-mesh); }
+    // Tonos medios en claro, pastel en oscuro (los pastel desaparecen sobre el fondo verdoso).
+    &--verde { background: $color-verde-medio; }
+    &--amarillo { background: $color-amarillo-medio; }
+    &--naranja { background: $color-naranja-medio; }
+    &--rojo { background: $color-rojo-medio; }
+    &--morado { background: $color-morado-medio; }
+
+    [data-theme="dark"] & {
+      &.alerta-fila__indicador--verde { background: $color-verde-alerta; }
+      &.alerta-fila__indicador--amarillo { background: $color-amarillo-alerta; }
+      &.alerta-fila__indicador--naranja { background: $color-naranja-alerta; }
+      &.alerta-fila__indicador--rojo { background: $color-rojo-alerta; }
+      &.alerta-fila__indicador--morado { background: $color-morado-mesh; }
+    }
   }
 
   &__contenido {
@@ -191,6 +225,44 @@
 
     @include solo-movil {
       display: none;
+    }
+  }
+
+  &__uuid {
+    font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+    font-size: $texto-xs;
+    padding: $espacio-2xs $espacio-xs;
+    border: 1px dashed var(--color-gris);
+    background: var(--color-fondo-suave);
+    color: var(--color-texto);
+    border-radius: $borde-radio;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+      border-style: solid;
+      border-color: var(--color-naranja-marca);
+    }
+
+    @include solo-movil {
+      display: none;
+    }
+  }
+
+  &__eliminar {
+    padding: $espacio-2xs $espacio-xs;
+    border: none;
+    background: $color-rojo-oscuro;
+    color: var(--color-fondo);
+    border-radius: $borde-radio;
+    font-size: $texto-xs;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+      opacity: $opacidad-hover;
     }
   }
 

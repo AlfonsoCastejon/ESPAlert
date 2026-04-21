@@ -64,7 +64,44 @@ export default function AlertasPage() {
   const [alertaAbierta, setAlertaAbierta] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [favoritosIds, setFavoritosIds] = useState<Set<string>>(new Set());
+  const [toast, setToast] = useState("");
   const { usuario } = useAuth();
+  const esAdmin = usuario?.role === "admin";
+
+  function mostrarToast(mensaje: string) {
+    setToast(mensaje);
+    setTimeout(() => setToast(""), 2000);
+  }
+
+  async function copiarUuid(e: React.MouseEvent, alertId: string) {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(alertId);
+      mostrarToast("UUID copiado al portapapeles");
+    } catch {
+      /* ignorar */
+    }
+  }
+
+  async function eliminarAlerta(e: React.MouseEvent, alertId: string) {
+    e.stopPropagation();
+    if (!window.confirm("¿Eliminar esta alerta?")) return;
+    try {
+      const res = await fetch(`${API_URL}/api/admin/alerts/${alertId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.status === 204) {
+        setAlertas((prev) => prev.filter((a) => a.id !== alertId));
+        setTotal((t) => Math.max(0, t - 1));
+        mostrarToast("Alerta eliminada");
+      } else {
+        mostrarToast("No se pudo eliminar");
+      }
+    } catch {
+      mostrarToast("Error al eliminar");
+    }
+  }
 
   const cargar = useCallback(async () => {
     setCargando(true);
@@ -150,6 +187,7 @@ export default function AlertasPage() {
 
   return (
     <div className="alertas-page">
+      {toast && <div className="alertas-page__toast">{toast}</div>}
       <div className="alertas-page__cabecera">
         <h1 className="alertas-page__titulo">Alertas activas</h1>
         <p className="alertas-page__subtitulo">
@@ -225,6 +263,26 @@ export default function AlertasPage() {
                   </div>
                 </div>
                 <div className="alerta-fila__acciones">
+                  {esAdmin && (
+                    <>
+                      <button
+                        type="button"
+                        className="alerta-fila__uuid"
+                        title="Copiar UUID"
+                        onClick={(e) => copiarUuid(e, a.id)}
+                      >
+                        {a.id.slice(0, 8)}…
+                      </button>
+                      <button
+                        type="button"
+                        className="alerta-fila__eliminar"
+                        title="Eliminar alerta"
+                        onClick={(e) => eliminarAlerta(e, a.id)}
+                      >
+                        Eliminar
+                      </button>
+                    </>
+                  )}
                   {usuario && (
                     <button
                       className={`alerta-fila__fav ${favoritosIds.has(a.id) ? "alerta-fila__fav--activo" : ""}`}
