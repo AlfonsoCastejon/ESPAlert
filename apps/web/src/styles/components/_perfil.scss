@@ -315,6 +315,12 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: $espacio-2xs;
+    }
   }
 
   &__requisito--ok {

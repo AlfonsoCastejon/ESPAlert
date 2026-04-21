@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Sun, Moon, Menu, X } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 
@@ -29,8 +30,8 @@ export default function Header() {
           <Link href="/prediccion">Predicción</Link>
           <Link href="/alertas">Alertas</Link>
         </nav>
-        <button className="cabecera__tema" aria-label="Cambiar tema" onClick={toggleTema}>
-          {tema === "dark" ? "\u2600" : "\u263E"}
+        <button className="cabecera__tema" aria-label="Cambiar tema" title="Cambiar tema" onClick={toggleTema}>
+          {tema === "dark" ? <Sun size={20} /> : <Moon size={20} />}
         </button>
 
         {!cargando && (
@@ -62,15 +63,16 @@ export default function Header() {
       </div>
 
       <div className="cabecera__movil">
-        <button className="cabecera__tema" aria-label="Cambiar tema" onClick={toggleTema}>
-          {tema === "dark" ? "\u2600" : "\u263E"}
+        <button className="cabecera__tema" aria-label="Cambiar tema" title="Cambiar tema" onClick={toggleTema}>
+          {tema === "dark" ? <Sun size={20} /> : <Moon size={20} />}
         </button>
         <button
           className="cabecera__burger"
           aria-label={menuAbierto ? "Cerrar menú" : "Abrir menú"}
+          title={menuAbierto ? "Cerrar menú" : "Abrir menú"}
           onClick={() => setMenuAbierto(!menuAbierto)}
         >
-          {menuAbierto ? "\u2715" : "\u2630"}
+          {menuAbierto ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 

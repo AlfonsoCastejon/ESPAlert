@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
+import { Star } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { REGIONES } from "@/types/filters";
 import type { Alerta, FuenteAlerta, ColorAlerta } from "@/types/alert";
@@ -269,6 +270,7 @@ export default function AlertasPage() {
                         type="button"
                         className="alerta-fila__uuid"
                         title="Copiar UUID"
+                        aria-label={`Copiar UUID de la alerta ${a.id}`}
                         onClick={(e) => copiarUuid(e, a.id)}
                       >
                         {a.id.slice(0, 8)}…
@@ -288,8 +290,10 @@ export default function AlertasPage() {
                       className={`alerta-fila__fav ${favoritosIds.has(a.id) ? "alerta-fila__fav--activo" : ""}`}
                       onClick={(e) => toggleFavorito(e, a.id)}
                       title={favoritosIds.has(a.id) ? "Quitar de favoritos" : "Añadir a favoritos"}
+                      aria-label={favoritosIds.has(a.id) ? "Quitar de favoritos" : "Añadir a favoritos"}
+                      aria-pressed={favoritosIds.has(a.id)}
                     >
-                      {favoritosIds.has(a.id) ? "\u2605" : "\u2606"}
+                      <Star size={18} fill={favoritosIds.has(a.id) ? "currentColor" : "none"} />
                     </button>
                   )}
                   <time className="alerta-fila__fecha">{formatearFecha(a.effective_at || a.created_at)}</time>
