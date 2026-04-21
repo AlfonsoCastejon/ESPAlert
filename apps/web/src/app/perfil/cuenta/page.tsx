@@ -21,6 +21,17 @@ export default function CuentaPage() {
   const [error, setError] = useState("");
   const [exito, setExito] = useState("");
 
+  // Requisitos evaluados en tiempo real sobre la nueva contraseña
+  const requisitos = {
+    longitud: nueva.length >= 8,
+    mayuscula: /[A-Z]/.test(nueva),
+    minuscula: /[a-z]/.test(nueva),
+    numero: /\d/.test(nueva),
+  };
+  const coinciden = repetir.length > 0 && nueva === repetir;
+  const todoOk =
+    Object.values(requisitos).every(Boolean) && coinciden && actual.length > 0;
+
   useEffect(() => {
     if (!cargando && !usuario) {
       router.push("/login");
@@ -98,10 +109,6 @@ export default function CuentaPage() {
 
         <div className="perfil__bloque">
           <h3 className="perfil__bloque-titulo">Cambiar contraseña</h3>
-          <p className="perfil__bloque-desc">
-            La nueva contraseña debe tener al menos 8 caracteres, una mayúscula,
-            una minúscula y un número.
-          </p>
 
           {error && <p className="perfil__error">{error}</p>}
           {exito && <p className="perfil__exito">{exito}</p>}
@@ -125,9 +132,24 @@ export default function CuentaPage() {
                 value={nueva}
                 onChange={(e) => setNueva(e.target.value)}
                 required
-                minLength={8}
               />
             </label>
+
+            <ul className="perfil__requisitos">
+              <li className={requisitos.longitud ? "perfil__requisito--ok" : "perfil__requisito--pendiente"}>
+                {requisitos.longitud ? "✓" : "✗"} Al menos 8 caracteres
+              </li>
+              <li className={requisitos.mayuscula ? "perfil__requisito--ok" : "perfil__requisito--pendiente"}>
+                {requisitos.mayuscula ? "✓" : "✗"} Una letra mayúscula
+              </li>
+              <li className={requisitos.minuscula ? "perfil__requisito--ok" : "perfil__requisito--pendiente"}>
+                {requisitos.minuscula ? "✓" : "✗"} Una letra minúscula
+              </li>
+              <li className={requisitos.numero ? "perfil__requisito--ok" : "perfil__requisito--pendiente"}>
+                {requisitos.numero ? "✓" : "✗"} Un número
+              </li>
+            </ul>
+
             <label className="perfil__label">
               Repetir nueva contraseña
               <input
@@ -136,13 +158,18 @@ export default function CuentaPage() {
                 value={repetir}
                 onChange={(e) => setRepetir(e.target.value)}
                 required
-                minLength={8}
               />
             </label>
+            {repetir.length > 0 && (
+              <p className={coinciden ? "perfil__requisito--ok" : "perfil__requisito--pendiente"}>
+                {coinciden ? "✓ Las contraseñas coinciden" : "✗ Las contraseñas no coinciden"}
+              </p>
+            )}
+
             <button
               type="submit"
               className="perfil__btn-guardar"
-              disabled={guardando}
+              disabled={guardando || !todoOk}
             >
               {guardando ? "Guardando..." : "Cambiar contraseña"}
             </button>

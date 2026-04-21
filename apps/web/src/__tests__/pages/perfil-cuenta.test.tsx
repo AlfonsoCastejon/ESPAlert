@@ -42,23 +42,30 @@ describe("CuentaPage", () => {
     expect(screen.getByText("user-1")).toBeInTheDocument();
   });
 
-  it("muestra error si las contrasenas nuevas no coinciden", async () => {
+  it("muestra aviso en tiempo real si las contrasenas no coinciden", async () => {
     render(<CuentaPage />);
-    fireEvent.change(screen.getByLabelText("Contraseña actual"), {
-      target: { value: "Oldpass1" },
-    });
     fireEvent.change(screen.getByLabelText("Nueva contraseña"), {
       target: { value: "Newpass1" },
     });
     fireEvent.change(screen.getByLabelText("Repetir nueva contraseña"), {
       target: { value: "Different1" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Cambiar contraseña" }));
 
     await waitFor(() =>
-      expect(screen.getByText("Las contraseñas nuevas no coinciden.")).toBeInTheDocument(),
+      expect(screen.getByText(/Las contraseñas no coinciden/)).toBeInTheDocument(),
     );
+    expect(screen.getByRole("button", { name: "Cambiar contraseña" })).toBeDisabled();
     expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("muestra los requisitos en tiempo real mientras se escribe", () => {
+    render(<CuentaPage />);
+    fireEvent.change(screen.getByLabelText("Nueva contraseña"), {
+      target: { value: "abc" },
+    });
+    expect(screen.getByText(/Al menos 8 caracteres/)).toBeInTheDocument();
+    expect(screen.getByText(/Una letra mayúscula/)).toBeInTheDocument();
+    expect(screen.getByText(/Un número/)).toBeInTheDocument();
   });
 
   it("cambia la contrasena correctamente", async () => {
@@ -101,7 +108,9 @@ describe("CuentaPage", () => {
     );
   });
 
-  it("muestra error si la nueva contrasena no cumple los requisitos (422)", async () => {
+  it("muestra error si el servidor responde 422 pese a pasar la validación del cliente", async () => {
+    // La contraseña pasa los requisitos del formulario, pero imaginamos un
+    // endpoint más estricto que la rechaza igualmente.
     mockFetch.mockResolvedValueOnce({ status: 422 });
     render(<CuentaPage />);
 
@@ -109,10 +118,10 @@ describe("CuentaPage", () => {
       target: { value: "Oldpass1" },
     });
     fireEvent.change(screen.getByLabelText("Nueva contraseña"), {
-      target: { value: "shortpw1" },
+      target: { value: "Newpass1" },
     });
     fireEvent.change(screen.getByLabelText("Repetir nueva contraseña"), {
-      target: { value: "shortpw1" },
+      target: { value: "Newpass1" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Cambiar contraseña" }));
 

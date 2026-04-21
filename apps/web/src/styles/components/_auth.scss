@@ -109,6 +109,10 @@
     &::before {
       content: "✓ ";
     }
+
+    [data-theme="dark"] & {
+      color: $color-verde-alerta;
+    }
   }
 
   &__requisito--pendiente {
