@@ -45,6 +45,8 @@
     padding: $espacio-sm $espacio-md;
     border: 1px solid var(--color-texto);
     background: transparent;
+    color: var(--color-texto);
     font-size: $texto-sm;
+    cursor: pointer;
   }
 }

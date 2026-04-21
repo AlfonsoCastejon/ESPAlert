@@ -45,9 +45,9 @@
   }
 
   &--morado {
-    background: var(--color-morado-mesh);
+    background: $color-morado-oscuro;
     color: $color-texto-dark;
 
-    .badge-alerta__punto { background: $color-morado-oscuro; }
+    .badge-alerta__punto { background: var(--color-morado-mesh); }
   }
 }
