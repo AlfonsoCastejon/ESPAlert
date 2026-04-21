@@ -65,8 +65,9 @@
       opacity: $opacidad-placeholder;
     }
 
-    &:focus {
-      outline: none;
+    &:focus-visible {
+      outline: 2px solid var(--color-naranja-marca);
+      outline-offset: 2px;
       border-color: var(--color-naranja-marca);
     }
   }

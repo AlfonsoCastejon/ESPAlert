@@ -71,6 +71,12 @@ export default function AlertFilters({
               type="checkbox"
               checked={filtros.tipos[tipo.clave]}
               onChange={() => toggleTipo(tipo.clave)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  toggleTipo(tipo.clave);
+                }
+              }}
             />
             {tipo.etiqueta}
           </label>
@@ -91,6 +97,12 @@ export default function AlertFilters({
               className="filtros__check-oculto"
               checked={filtros.severidades[sev.clave]}
               onChange={() => toggleSeveridad(sev.clave)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  toggleSeveridad(sev.clave);
+                }
+              }}
             />
             <span
               className={`filtros__indicador filtros__indicador--${sev.clave}`}

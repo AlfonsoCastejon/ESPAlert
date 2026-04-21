@@ -72,6 +72,12 @@ a:hover {
   text-decoration: underline;
 }
 
+:focus-visible {
+  outline: 2px solid var(--color-naranja-marca);
+  outline-offset: 2px;
+  border-radius: $borde-radio;
+}
+
 button {
   cursor: pointer;
   border: 1px solid var(--color-texto);

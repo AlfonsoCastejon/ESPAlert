@@ -92,15 +92,10 @@
     }
 
     &--admin {
-      border: 1px solid $color-naranja-alerta;
-      background: rgba($color-naranja-alerta, 0.15);
-      color: $color-naranja-oscuro;
+      border: 1px solid var(--color-naranja-marca);
+      background: var(--color-naranja-marca);
+      color: #fff;
       font-weight: 600;
-
-      [data-theme="dark"] & {
-        background: rgba($color-naranja-alerta, 0.25);
-        color: $color-naranja-alerta;
-      }
     }
   }
 
