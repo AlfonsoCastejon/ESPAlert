@@ -48,6 +48,7 @@ env/
 .next/
 out/
 dist/
+*.tsbuildinfo
 
 # Logs
 logs/
