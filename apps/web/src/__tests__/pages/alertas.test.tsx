@@ -2,18 +2,23 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import AlertasPage from "@/app/alertas/page";
 
+const mockUseAuth = vi.fn();
+
 vi.mock("@/context/AuthContext", () => ({
-  useAuth: () => ({ usuario: null, cargando: false }),
+  useAuth: () => mockUseAuth(),
 }));
 
 const mockFetch = vi.fn();
 
 beforeEach(() => {
+  mockUseAuth.mockReturnValue({ usuario: null, cargando: false });
   vi.stubGlobal("fetch", mockFetch);
 });
 
 afterEach(() => {
   vi.restoreAllMocks();
+  mockUseAuth.mockReset();
+  mockFetch.mockReset();
 });
 
 describe("AlertasPage", () => {
@@ -84,5 +89,45 @@ describe("AlertasPage", () => {
     render(<AlertasPage />);
     expect(screen.getByDisplayValue("Todas las fuentes")).toBeInTheDocument();
     expect(screen.getByDisplayValue("Todas")).toBeInTheDocument();
+  });
+
+  it("muestra UUID y botón eliminar en cada fila si el usuario es admin", async () => {
+    mockUseAuth.mockReturnValue({
+      usuario: { id: "admin-1", email: "admin@test.com", role: "admin" },
+      cargando: false,
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        total: 1,
+        items: [
+          {
+            id: "abcdef12-3456-7890-abcd-ef1234567890",
+            headline: "Alerta admin",
+            source: "aemet",
+            severity: "moderate",
+            color: "yellow",
+            status: "active",
+            alert_type: "meteorological",
+            onset: "2026-04-14T00:00:00Z",
+            expires: "2026-04-15T00:00:00Z",
+            area_description: "Madrid",
+          },
+        ],
+      }),
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ items: [] }),
+    });
+
+    render(<AlertasPage />);
+
+    await waitFor(() =>
+      expect(screen.getByText("Alerta admin")).toBeInTheDocument(),
+    );
+    expect(screen.getByTitle("Copiar UUID")).toBeInTheDocument();
+    expect(screen.getByText("Eliminar")).toBeInTheDocument();
+    expect(screen.getByText(/abcdef12…/)).toBeInTheDocument();
   });
 });

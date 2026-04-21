@@ -82,7 +82,7 @@ describe("AdminPage", () => {
     expect(screen.getByText("2 usuarios registrados")).toBeInTheDocument();
   });
 
-  it("cambia a la pestaña de alertas", async () => {
+  it("cambia a la pestaña de Meshtastic", async () => {
     mockUseAuth.mockReturnValue({
       usuario: { id: "admin-1", email: "admin@test.com", role: "admin" },
       cargando: false,
@@ -94,11 +94,11 @@ describe("AdminPage", () => {
 
     render(<AdminPage />);
 
-    await waitFor(() => screen.getByText("Gestión de alertas"));
-    fireEvent.click(screen.getByText("Gestión de alertas"));
+    await waitFor(() => screen.getByText("Meshtastic"));
+    fireEvent.click(screen.getByText("Meshtastic"));
 
-    expect(screen.getByText("Eliminar alerta por ID")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("UUID de la alerta")).toBeInTheDocument();
+    expect(screen.getByText("Mensajes Meshtastic")).toBeInTheDocument();
+    expect(screen.getByText("Eliminar todos los mensajes mesh")).toBeInTheDocument();
   });
 
   it("llama al endpoint al cambiar rol de otro usuario", async () => {

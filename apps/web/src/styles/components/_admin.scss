@@ -70,6 +70,12 @@
     border-radius: $borde-radio;
     padding: $espacio-sm $espacio-md;
     margin-bottom: $espacio-md;
+
+    [data-theme="dark"] & {
+      color: $color-verde-alerta;
+      background: rgba($color-verde-alerta, 0.15);
+      border-color: $color-verde-alerta;
+    }
   }
 
   &__estado {
@@ -120,11 +126,21 @@
     &--admin {
       background: rgba($color-naranja-alerta, 0.2);
       color: $color-naranja-oscuro;
+
+      [data-theme="dark"] & {
+        background: rgba($color-naranja-alerta, 0.25);
+        color: $color-naranja-alerta;
+      }
     }
 
     &--user {
       background: rgba($color-verde-alerta, 0.3);
       color: $color-verde-oscuro;
+
+      [data-theme="dark"] & {
+        background: rgba($color-verde-alerta, 0.2);
+        color: $color-verde-alerta;
+      }
     }
   }
 
@@ -145,6 +161,8 @@
   }
 
   &__bloque {
+    display: flex;
+    flex-direction: column;
     background: var(--color-fondo-suave);
     border-radius: $borde-radio-lg;
     padding: $espacio-lg;
@@ -178,19 +196,49 @@
     font-size: $texto-sm;
   }
 
+  &__uuid {
+    font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+    font-size: $texto-xs;
+    padding: $espacio-2xs $espacio-xs;
+    border: 1px dashed var(--color-gris);
+    background: var(--color-fondo-suave);
+    color: var(--color-texto);
+    border-radius: $borde-radio;
+    cursor: pointer;
+
+    &:hover {
+      border-style: solid;
+      border-color: var(--color-naranja-marca);
+    }
+  }
+
   &__btn-danger {
     padding: $espacio-sm $espacio-md;
     border: none;
-    background: $color-rojo-alerta;
-    color: white;
+    background: $color-rojo-oscuro;
+    color: var(--color-fondo);
     border-radius: $borde-radio;
     font-size: $texto-sm;
     font-weight: 600;
     cursor: pointer;
     transition: opacity 0.15s;
+    align-self: flex-start;
 
     &:hover {
       opacity: $opacidad-hover;
+    }
+  }
+
+  &__enlace {
+    display: inline-block;
+    margin-top: $espacio-md;
+    font-size: $texto-sm;
+    color: var(--color-naranja-marca);
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
     }
   }
 }
