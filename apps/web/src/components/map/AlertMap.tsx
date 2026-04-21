@@ -12,11 +12,11 @@ import styles from "./AlertMap.module.scss";
 import type { Alerta, ColorAlerta } from "@/types/alert";
 
 const COLORES: Record<ColorAlerta, string> = {
-  green: "#4CAF50",
-  yellow: "#FDD835",
-  orange: "#FF9800",
-  red: "#F44336",
-  purple: "#A35DFF",
+  green: "hsl(122, 39%, 49%)",
+  yellow: "hsl(54, 98%, 60%)",
+  orange: "hsl(36, 100%, 50%)",
+  red: "hsl(4, 90%, 58%)",
+  purple: "hsl(265, 100%, 68%)",
 };
 
 const FUENTES: Record<string, string> = {
@@ -52,14 +52,14 @@ const ESTILO_MAPA: maplibregl.StyleSpecification = {
     {
       id: "fondo",
       type: "background",
-      paint: { "background-color": "#d4d4d4" },
+      paint: { "background-color": "hsl(0, 0%, 83%)" },
     },
     {
       id: "agua",
       type: "fill",
       source: "openmaptiles",
       "source-layer": "water",
-      paint: { "fill-color": "#f0f0f0" },
+      paint: { "fill-color": "hsl(0, 0%, 94%)" },
     },
   ],
 };
@@ -137,7 +137,7 @@ function actualizarAlertas(map: maplibregl.Map, geojson: GeoJSON.FeatureCollecti
       "circle-radius": 6,
       "circle-color": ["get", "color"],
       "circle-stroke-width": 1.5,
-      "circle-stroke-color": "#142426",
+      "circle-stroke-color": "hsl(187, 31%, 11%)",
     },
   });
 
@@ -203,14 +203,14 @@ async function cargarCapasEspana(map: maplibregl.Map) {
     id: "ccaa-fill",
     type: "fill",
     source: "ccaa",
-    paint: { "fill-color": "#d4d4d4" },
+    paint: { "fill-color": "hsl(0, 0%, 83%)" },
   });
   map.addLayer({
     id: "ccaa-line",
     type: "line",
     source: "ccaa",
     paint: {
-      "line-color": "#555555",
+      "line-color": "hsl(0, 0%, 33%)",
       "line-width": 1.8,
     },
   });
@@ -222,7 +222,7 @@ async function cargarCapasEspana(map: maplibregl.Map) {
     source: "provincias",
     minzoom: 6.5,
     paint: {
-      "line-color": "#888888",
+      "line-color": "hsl(0, 0%, 53%)",
       "line-width": 1,
     },
   });
