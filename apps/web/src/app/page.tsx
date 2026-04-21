@@ -6,8 +6,13 @@
  */
 
 import { useState, useEffect, useCallback } from "react";
-import AlertMap from "@/components/map/AlertMap";
+import dynamic from "next/dynamic";
 import AlertFilters from "@/components/filters/AlertFilters";
+
+const AlertMap = dynamic(() => import("@/components/map/AlertMap"), {
+  ssr: false,
+  loading: () => <div className="pagina-estado pagina-estado--centrado">Cargando mapa...</div>,
+});
 import { FILTROS_INICIALES } from "@/types/filters";
 import type { EstadoFiltros } from "@/types/filters";
 import type { Alerta, ColorAlerta } from "@/types/alert";
