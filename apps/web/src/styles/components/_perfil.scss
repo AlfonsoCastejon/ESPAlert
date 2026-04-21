@@ -37,6 +37,11 @@
     font-weight: 600;
     background: rgba($color-verde-alerta, 0.3);
     color: $color-verde-oscuro;
+
+    [data-theme="dark"] & {
+      background: rgba($color-verde-alerta, 0.2);
+      color: $color-verde-alerta;
+    }
   }
 
   &__tabs {
@@ -88,6 +93,12 @@
     border-radius: $borde-radio;
     padding: $espacio-sm $espacio-md;
     margin-bottom: $espacio-md;
+
+    [data-theme="dark"] & {
+      color: $color-verde-alerta;
+      background: rgba($color-verde-alerta, 0.15);
+      border-color: $color-verde-alerta;
+    }
   }
 
   &__estado {
@@ -296,6 +307,36 @@
     }
   }
 
+  &__requisitos {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 $espacio-sm;
+    font-size: $texto-xs;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__requisito--ok {
+    color: $color-verde-oscuro;
+    font-size: $texto-xs;
+    margin: 0;
+
+    [data-theme="dark"] & {
+      color: $color-verde-alerta;
+    }
+  }
+
+  &__requisito--pendiente {
+    color: $color-rojo-oscuro;
+    font-size: $texto-xs;
+    margin: 0;
+
+    [data-theme="dark"] & {
+      color: $color-rojo-alerta;
+    }
+  }
+
   &__enlace {
     display: inline-block;
     margin-top: $espacio-sm;
@@ -312,8 +353,8 @@
   &__btn-danger {
     padding: $espacio-sm $espacio-lg;
     border: none;
-    background: $color-rojo-alerta;
-    color: white;
+    background: $color-rojo-oscuro;
+    color: var(--color-fondo);
     border-radius: $borde-radio;
     font-size: $texto-sm;
     font-weight: 600;
