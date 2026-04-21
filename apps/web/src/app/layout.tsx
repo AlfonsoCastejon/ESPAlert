@@ -24,7 +24,7 @@ export default function RootLayout({
           <AuthProvider>
             <div className="app-layout">
               <Header />
-              <div className="contenido-principal">{children}</div>
+              <main className="contenido-principal">{children}</main>
               <Footer />
             </div>
             <CookieBanner />
