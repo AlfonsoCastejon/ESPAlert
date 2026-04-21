@@ -76,15 +76,19 @@
     padding: $espacio-xs $espacio-md;
     font-size: $texto-sm;
     border-radius: $borde-radio;
+    color: var(--color-texto);
+    cursor: pointer;
 
     &--login {
       border: 1px solid var(--color-texto);
       background: transparent;
+      color: var(--color-texto);
     }
 
     &--registro {
       border: 1px solid var(--color-texto);
       background: var(--color-boton-registro);
+      color: var(--color-texto);
     }
 
     &--admin {
@@ -92,6 +96,11 @@
       background: rgba($color-naranja-alerta, 0.15);
       color: $color-naranja-oscuro;
       font-weight: 600;
+
+      [data-theme="dark"] & {
+        background: rgba($color-naranja-alerta, 0.25);
+        color: $color-naranja-alerta;
+      }
     }
   }
 
