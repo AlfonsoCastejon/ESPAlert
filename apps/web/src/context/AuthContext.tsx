@@ -9,6 +9,21 @@ import { createContext, useContext, useState, useEffect, useCallback } from "rea
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
+// FastAPI devuelve detail como string o como array de objetos (422 Pydantic).
+// Normalizamos a string para poder renderizarlo en React.
+function normalizarDetalle(detail: unknown): string | null {
+  if (!detail) return null;
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    const primero = detail[0];
+    if (typeof primero === "string") return primero;
+    if (primero && typeof primero === "object" && "msg" in primero) {
+      return String((primero as { msg: unknown }).msg);
+    }
+  }
+  return null;
+}
+
 interface Usuario {
   id: string;
   email: string;
@@ -63,7 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null;
       }
       const err = await res.json().catch(() => null);
-      return err?.detail || "Credenciales inválidas";
+      return normalizarDetalle(err?.detail) || "Credenciales inválidas";
     } catch {
       return "Error de conexión con el servidor";
     }
