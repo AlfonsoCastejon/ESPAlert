@@ -136,6 +136,17 @@ def parse_datex2_xml(content: Union[str, bytes]) -> list[dict[str, Any]]:
         
         situation_records = root.findall('.//{*}situationRecord')
         for record in situation_records:
+            # Intentamos sacar nombre de la carretera / descripción de la ubicación
+            road_number = _get_text(record, './/{*}roadNumber')
+            area_name = (
+                _get_text(record, './/{*}supplementaryPositionalDescription/{*}locationDescriptor/{*}values/{*}value')
+                or _get_text(record, './/{*}supplementaryPositionalDescription/{*}roadName/{*}values/{*}value')
+                or _get_text(record, './/{*}roadName/{*}values/{*}value')
+                or _get_text(record, './/{*}areaName/{*}values/{*}value')
+            )
+            partes = [p for p in (road_number, area_name) if p]
+            area_description = " · ".join(partes) if partes else None
+
             sit = {
                 "id": record.attrib.get('id', ''),
                 "creationTime": _get_text(record, './/{*}situationRecordCreationTime'),
@@ -143,6 +154,7 @@ def parse_datex2_xml(content: Union[str, bytes]) -> list[dict[str, Any]]:
                 "probabilityOfOccurrence": _get_text(record, './/{*}probabilityOfOccurrence'),
                 "severity": _get_text(record, './/{*}severity'),
                 "summary": _get_text(record, './/{*}nonGeneralPublicComment/{*}comment/{*}values/{*}value') or _get_text(record, './/{*}generalPublicComment/{*}comment/{*}values/{*}value'),
+                "area_description": area_description,
                 "location": None
             }
             

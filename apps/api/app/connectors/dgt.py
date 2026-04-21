@@ -57,6 +57,7 @@ class DgtConnector(BaseConnector):
                     "severity": severity,
                     "headline": summary,
                     "description": summary,
+                    "area_description": sit.get("area_description"),
                     "geometry": sit.get("location"),
                     "status": AlertStatus.ACTUAL,
                     "raw_data": sit
