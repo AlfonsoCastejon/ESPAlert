@@ -25,10 +25,10 @@ afterEach(() => {
 });
 
 describe("Home", () => {
-  it("renderiza el mapa y el boton de filtros", () => {
+  it("renderiza el mapa y el boton de filtros", async () => {
     mockFetch.mockResolvedValue({ ok: true, json: async () => ({ items: [] }) });
     render(<Home />);
-    expect(screen.getByTestId("alert-map")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByTestId("alert-map")).toBeInTheDocument());
     expect(screen.getByRole("button", { name: "Filtros" })).toBeInTheDocument();
   });
 
