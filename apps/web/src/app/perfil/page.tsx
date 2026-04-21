@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { REGIONES } from "@/types/filters";
 import type { Alerta } from "@/types/alert";
@@ -196,8 +197,9 @@ export default function PerfilPage() {
                     className="perfil__fav-quitar"
                     onClick={() => quitarFavorito(a.id)}
                     title="Quitar de favoritos"
+                    aria-label="Quitar de favoritos"
                   >
-                    &#x2715;
+                    <X size={16} />
                   </button>
                 </div>
               ))}
