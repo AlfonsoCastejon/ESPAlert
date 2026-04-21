@@ -28,7 +28,7 @@
   padding: $espacio-sm $espacio-md;
   border-radius: $borde-radio;
   border: 1px solid var(--color-texto);
-  box-shadow: 0 $espacio-2xs $espacio-sm rgba(0, 0, 0, $opacidad-sombra-suave);
+  box-shadow: 0 $espacio-2xs $espacio-sm hsl(0 0% 0% / $opacidad-sombra-suave);
   background-color: var(--color-fondo);
   color: var(--color-texto);
 }

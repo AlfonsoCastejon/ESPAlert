@@ -119,7 +119,7 @@
     border-radius: $borde-radio-pill;
     font-size: $texto-sm;
     font-weight: 600;
-    box-shadow: 0 $espacio-xs $espacio-md rgba(0, 0, 0, $opacidad-sombra);
+    box-shadow: 0 $espacio-xs $espacio-md hsl(0 0% 0% / $opacidad-sombra);
   }
 }
 
@@ -131,7 +131,7 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, $opacidad-overlay);
+    background: hsl(0 0% 0% / $opacidad-overlay);
     z-index: $z-lateral - 1;
   }
 }
