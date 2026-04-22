@@ -22,7 +22,7 @@ export default function Header() {
   return (
     <header className="cabecera">
       <Link href="/" className="cabecera__logo" aria-label="ESPAlert - Inicio">
-        <Image src="/icon.png" alt="" width={66} height={36} priority />
+        <Image src="/icon.png" alt="" width={66} height={36} priority sizes="66px" />
         <span className="cabecera__marca" aria-hidden="true"><span className="cabecera__marca-esp">ESP</span>Alert</span>
       </Link>
 
