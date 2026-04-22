@@ -68,7 +68,9 @@ export default function AlertFilters({
         {TIPOS.map((tipo) => (
           <label key={tipo.clave} className="filtros__opcion">
             <input
+              id={`filtro-tipo-${tipo.clave}`}
               type="checkbox"
+              title={tipo.etiqueta}
               aria-label={tipo.etiqueta}
               checked={filtros.tipos[tipo.clave]}
               onChange={() => toggleTipo(tipo.clave)}
@@ -94,8 +96,10 @@ export default function AlertFilters({
             }`}
           >
             <input
+              id={`filtro-severidad-${sev.clave}`}
               type="checkbox"
               className="filtros__check-oculto"
+              title={sev.etiqueta}
               aria-label={sev.etiqueta}
               checked={filtros.severidades[sev.clave]}
               onChange={() => toggleSeveridad(sev.clave)}
