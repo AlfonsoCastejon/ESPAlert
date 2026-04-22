@@ -4,6 +4,7 @@ import json
 import logging
 import asyncio
 import ssl
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict
 from urllib.parse import urlparse, unquote
 
@@ -149,6 +150,7 @@ class MeshtasticConnector:
                         if last_pos:
                             geometry = {"type": "Point", "coordinates": [last_pos[1], last_pos[0]]}
 
+                    ahora = datetime.now(timezone.utc)
                     alert = AlertCreate(
                         external_id=f"mesh-{data.get('sender', 'unknown')}-{data.get('id', '')}",
                         source=AlertSource.MESHTASTIC,
@@ -159,6 +161,8 @@ class MeshtasticConnector:
                         description=message_text,
                         area_description=f"Nodo {data.get('sender', 'desconocido')}",
                         geometry=geometry,
+                        effective_at=ahora,
+                        expires_at=ahora + timedelta(days=7),
                         raw_data=data,
                     )
                     await upsert_alert(db, alert)
