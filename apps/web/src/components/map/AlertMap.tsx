@@ -68,24 +68,52 @@ interface AlertMapProps {
   alertas: Alerta[];
 }
 
+// Radio del desplazamiento en grados (~11 m). Mantiene los markers visualmente
+// separados al hacer zoom sin alterar percepción de ubicación.
+const OFFSET_DUPLICADOS = 0.0001;
+
+/** Aplica offset radial determinista a puntos duplicados del mismo lat/lon. */
+function desplazarPunto(
+  coords: [number, number],
+  indice: number,
+): [number, number] {
+  if (indice === 0) return coords;
+  const angulo = (indice * 2 * Math.PI) / 8;
+  const radio = OFFSET_DUPLICADOS * Math.ceil(indice / 8);
+  return [coords[0] + Math.cos(angulo) * radio, coords[1] + Math.sin(angulo) * radio];
+}
+
 /** Transforma el array de alertas en una FeatureCollection para MapLibre */
 function construirGeoJSON(alertas: Alerta[]): GeoJSON.FeatureCollection {
+  const ocurrencias = new Map<string, number>();
+
   return {
     type: "FeatureCollection",
     features: alertas
       .filter((a) => a.geometry)
-      .map((a) => ({
-        type: "Feature" as const,
-        properties: {
-          id: a.id,
-          color: COLORES[a.color] || COLORES.green,
-          headline: a.headline,
-          description: a.description || "",
-          area_description: a.area_description || "",
-          source: a.source,
-        },
-        geometry: a.geometry!,
-      })),
+      .map((a) => {
+        let geometry = a.geometry!;
+        if (geometry.type === "Point") {
+          const [lon, lat] = geometry.coordinates as [number, number];
+          const clave = `${lon.toFixed(6)},${lat.toFixed(6)}`;
+          const indice = ocurrencias.get(clave) ?? 0;
+          ocurrencias.set(clave, indice + 1);
+          geometry = { type: "Point", coordinates: desplazarPunto([lon, lat], indice) };
+        }
+
+        return {
+          type: "Feature" as const,
+          properties: {
+            id: a.id,
+            color: COLORES[a.color] || COLORES.green,
+            headline: a.headline,
+            description: a.description || "",
+            area_description: a.area_description || "",
+            source: a.source,
+          },
+          geometry,
+        };
+      }),
   };
 }
 
