@@ -13,6 +13,7 @@ interface AlertFiltersProps {
   filtros: EstadoFiltros;
   onCambio: (filtros: EstadoFiltros) => void;
   alertas: Alerta[];
+  idPrefijo?: string;
 }
 
 const TIPOS = [
@@ -33,6 +34,7 @@ export default function AlertFilters({
   filtros,
   onCambio,
   alertas,
+  idPrefijo = "filtro",
 }: AlertFiltersProps) {
   function toggleTipo(clave: keyof EstadoFiltros["tipos"]) {
     onCambio({
@@ -68,7 +70,7 @@ export default function AlertFilters({
         {TIPOS.map((tipo) => (
           <div key={tipo.clave} className="filtros__opcion">
             <input
-              id={`filtro-tipo-${tipo.clave}`}
+              id={`${idPrefijo}-tipo-${tipo.clave}`}
               type="checkbox"
               checked={filtros.tipos[tipo.clave]}
               onChange={() => toggleTipo(tipo.clave)}
@@ -79,7 +81,7 @@ export default function AlertFilters({
                 }
               }}
             />
-            <label htmlFor={`filtro-tipo-${tipo.clave}`}>{tipo.etiqueta}</label>
+            <label htmlFor={`${idPrefijo}-tipo-${tipo.clave}`}>{tipo.etiqueta}</label>
           </div>
         ))}
       </fieldset>
@@ -94,7 +96,7 @@ export default function AlertFilters({
             }`}
           >
             <input
-              id={`filtro-severidad-${sev.clave}`}
+              id={`${idPrefijo}-severidad-${sev.clave}`}
               type="checkbox"
               className="filtros__check-oculto"
               checked={filtros.severidades[sev.clave]}
@@ -107,7 +109,7 @@ export default function AlertFilters({
               }}
             />
             <label
-              htmlFor={`filtro-severidad-${sev.clave}`}
+              htmlFor={`${idPrefijo}-severidad-${sev.clave}`}
               className="filtros__opcion-severidad-label"
             >
               <span
@@ -120,11 +122,11 @@ export default function AlertFilters({
       </fieldset>
 
       <div className="filtros__seccion">
-        <label className="filtros__etiqueta" htmlFor="filtro-region">
+        <label className="filtros__etiqueta" htmlFor={`${idPrefijo}-region`}>
           Zona geográfica
         </label>
         <select
-          id="filtro-region"
+          id={`${idPrefijo}-region`}
           className="filtros__select"
           value={filtros.region}
           onChange={(e) => cambiarRegion(e.target.value)}

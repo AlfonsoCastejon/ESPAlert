@@ -28,7 +28,7 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: $z-mapa + 1;
-  background: var(--color-rojo-alerta);
+  background: hsl(0, 70%, 32%);
   color: #fff;
   padding: $espacio-xs $espacio-lg;
   border-radius: $borde-radio;

@@ -97,6 +97,7 @@ export default function Home() {
           filtros={filtros}
           onCambio={setFiltros}
           alertas={alertasFiltradas}
+          idPrefijo="filtro-lateral"
         />
       </aside>
 
@@ -111,6 +112,7 @@ export default function Home() {
             filtros={filtros}
             onCambio={setFiltros}
             alertas={alertasFiltradas}
+            idPrefijo="filtro-bandeja"
           />
         </div>
       </div>
