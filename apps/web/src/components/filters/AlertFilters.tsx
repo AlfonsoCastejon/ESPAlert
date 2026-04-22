@@ -69,6 +69,7 @@ export default function AlertFilters({
           <label key={tipo.clave} className="filtros__opcion">
             <input
               type="checkbox"
+              aria-label={tipo.etiqueta}
               checked={filtros.tipos[tipo.clave]}
               onChange={() => toggleTipo(tipo.clave)}
               onKeyDown={(e) => {
@@ -95,6 +96,7 @@ export default function AlertFilters({
             <input
               type="checkbox"
               className="filtros__check-oculto"
+              aria-label={sev.etiqueta}
               checked={filtros.severidades[sev.clave]}
               onChange={() => toggleSeveridad(sev.clave)}
               onKeyDown={(e) => {
