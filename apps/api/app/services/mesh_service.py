@@ -56,6 +56,22 @@ async def get_mesh_messages(db: AsyncSession, limit: int = 50, offset: int = 0, 
     )
     return result.scalars().all()
 
+async def get_last_known_position(db: AsyncSession, node_id: str) -> tuple[float, float] | None:
+    """Devuelve (lat, lon) del último mensaje con coordenadas del nodo, o None."""
+    stmt = (
+        select(MeshMessage.latitude, MeshMessage.longitude)
+        .where(MeshMessage.node_id == node_id)
+        .where(MeshMessage.latitude.is_not(None))
+        .where(MeshMessage.longitude.is_not(None))
+        .order_by(MeshMessage.received_at.desc())
+        .limit(1)
+    )
+    row = (await db.execute(stmt)).first()
+    if not row:
+        return None
+    return float(row[0]), float(row[1])
+
+
 async def get_mesh_messages_count(db: AsyncSession, node_id: str | None = None) -> int:
     """Devuelve el total de mensajes para paginación"""
     stmt = select(func.count(MeshMessage.id))

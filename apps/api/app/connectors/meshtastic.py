@@ -16,7 +16,7 @@ from app.models.enums import AlertSource, AlertType, AlertSeverity, AlertStatus
 from app.schemas.alert import AlertCreate
 from app.schemas.mesh_message import MeshMessageCreate
 from app.services.alert_service import upsert_alert
-from app.services.mesh_service import save_mesh_message
+from app.services.mesh_service import save_mesh_message, get_last_known_position
 
 logger = logging.getLogger(__name__)
 
@@ -144,6 +144,10 @@ class MeshtasticConnector:
                     geometry = None
                     if lat is not None and lon is not None:
                         geometry = {"type": "Point", "coordinates": [lon, lat]}
+                    else:
+                        last_pos = await get_last_known_position(db, str(data.get("sender", "unknown")))
+                        if last_pos:
+                            geometry = {"type": "Point", "coordinates": [last_pos[1], last_pos[0]]}
 
                     alert = AlertCreate(
                         external_id=f"mesh-{data.get('sender', 'unknown')}-{data.get('id', '')}",
