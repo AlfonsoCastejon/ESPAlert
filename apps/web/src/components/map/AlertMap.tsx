@@ -68,9 +68,9 @@ interface AlertMapProps {
   alertas: Alerta[];
 }
 
-// Radio del desplazamiento en grados (~11 m). Mantiene los markers visualmente
-// separados al hacer zoom sin alterar percepción de ubicación.
-const OFFSET_DUPLICADOS = 0.0001;
+// Radio del desplazamiento en grados (~55 m). Suficiente para separarse a zoom
+// máximo (12) sin falsear visiblemente la ubicación.
+const OFFSET_DUPLICADOS = 0.0005;
 
 /** Aplica offset radial determinista a puntos duplicados del mismo lat/lon. */
 function desplazarPunto(
