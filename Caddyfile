@@ -3,3 +3,9 @@
     reverse_proxy /ws/*  api:8000
     reverse_proxy /*     web:3000
 }
+
+mqtt.espalert.app {
+    # Caddy emite y renueva el cert automaticamente.
+    # No hay servicio HTTP detras: basta con una respuesta vacia para validar.
+    respond "MQTT broker en puerto 8883" 200
+}

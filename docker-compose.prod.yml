@@ -92,13 +92,19 @@ services:
   mosquitto:
     image: eclipse-mosquitto:2
     restart: unless-stopped
+    # Necesario para leer los certs del volumen de Caddy (root, modo 0600)
+    user: "0:0"
     volumes:
-      - ./mosquitto/config:/mosquitto/config:ro
+      - ./mosquitto/config:/mosquitto/config
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
-    # Puerto 1883 expuesto solo en la red interna de docker, no al host
+      - caddy_data:/caddy-data:ro
+    ports:
+      - "8883:8883"
     expose:
       - "1883"
+    depends_on:
+      - caddy
 
   caddy:
     image: caddy:2-alpine
