@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
@@ -20,9 +21,9 @@ export default function Header() {
 
   return (
     <header className="cabecera">
-      <Link href="/" className="cabecera__logo">
-        <img src="/icon.png" alt="ESPAlert" />
-        <span className="cabecera__marca"><span className="cabecera__marca-esp">ESP</span>Alert</span>
+      <Link href="/" className="cabecera__logo" aria-label="ESPAlert - Inicio">
+        <Image src="/icon.png" alt="" width={66} height={36} priority />
+        <span className="cabecera__marca" aria-hidden="true"><span className="cabecera__marca-esp">ESP</span>Alert</span>
       </Link>
 
       <div className="cabecera__acciones">
