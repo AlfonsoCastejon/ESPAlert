@@ -3,6 +3,7 @@
 import json
 import logging
 import asyncio
+import ssl
 from typing import Any, Dict
 from urllib.parse import urlparse
 
@@ -11,7 +12,10 @@ from paho.mqtt.enums import CallbackAPIVersion
 
 from app.config import settings
 from app.database import AsyncSessionLocal
+from app.models.enums import AlertSource, AlertType, AlertSeverity, AlertStatus
+from app.schemas.alert import AlertCreate
 from app.schemas.mesh_message import MeshMessageCreate
+from app.services.alert_service import upsert_alert
 from app.services.mesh_service import save_mesh_message
 
 logger = logging.getLogger(__name__)
@@ -42,17 +46,22 @@ class MeshtasticConnector:
         """
         Inicia la conexión MQTT y lanza un hilo en background.
         paho-mqtt maneja las reconexiones automáticamente.
+        Soporta esquemas mqtt:// (plano) y mqtts:// (TLS).
         """
         self.loop = asyncio.get_running_loop()
 
         url = urlparse(self.broker_url)
         host = url.hostname or "mqtt.meshtastic.org"
-        port = url.port or 1883
-        
+        use_tls = url.scheme == "mqtts"
+        port = url.port or (8883 if use_tls else 1883)
+
         if url.username and url.password:
             self.client.username_pw_set(url.username, url.password)
-            
-        logger.info(f"MeshtasticConnector: Conectando a broker MQTT en {host}:{port}...")
+
+        if use_tls:
+            self.client.tls_set(cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLS_CLIENT)
+
+        logger.info(f"MeshtasticConnector: Conectando a broker MQTT en {host}:{port} (TLS={use_tls})...")
         self.client.connect(host, port, keepalive=60)
         
         # Inicia el loop en un thread aparte interno de PAHO
@@ -128,6 +137,29 @@ class MeshtasticConnector:
             # Apertura de sesión efímera para guardar el registro asíncronamente
             async with AsyncSessionLocal() as db:
                 await save_mesh_message(db, mesh_val)
+
+                # Si el mensaje incluye texto, tambien se crea una Alert para
+                # que aparezca en el feed principal con source=meshtastic.
+                if message_text:
+                    geometry = None
+                    if lat is not None and lon is not None:
+                        geometry = {"type": "Point", "coordinates": [lon, lat]}
+
+                    alert = AlertCreate(
+                        external_id=f"mesh-{data.get('sender', 'unknown')}-{data.get('id', '')}",
+                        source=AlertSource.MESHTASTIC,
+                        alert_type=AlertType.MESH,
+                        severity=AlertSeverity.UNKNOWN,
+                        status=AlertStatus.ACTUAL,
+                        headline=message_text[:200],
+                        description=message_text,
+                        area_description=f"Nodo {data.get('sender', 'desconocido')}",
+                        geometry=geometry,
+                        raw_data=data,
+                    )
+                    await upsert_alert(db, alert)
+
+                await db.commit()
 
         except Exception as e:
             logger.error(f"MeshtasticConnector: Fallo al persistir mensaje: {e}")
