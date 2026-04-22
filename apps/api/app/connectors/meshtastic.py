@@ -29,7 +29,7 @@ class MeshtasticConnector:
         self.broker_url = settings.MQTT_BROKER_URL if settings.MQTT_BROKER_URL else "mqtt://mqtt.meshtastic.org:1883"
         
         # Suscribimos a JSON general de meshes
-        self.topic_subscribe = "msh/+/json/#"
+        self.topic_subscribe = "msh/+/+/json/#"
         self.topic_publish = "msh/espalert/json"
         
         # Instancia del cliente paho-mqtt
