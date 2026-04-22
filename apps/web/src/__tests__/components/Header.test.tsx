@@ -74,8 +74,8 @@ describe("Header", () => {
     expect(screen.getByText("Alertas")).toBeInTheDocument();
   });
 
-  it("muestra el logo con alt text", () => {
+  it("muestra el enlace del logo accesible", () => {
     render(<Header />);
-    expect(screen.getByAltText("ESPAlert")).toBeInTheDocument();
+    expect(screen.getByLabelText("ESPAlert - Inicio")).toBeInTheDocument();
   });
 });
