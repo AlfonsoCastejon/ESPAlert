@@ -53,13 +53,7 @@
   }
 
   &__opcion-severidad {
-    display: flex;
-    align-items: center;
-    gap: $espacio-sm;
     margin-bottom: $espacio-xs;
-    font-size: $texto-sm;
-    cursor: pointer;
-    padding: $espacio-xs $espacio-sm;
     border-radius: $borde-radio;
     color: var(--color-gris);
     transition: background-color 0.15s, color 0.15s;
@@ -72,6 +66,16 @@
       color: var(--color-texto);
       font-weight: 600;
     }
+  }
+
+  &__opcion-severidad-label {
+    display: flex;
+    align-items: center;
+    gap: $espacio-sm;
+    font-size: $texto-sm;
+    cursor: pointer;
+    padding: $espacio-xs $espacio-sm;
+    width: 100%;
   }
 
   &__check-oculto {

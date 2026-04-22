@@ -66,12 +66,10 @@ export default function AlertFilters({
       <fieldset className="filtros__seccion">
         <legend className="filtros__etiqueta">Tipo de alerta</legend>
         {TIPOS.map((tipo) => (
-          <label key={tipo.clave} className="filtros__opcion">
+          <div key={tipo.clave} className="filtros__opcion">
             <input
               id={`filtro-tipo-${tipo.clave}`}
               type="checkbox"
-              title={tipo.etiqueta}
-              aria-label={tipo.etiqueta}
               checked={filtros.tipos[tipo.clave]}
               onChange={() => toggleTipo(tipo.clave)}
               onKeyDown={(e) => {
@@ -81,15 +79,15 @@ export default function AlertFilters({
                 }
               }}
             />
-            {tipo.etiqueta}
-          </label>
+            <label htmlFor={`filtro-tipo-${tipo.clave}`}>{tipo.etiqueta}</label>
+          </div>
         ))}
       </fieldset>
 
       <fieldset className="filtros__seccion">
         <legend className="filtros__etiqueta">Severidad</legend>
         {SEVERIDADES.map((sev) => (
-          <label
+          <div
             key={sev.clave}
             className={`filtros__opcion-severidad ${
               filtros.severidades[sev.clave] ? "filtros__opcion-severidad--activo" : ""
@@ -99,8 +97,6 @@ export default function AlertFilters({
               id={`filtro-severidad-${sev.clave}`}
               type="checkbox"
               className="filtros__check-oculto"
-              title={sev.etiqueta}
-              aria-label={sev.etiqueta}
               checked={filtros.severidades[sev.clave]}
               onChange={() => toggleSeveridad(sev.clave)}
               onKeyDown={(e) => {
@@ -110,11 +106,16 @@ export default function AlertFilters({
                 }
               }}
             />
-            <span
-              className={`filtros__indicador filtros__indicador--${sev.clave}`}
-            />
-            {sev.etiqueta}
-          </label>
+            <label
+              htmlFor={`filtro-severidad-${sev.clave}`}
+              className="filtros__opcion-severidad-label"
+            >
+              <span
+                className={`filtros__indicador filtros__indicador--${sev.clave}`}
+              />
+              {sev.etiqueta}
+            </label>
+          </div>
         ))}
       </fieldset>
 
