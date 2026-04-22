@@ -91,6 +91,7 @@ export default function Home() {
 
   return (
     <>
+      <h1 className="sr-only">Mapa de alertas de riesgo en España</h1>
       <aside className="lateral">
         <AlertFilters
           filtros={filtros}
