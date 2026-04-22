@@ -70,7 +70,7 @@ interface AlertMapProps {
 
 // Radio del desplazamiento en grados (~55 m). Suficiente para separarse a zoom
 // máximo (12) sin falsear visiblemente la ubicación.
-const OFFSET_DUPLICADOS = 0.0005;
+const OFFSET_DUPLICADOS = 0.003;
 
 /** Aplica offset radial determinista a puntos duplicados del mismo lat/lon. */
 function desplazarPunto(
