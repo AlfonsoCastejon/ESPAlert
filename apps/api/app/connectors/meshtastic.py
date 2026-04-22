@@ -5,7 +5,7 @@ import logging
 import asyncio
 import ssl
 from typing import Any, Dict
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 
 import paho.mqtt.client as mqtt
 from paho.mqtt.enums import CallbackAPIVersion
@@ -56,7 +56,7 @@ class MeshtasticConnector:
         port = url.port or (8883 if use_tls else 1883)
 
         if url.username and url.password:
-            self.client.username_pw_set(url.username, url.password)
+            self.client.username_pw_set(unquote(url.username), unquote(url.password))
 
         if use_tls:
             self.client.tls_set(cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLS_CLIENT)
