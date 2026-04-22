@@ -89,6 +89,17 @@ services:
       retries: 3
       start_period: 30s
 
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    volumes:
+      - ./mosquitto/config:/mosquitto/config:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    # Puerto 1883 expuesto solo en la red interna de docker, no al host
+    expose:
+      - "1883"
+
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
@@ -110,3 +121,5 @@ volumes:
   postgres_data:
   caddy_data:
   caddy_config:
+  mosquitto_data:
+  mosquitto_log:
