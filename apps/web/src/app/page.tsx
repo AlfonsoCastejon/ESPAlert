@@ -89,6 +89,15 @@ export default function Home() {
     return activas.includes(a.color);
   });
 
+  const ahora = Date.now();
+  const hace24h = ahora - 24 * 60 * 60 * 1000;
+  const hace7d = ahora - 7 * 24 * 60 * 60 * 1000;
+  const alertasMapa = alertasFiltradas.filter((a) => {
+    const fecha = new Date(a.effective_at || a.created_at).getTime();
+    const umbral = a.source === "meshtastic" ? hace7d : hace24h;
+    return fecha >= umbral;
+  });
+
   return (
     <>
       <h1 className="sr-only">Mapa de alertas de riesgo en España</h1>
@@ -125,7 +134,7 @@ export default function Home() {
         {errorConexion && (
           <div className="mapa-error">Sin conexión con el servidor</div>
         )}
-        <AlertMap alertas={alertasFiltradas} />
+        <AlertMap alertas={alertasMapa} />
         <button
           className="boton-filtros"
           onClick={() => setFiltrosAbiertos(true)}

@@ -2,9 +2,9 @@
 
 import asyncio
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import update
+from sqlalchemy import delete, update
 
 from app.workers.celery_app import celery_app
 from app.database import AsyncSessionLocal
@@ -116,9 +116,27 @@ def fetch_meteoalarm_task():
     except Exception as e:
         logger.error(f"Error Meteoalarm: {e}")
 
+async def async_purge_old_alerts():
+    """Elimina alertas cuyo created_at tiene más de 14 días."""
+    async with AsyncSessionLocal() as db:
+        limite = datetime.now(timezone.utc) - timedelta(days=14)
+        stmt = delete(Alert).where(Alert.created_at < limite)
+        result = await db.execute(stmt)
+        await db.commit()
+        logger.info(f"Alertas purgadas (>21 días): {result.rowcount}")
+
+
 @celery_app.task(name="app.workers.tasks.expire_alerts_task", ignore_result=True)
 def expire_alerts_task():
     try:
         run_async(async_expire_alerts())
     except Exception as e:
         logger.error(f"Error expiracion: {e}")
+
+
+@celery_app.task(name="app.workers.tasks.purge_old_alerts_task", ignore_result=True)
+def purge_old_alerts_task():
+    try:
+        run_async(async_purge_old_alerts())
+    except Exception as e:
+        logger.error(f"Error purgando alertas antiguas: {e}")
