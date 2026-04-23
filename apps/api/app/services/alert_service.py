@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from geoalchemy2.functions import ST_Intersects, ST_MakeEnvelope
-from sqlalchemy import func, select, text, update
+from sqlalchemy import case, func, select, text, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,11 +22,31 @@ def _geojson_to_wke(geom: Any) -> Any:
         return func.ST_SetSRID(func.ST_GeomFromGeoJSON(json.dumps(geom)), 4326)
     return geom
 
+_ORDEN_SEVERIDAD = case(
+    {
+        AlertSeverity.EXTREME: 0,
+        AlertSeverity.SEVERE: 1,
+        AlertSeverity.MODERATE: 2,
+        AlertSeverity.MINOR: 3,
+    },
+    value=Alert.severity,
+    else_=4,
+)
+
+
+def _aplicar_orden(stmt, order_by: str | None):
+    """Aplica el criterio de ordenación. 'severity' usa un CASE y desempata por fecha."""
+    if order_by == "severity":
+        return stmt.order_by(_ORDEN_SEVERIDAD.asc(), Alert.created_at.desc())
+    return stmt.order_by(Alert.created_at.desc())
+
+
 async def get_active_alerts(
     db: AsyncSession,
     filters: dict[str, Any],
     limit: int = 50,
     offset: int = 0,
+    order_by: str | None = None,
 ) -> tuple[int, list[Alert]]:
     """Devuelve alertas activas (no expiradas) aplicando los filtros recibidos."""
     stmt = select(Alert).where(
@@ -34,11 +54,12 @@ async def get_active_alerts(
         (Alert.expires_at.is_(None)) | (Alert.expires_at > datetime.now(UTC)),
     )
     stmt = _apply_common_filters(stmt, filters)
-    
+
     total = await db.scalar(select(func.count()).select_from(stmt.subquery()))
     total = total or 0
-    
-    rows = await db.scalars(stmt.order_by(Alert.created_at.desc()).limit(limit).offset(offset))
+
+    stmt = _aplicar_orden(stmt, order_by).limit(limit).offset(offset)
+    rows = await db.scalars(stmt)
     return total, list(rows.all())
 
 async def get_alert_history(
@@ -46,6 +67,7 @@ async def get_alert_history(
     filters: dict[str, Any],
     limit: int = 50,
     offset: int = 0,
+    order_by: str | None = None,
 ) -> tuple[int, list[Alert]]:
     """Devuelve el historial completo de alertas, sin filtrar por estado."""
     stmt = select(Alert)
@@ -54,15 +76,16 @@ async def get_alert_history(
     date_from = filters.get("date_from")
     if date_from:
         stmt = stmt.where(Alert.created_at >= date_from)
-        
+
     date_to = filters.get("date_to")
     if date_to:
         stmt = stmt.where(Alert.created_at <= date_to)
 
     total = await db.scalar(select(func.count()).select_from(stmt.subquery()))
     total = total or 0
-    
-    rows = await db.scalars(stmt.order_by(Alert.created_at.desc()).limit(limit).offset(offset))
+
+    stmt = _aplicar_orden(stmt, order_by).limit(limit).offset(offset)
+    rows = await db.scalars(stmt)
     return total, list(rows.all())
 
 async def get_alert_by_id(db: AsyncSession, alert_id: uuid.UUID) -> Alert | None:

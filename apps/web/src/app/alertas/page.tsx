@@ -31,10 +31,6 @@ const SEVERIDADES_FILTRO: { valor: string; etiqueta: string }[] = [
   { valor: "minor", etiqueta: "Menor" },
 ];
 
-const ORDEN_SEVERIDAD: Record<string, number> = {
-  red: 0, orange: 1, yellow: 2, green: 3, purple: 4,
-};
-
 const NOMBRE_FUENTE: Record<string, string> = {
   aemet: "AEMET", ign: "IGN", dgt: "DGT",
   meteoalarm: "MeteoAlarm", meshtastic: "Meshtastic",
@@ -114,17 +110,13 @@ export default function AlertasPage() {
       if (fuente) params.set("source", fuente);
       if (severidad) params.set("severity", severidad);
       if (region) params.set("region", region);
+      params.set("order_by", orden === "severidad" ? "severity" : "date");
 
       const res = await fetch(`${API_URL}/api/alerts?${params}`);
       if (!res.ok) throw new Error();
       const data = await res.json();
 
-      let items: Alerta[] = data.items || [];
-      if (orden === "severidad") {
-        items.sort((a, b) => (ORDEN_SEVERIDAD[a.color] ?? 9) - (ORDEN_SEVERIDAD[b.color] ?? 9));
-      }
-
-      setAlertas(items);
+      setAlertas(data.items || []);
       setTotal(data.total || 0);
     } catch {
       setAlertas([]);

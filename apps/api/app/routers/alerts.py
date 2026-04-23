@@ -47,6 +47,10 @@ async def get_active_alerts(
     ] = None,
     limit: Annotated[int, Query(ge=1, le=200, description="Número máximo de resultados")] = 50,
     offset: Annotated[int, Query(ge=0, description="Desplazamiento para paginación")] = 0,
+    order_by: Annotated[
+        str | None,
+        Query(description="Orden de los resultados", pattern="^(date|severity)$"),
+    ] = None,
 ) -> AlertListResponse:
     filters = {
         "source": source,
@@ -55,9 +59,9 @@ async def get_active_alerts(
         "bbox": bbox,
         "region": region,
     }
-    
+
     try:
-        total, rows = await alert_service.get_active_alerts(db, filters, limit, offset)
+        total, rows = await alert_service.get_active_alerts(db, filters, limit, offset, order_by)
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -97,6 +101,10 @@ async def get_alert_history(
     ] = None,
     limit: Annotated[int, Query(ge=1, le=200)] = 50,
     offset: Annotated[int, Query(ge=0)] = 0,
+    order_by: Annotated[
+        str | None,
+        Query(description="Orden de los resultados", pattern="^(date|severity)$"),
+    ] = None,
 ) -> AlertListResponse:
     filters = {
         "source": source,
@@ -109,7 +117,7 @@ async def get_alert_history(
     }
 
     try:
-        total, rows = await alert_service.get_alert_history(db, filters, limit, offset)
+        total, rows = await alert_service.get_alert_history(db, filters, limit, offset, order_by)
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
