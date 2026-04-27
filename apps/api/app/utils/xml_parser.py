@@ -84,6 +84,15 @@ def parse_cap_xml(content: Union[str, bytes]) -> list[dict[str, Any]]:
             sent = _get_text(alert_node, './/{*}sent')
             
             infos = alert_node.findall('.//{*}info')
+            # CAP suele incluir un <info> por idioma (es-ES, en-GB, ...). Si hay
+            # bloques en español, descartamos los demás para evitar duplicados
+            # y textos en inglés colándose en la UI.
+            infos_es = [
+                i for i in infos
+                if (_get_text(i, './/{*}language') or "es").lower().startswith("es")
+            ]
+            if infos_es:
+                infos = infos_es
             for info in infos:
                 alert_dict = {
                     "identifier": identifier,

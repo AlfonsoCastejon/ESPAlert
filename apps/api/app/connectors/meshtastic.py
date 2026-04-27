@@ -126,7 +126,10 @@ class MeshtasticConnector:
                 node_id=str(data.get("sender", "unknown")),
                 channel=str(data.get("channel", "0")),
                 packet_id=data.get("id"),
-                message=message_text if message_text else "Posición/Señal actualizada",
+                message=message_text if message_text else (
+                    f"Actualización de posición del nodo "
+                    f"(SNR {data.get('rxSnr', '?')} dB, RSSI {data.get('rxRssi', '?')} dBm)"
+                ),
                 latitude=lat,
                 longitude=lon,
                 altitude=alt,

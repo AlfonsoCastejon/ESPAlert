@@ -137,6 +137,9 @@ export default function AlertFilters({
             </option>
           ))}
         </select>
+        <small className="filtros__ayuda">
+          Al seleccionar una zona, el mapa se centrará en ella.
+        </small>
       </div>
 
       <p className="filtros__contador">

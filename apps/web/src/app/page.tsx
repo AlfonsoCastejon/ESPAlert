@@ -134,7 +134,7 @@ export default function Home() {
         {errorConexion && (
           <div className="mapa-error">Sin conexión con el servidor</div>
         )}
-        <AlertMap alertas={alertasMapa} />
+        <AlertMap alertas={alertasMapa} region={filtros.region} />
         <button
           className="boton-filtros"
           onClick={() => setFiltrosAbiertos(true)}

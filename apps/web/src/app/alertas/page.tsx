@@ -93,10 +93,10 @@ export default function AlertasPage() {
         setTotal((t) => Math.max(0, t - 1));
         mostrarToast("Alerta eliminada");
       } else {
-        mostrarToast("No se pudo eliminar");
+        mostrarToast("No se pudo eliminar la alerta. Inténtalo de nuevo.");
       }
     } catch {
-      mostrarToast("Error al eliminar");
+      mostrarToast("Sin conexión con el servidor. Comprueba tu red.");
     }
   }
 
@@ -121,7 +121,7 @@ export default function AlertasPage() {
     } catch {
       setAlertas([]);
       setTotal(0);
-      setError("No se pudieron cargar las alertas. Comprueba la conexión.");
+      setError("No se pudieron cargar las alertas. Comprueba tu conexión y vuelve a intentarlo.");
     } finally {
       setCargando(false);
     }

@@ -46,4 +46,8 @@ celery_app.conf.beat_schedule = {
         'task': 'app.workers.tasks.expire_alerts_task',
         'schedule': crontab(minute='*/10'),
     },
+    'purge-old-alerts-daily': {
+        'task': 'app.workers.tasks.purge_old_alerts_task',
+        'schedule': crontab(hour=3, minute=30),
+    },
 }

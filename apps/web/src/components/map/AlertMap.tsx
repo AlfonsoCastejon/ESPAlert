@@ -5,7 +5,8 @@
  * Usa MapLibre GL con teselas vectoriales de OpenFreeMap y GeoJSON de OpenDataSoft.
  */
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+import { Info } from "lucide-react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import styles from "./AlertMap.module.scss";
@@ -30,10 +31,34 @@ const FUENTES: Record<string, string> = {
 const CENTRO_ESPANA: [number, number] = [-3.5, 39.5];
 const ZOOM_INICIAL = 5.5;
 
+// Encuadre máximo: incluye Canarias (lng ~-18, lat ~28) y Ceuta/Melilla (lat ~35).
 const BOUNDS_ESPANA: maplibregl.LngLatBoundsLike = [
-  [-12, 34],
+  [-19, 27],
   [6, 45],
 ];
+
+// Vista predefinida por CCAA/ciudad autónoma: clave = valor de REGIONES.
+const VISTAS_REGION: Record<string, { center: [number, number]; zoom: number }> = {
+  andalucia: { center: [-4.5, 37.5], zoom: 6.5 },
+  aragon: { center: [-0.7, 41.5], zoom: 7 },
+  asturias: { center: [-5.85, 43.3], zoom: 8 },
+  baleares: { center: [2.7, 39.6], zoom: 8 },
+  canarias: { center: [-15.6, 28.2], zoom: 7 },
+  cantabria: { center: [-4.0, 43.2], zoom: 8.5 },
+  "castilla-la-mancha": { center: [-3.0, 39.5], zoom: 6.5 },
+  "castilla-y-leon": { center: [-4.7, 41.7], zoom: 6.5 },
+  cataluna: { center: [1.5, 41.7], zoom: 7 },
+  ceuta: { center: [-5.34, 35.89], zoom: 11 },
+  extremadura: { center: [-6.0, 39.2], zoom: 7 },
+  galicia: { center: [-7.9, 42.8], zoom: 7.5 },
+  "la-rioja": { center: [-2.5, 42.3], zoom: 8.5 },
+  madrid: { center: [-3.7, 40.4], zoom: 8 },
+  melilla: { center: [-2.94, 35.29], zoom: 11 },
+  murcia: { center: [-1.5, 38.0], zoom: 8 },
+  navarra: { center: [-1.6, 42.7], zoom: 8 },
+  "pais-vasco": { center: [-2.6, 43.0], zoom: 8 },
+  valencia: { center: [-0.5, 39.5], zoom: 7 },
+};
 
 const URL_CCAA =
   "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/georef-spain-comunidad-autonoma/exports/geojson?lang=es";
@@ -66,6 +91,7 @@ const ESTILO_MAPA: maplibregl.StyleSpecification = {
 
 interface AlertMapProps {
   alertas: Alerta[];
+  region?: string;
 }
 
 // Radio del desplazamiento en grados (~55 m). Suficiente para separarse a zoom
@@ -295,7 +321,7 @@ async function cargarCapasEspana(map: maplibregl.Map) {
   });
 }
 
-export default function AlertMap({ alertas }: AlertMapProps) {
+export default function AlertMap({ alertas, region }: AlertMapProps) {
   const contenedorRef = useRef<HTMLDivElement>(null);
   const mapaRef = useRef<maplibregl.Map | null>(null);
   const listoRef = useRef(false);
@@ -354,9 +380,101 @@ export default function AlertMap({ alertas }: AlertMapProps) {
     }
   }, [alertas]);
 
+  // Vuela a la región seleccionada en el filtro lateral
+  useEffect(() => {
+    const map = mapaRef.current;
+    if (!map) return;
+
+    const aplicar = () => {
+      if (!region) {
+        map.flyTo({ center: CENTRO_ESPANA, zoom: ZOOM_INICIAL });
+        return;
+      }
+      const vista = VISTAS_REGION[region];
+      if (vista) {
+        map.flyTo({ center: vista.center, zoom: vista.zoom });
+      }
+    };
+
+    if (listoRef.current) {
+      aplicar();
+    } else {
+      const intervalo = setInterval(() => {
+        if (listoRef.current) {
+          clearInterval(intervalo);
+          aplicar();
+        }
+      }, 200);
+      return () => clearInterval(intervalo);
+    }
+  }, [region]);
+
   return (
     <div className={styles.contenedor}>
       <div ref={contenedorRef} className={styles.mapa} />
+      <Leyenda />
+    </div>
+  );
+}
+
+function Leyenda() {
+  const [abierta, setAbierta] = useState(true);
+
+  return (
+    <div
+      className={`${styles.leyenda} ${abierta ? "" : styles["leyenda--cerrada"]}`}
+      role="region"
+      aria-label="Leyenda del mapa"
+    >
+      <button
+        type="button"
+        className={styles.leyendaToggle}
+        aria-expanded={abierta}
+        aria-controls="mapa-leyenda-contenido"
+        onClick={() => setAbierta((v) => !v)}
+      >
+        <Info size={16} aria-hidden="true" />
+        <span>Leyenda</span>
+      </button>
+
+      {abierta && (
+        <div id="mapa-leyenda-contenido" className={styles.leyendaContenido}>
+          <p className={styles.leyendaTitulo}>Severidad</p>
+          <ul className={styles.leyendaLista}>
+            <li>
+              <span className={styles.leyendaPunto} style={{ background: COLORES.red }} aria-hidden="true" />
+              Rojo — Riesgo extremo
+            </li>
+            <li>
+              <span className={styles.leyendaPunto} style={{ background: COLORES.orange }} aria-hidden="true" />
+              Naranja — Riesgo importante
+            </li>
+            <li>
+              <span className={styles.leyendaPunto} style={{ background: COLORES.yellow }} aria-hidden="true" />
+              Amarillo — Riesgo moderado
+            </li>
+            <li>
+              <span className={styles.leyendaPunto} style={{ background: COLORES.green }} aria-hidden="true" />
+              Verde — Sin riesgo significativo
+            </li>
+            <li>
+              <span className={styles.leyendaPunto} style={{ background: COLORES.purple }} aria-hidden="true" />
+              Morado — Mensaje Meshtastic
+            </li>
+          </ul>
+          <p className={styles.leyendaTitulo}>Forma</p>
+          <ul className={styles.leyendaLista}>
+            <li>
+              <span className={styles.leyendaPunto} style={{ background: "var(--color-texto-medio)" }} aria-hidden="true" />
+              Círculo — Ubicación puntual (mesh, accidente, sismo)
+            </li>
+            <li>
+              <span className={styles.leyendaArea} aria-hidden="true" />
+              Área coloreada — Zona afectada por aviso meteorológico
+            </li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

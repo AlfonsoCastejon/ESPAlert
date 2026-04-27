@@ -63,6 +63,7 @@ describe("Home", () => {
             color: "red",
             severity: "extreme",
             headline: "Tormenta",
+            effective_at: new Date().toISOString(),
           },
         ],
       }),

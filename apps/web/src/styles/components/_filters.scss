@@ -117,6 +117,14 @@
     cursor: pointer;
   }
 
+  &__ayuda {
+    display: block;
+    margin-top: $espacio-xs;
+    font-size: $texto-xs;
+    color: var(--color-gris);
+    line-height: 1.4;
+  }
+
   &__contador {
     font-size: $texto-xs;
     color: var(--color-gris);

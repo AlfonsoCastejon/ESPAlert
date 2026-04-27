@@ -78,9 +78,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null;
       }
       const err = await res.json().catch(() => null);
-      return normalizarDetalle(err?.detail) || "Credenciales inválidas";
+      const detalle = normalizarDetalle(err?.detail);
+      if (detalle) return detalle;
+      if (res.status === 401) return "Email o contraseña incorrectos";
+      if (res.status === 422) return "Datos inválidos. Revisa el email y la contraseña";
+      return "No se pudo iniciar sesión. Inténtalo de nuevo en unos segundos";
     } catch {
-      return "Error de conexión con el servidor";
+      return "No se pudo conectar con el servidor. Comprueba tu conexión e inténtalo de nuevo";
     }
   };
 
@@ -98,9 +102,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null;
       }
       const err = await res.json().catch(() => null);
-      return err?.detail || "Error al crear la cuenta";
+      const detalle = normalizarDetalle(err?.detail);
+      if (detalle) return detalle;
+      if (res.status === 409) return "Ya existe una cuenta con ese email";
+      if (res.status === 422) return "Datos inválidos. Revisa el email y la contraseña";
+      return "No se pudo crear la cuenta. Inténtalo de nuevo en unos segundos";
     } catch {
-      return "Error de conexión con el servidor";
+      return "No se pudo conectar con el servidor. Comprueba tu conexión e inténtalo de nuevo";
     }
   };
 

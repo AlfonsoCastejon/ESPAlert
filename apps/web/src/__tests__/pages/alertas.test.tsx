@@ -79,7 +79,7 @@ describe("AlertasPage", () => {
 
     await waitFor(() =>
       expect(
-        screen.getByText("No se pudieron cargar las alertas. Comprueba la conexión."),
+        screen.getByText("No se pudieron cargar las alertas. Comprueba tu conexión y vuelve a intentarlo."),
       ).toBeInTheDocument(),
     );
   });
