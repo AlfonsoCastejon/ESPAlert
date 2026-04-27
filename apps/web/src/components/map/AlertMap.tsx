@@ -329,32 +329,60 @@ export default function AlertMap({ alertas, region }: AlertMapProps) {
   useEffect(() => {
     if (!contenedorRef.current || mapaRef.current) return;
 
-    const map = new maplibregl.Map({
-      container: contenedorRef.current,
-      style: ESTILO_MAPA,
-      center: CENTRO_ESPANA,
-      zoom: ZOOM_INICIAL,
-      minZoom: 5,
-      maxZoom: 12,
-      maxBounds: BOUNDS_ESPANA,
-      dragRotate: false,
-      pitchWithRotate: false,
-      touchPitch: false,
-    });
+    let cancelado = false;
 
-    map.addControl(
-      new maplibregl.NavigationControl({ showCompass: false }),
-      "bottom-right"
-    );
+    // Wrapper de requestIdleCallback con fallback a setTimeout (Safari).
+    const enIdle = (cb: () => void, timeoutMs = 200) => {
+      const w = window as Window & {
+        requestIdleCallback?: (cb: () => void) => number;
+      };
+      if (typeof w.requestIdleCallback === "function") {
+        w.requestIdleCallback(cb);
+      } else {
+        setTimeout(cb, timeoutMs);
+      }
+    };
 
-    map.on("load", async () => {
-      await cargarCapasEspana(map);
-      listoRef.current = true;
-    });
+    // Diferimos la construcción del mapa para que el TBT (Total Blocking Time)
+    // no se dispare. La inicialización de MapLibre con WebGL bloquea el main
+    // thread varios cientos de ms en móvil.
+    const inicializar = () => {
+      if (cancelado || !contenedorRef.current || mapaRef.current) return;
 
-    mapaRef.current = map;
+      const map = new maplibregl.Map({
+        container: contenedorRef.current,
+        style: ESTILO_MAPA,
+        center: CENTRO_ESPANA,
+        zoom: ZOOM_INICIAL,
+        minZoom: 5,
+        maxZoom: 12,
+        maxBounds: BOUNDS_ESPANA,
+        dragRotate: false,
+        pitchWithRotate: false,
+        touchPitch: false,
+      });
+
+      map.addControl(
+        new maplibregl.NavigationControl({ showCompass: false }),
+        "bottom-right"
+      );
+
+      map.on("load", () => {
+        listoRef.current = true;
+        // Las capas de CCAA/provincias también se difieren a idle para no
+        // competir con el primer render del mapa.
+        enIdle(() => {
+          cargarCapasEspana(map).catch(() => {});
+        });
+      });
+
+      mapaRef.current = map;
+    };
+
+    enIdle(inicializar);
 
     return () => {
+      cancelado = true;
       mapaRef.current?.remove();
       mapaRef.current = null;
       listoRef.current = false;
