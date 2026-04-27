@@ -60,10 +60,10 @@ const VISTAS_REGION: Record<string, { center: [number, number]; zoom: number }> 
   valencia: { center: [-0.5, 39.5], zoom: 7 },
 };
 
-const URL_CCAA =
-  "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/georef-spain-comunidad-autonoma/exports/geojson?lang=es";
-const URL_PROVINCIAS =
-  "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/georef-spain-provincia/exports/geojson?lang=es";
+// Servidos desde /public — versiones simplificadas con mapshaper (~400 KB en
+// total frente a ~11 MB del origen externo). Imperceptible al zoom usado.
+const URL_CCAA = "/data/ccaa.geojson";
+const URL_PROVINCIAS = "/data/provincias.geojson";
 
 const ESTILO_MAPA: maplibregl.StyleSpecification = {
   version: 8,
