@@ -1,5 +1,6 @@
 """Endpoint de predicción meteorológica por municipio (AEMET OpenData)."""
 
+import asyncio
 import json
 import logging
 from typing import Annotated
@@ -19,6 +20,7 @@ PREDICCION_DIARIA_URL = f"{AEMET_BASE}/prediccion/especifica/municipio/diaria"
 
 # Caché en memoria del maestro de municipios (se carga una sola vez)
 _cache_municipios: list[dict] | None = None
+_cache_lock = asyncio.Lock()
 
 
 def _headers() -> dict:
@@ -34,28 +36,30 @@ async def _obtener_municipios() -> list[dict]:
     if _cache_municipios is not None:
         return _cache_municipios
 
-    async with httpx.AsyncClient(timeout=15.0) as client:
-        # Paso 1: obtener URL de datos
-        resp = await client.get(MUNICIPIOS_URL, headers=_headers())
-        if resp.status_code != 200:
-            raise HTTPException(status_code=502, detail="Error al consultar AEMET")
+    async with _cache_lock:
+        if _cache_municipios is not None:
+            return _cache_municipios
 
-        payload = resp.json()
-        datos_url = payload.get("datos")
-        if not datos_url:
-            raise HTTPException(status_code=502, detail="AEMET no devolvió URL de datos")
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.get(MUNICIPIOS_URL, headers=_headers())
+            if resp.status_code != 200:
+                raise HTTPException(status_code=502, detail="Error al consultar AEMET")
 
-        # Paso 2: descargar datos reales (codificados en latin-1)
-        data_resp = await client.get(datos_url)
-        if data_resp.status_code != 200:
-            raise HTTPException(status_code=502, detail="Error al descargar municipios")
+            payload = resp.json()
+            datos_url = payload.get("datos")
+            if not datos_url:
+                raise HTTPException(status_code=502, detail="AEMET no devolvió URL de datos")
 
-        text = data_resp.content.decode("latin-1")
-        municipios = json.loads(text)
+            data_resp = await client.get(datos_url)
+            if data_resp.status_code != 200:
+                raise HTTPException(status_code=502, detail="Error al descargar municipios")
 
-    _cache_municipios = municipios
-    logger.info(f"Maestro de municipios AEMET cacheado: {len(municipios)} entradas")
-    return municipios
+            text = data_resp.content.decode("latin-1")
+            municipios = json.loads(text)
+
+        _cache_municipios = municipios
+        logger.info(f"Maestro de municipios AEMET cacheado: {len(municipios)} entradas")
+        return municipios
 
 
 @router.get(

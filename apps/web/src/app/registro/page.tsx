@@ -81,22 +81,20 @@ export default function RegistroPage() {
             required
             autoComplete="new-password"
           />
-          {password.length > 0 && (
-            <ul className="auth__requisitos">
-              <li className={tieneMinLength ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
-                Mínimo 8 caracteres
-              </li>
-              <li className={tieneMayuscula ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
-                Una letra mayúscula
-              </li>
-              <li className={tieneMinuscula ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
-                Una letra minúscula
-              </li>
-              <li className={tieneNumero ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
-                Un número
-              </li>
-            </ul>
-          )}
+          <ul className="auth__requisitos" aria-label="Requisitos de la contraseña">
+            <li className={tieneMinLength ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
+              Mínimo 8 caracteres
+            </li>
+            <li className={tieneMayuscula ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
+              Una letra mayúscula
+            </li>
+            <li className={tieneMinuscula ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
+              Una letra minúscula
+            </li>
+            <li className={tieneNumero ? "auth__requisito--ok" : "auth__requisito--pendiente"}>
+              Un número
+            </li>
+          </ul>
         </label>
 
         <label className="auth__campo">

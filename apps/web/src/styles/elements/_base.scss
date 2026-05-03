@@ -78,6 +78,26 @@ a:hover {
   border-radius: $borde-radio;
 }
 
+.skip-link {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  padding: 0.75rem 1rem;
+  background: var(--color-naranja-marca);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  transform: translateY(-150%);
+  transition: transform 0.15s ease;
+
+  &:focus,
+  &:focus-visible {
+    transform: translateY(0);
+    outline: none;
+  }
+}
+
 button {
   cursor: pointer;
   border: 1px solid var(--color-texto);

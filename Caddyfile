@@ -1,4 +1,20 @@
 {$CADDY_DOMAIN} {
+    # Cabeceras de seguridad globales (front + API). Caddy ya gestiona HTTPS.
+    header {
+        # HSTS: fuerza HTTPS durante 1 año (incl. subdominios).
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        # Evita sniffing de tipo MIME.
+        X-Content-Type-Options "nosniff"
+        # No permitir embebido en iframes externos.
+        X-Frame-Options "SAMEORIGIN"
+        # Política referrer conservadora.
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # Limitar APIs sensibles del navegador.
+        Permissions-Policy "geolocation=(self), microphone=(), camera=(), payment=()"
+        # Eliminamos cabecera por defecto que filtra tecnología.
+        -Server
+    }
+
     reverse_proxy /api/* api:8000
     reverse_proxy /ws/*  api:8000
     reverse_proxy /*     web:3000

@@ -1,10 +1,11 @@
 """Endpoints de autenticación: registro, login, logout y perfil."""
 
-from fastapi import APIRouter, HTTPException, Response, status
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from sqlalchemy.exc import IntegrityError
 
 from app.config import settings
 from app.dependencies import CurrentUserDep, DBSessionDep
+from app.limiter import limiter
 from app.schemas.auth import (
     ChangePasswordRequest,
     LoginRequest,
@@ -34,7 +35,9 @@ def _set_session_cookie(response: Response, token: str) -> None:
     status_code=status.HTTP_201_CREATED,
     summary="Registrar un nuevo usuario",
 )
+@limiter.limit("5/hour")
 async def register(
+    request: Request,
     payload: RegisterRequest,
     db: DBSessionDep,
     response: Response,
@@ -63,7 +66,9 @@ async def register(
     response_model=UserResponse,
     summary="Iniciar sesión",
 )
+@limiter.limit("10/minute")
 async def login(
+    request: Request,
     payload: LoginRequest,
     db: DBSessionDep,
     response: Response,

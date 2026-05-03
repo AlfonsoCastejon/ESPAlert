@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /perfil
+
+Sitemap: https://espalert.app/sitemap.xml

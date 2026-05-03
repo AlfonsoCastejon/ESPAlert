@@ -76,7 +76,7 @@ export default function AlertasPage() {
       await navigator.clipboard.writeText(alertId);
       mostrarToast("UUID copiado al portapapeles");
     } catch {
-      /* ignorar */
+      mostrarToast("No se pudo copiar al portapapeles");
     }
   }
 
@@ -158,8 +158,12 @@ export default function AlertasPage() {
           if (esFav) next.delete(alertId); else next.add(alertId);
           return next;
         });
+      } else {
+        mostrarToast("No se pudo actualizar el favorito");
       }
-    } catch { /* silenciar */ }
+    } catch {
+      mostrarToast("Sin conexión con el servidor");
+    }
   }
 
   function cambiarFiltro(setter: (v: string) => void, valor: string) {

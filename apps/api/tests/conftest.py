@@ -70,7 +70,7 @@ def fake_admin():
 
 
 def _build_test_app(include_auth=False, include_user=False, include_admin=False,
-                    include_push=False, include_health=False):
+                    include_push=False, include_health=False, include_ws=False):
     """Construye una app FastAPI mínima (sin lifespan) con los routers solicitados."""
     from fastapi import FastAPI
 
@@ -90,6 +90,9 @@ def _build_test_app(include_auth=False, include_user=False, include_admin=False,
     if include_health:
         from app.routers import health
         app.include_router(health.router, prefix="/api")
+    if include_ws:
+        from app.routers import ws
+        app.include_router(ws.router)
     return app
 
 
