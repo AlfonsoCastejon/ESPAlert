@@ -2,11 +2,11 @@
 
 Agregador multi-riesgo de alertas oficiales en España: meteorología (AEMET y MeteoAlarm), sismicidad (IGN), tráfico (DGT) y un canal Meshtastic como respaldo cuando falla la red.
 
-[![CI](https://github.com/acasmor0802/ESPAlert/actions/workflows/ci.yml/badge.svg)](https://github.com/acasmor0802/ESPAlert/actions/workflows/ci.yml)
-[![Deploy](https://github.com/acasmor0802/ESPAlert/actions/workflows/deploy.yml/badge.svg)](https://github.com/acasmor0802/ESPAlert/actions/workflows/deploy.yml)
+[![CI](https://github.com/alfonsocastejon/ESPAlert/actions/workflows/ci.yml/badge.svg)](https://github.com/alfonsocastejon/ESPAlert/actions/workflows/ci.yml)
+[![Deploy](https://github.com/alfonsocastejon/ESPAlert/actions/workflows/deploy.yml/badge.svg)](https://github.com/alfonsocastejon/ESPAlert/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[INSERTAR aquí: captura de la home con el mapa de España y alertas activas]
+![Home con el mapa de España y alertas activas](docs/assets/home.png)
 
 ## Qué es
 
@@ -39,7 +39,7 @@ Una aplicación web que reúne en un único panel las alertas oficiales de cuatr
 ## Quickstart
 
 ```bash
-git clone https://github.com/acasmor0802/ESPAlert.git
+git clone https://github.com/alfonsocastejon/ESPAlert.git
 cd ESPAlert
 cp .env.example .env          # editar AEMET_API_KEY, JWT_SECRET, VAPID_*
 docker compose up -d
