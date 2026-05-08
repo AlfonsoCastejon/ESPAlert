@@ -216,7 +216,9 @@ function actualizarAlertas(map: maplibregl.Map, geojson: GeoJSON.FeatureCollecti
       filter: ["==", "$type", "Polygon"],
       paint: {
         "fill-color": ["get", "color"],
-        "fill-opacity": 0.7,
+        // Más opacidad cuando el fondo gris CCAA está activo (zoom bajo) y
+        // menos cuando se desvanece para dejar ver las carreteras.
+        "fill-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0.7, 12, 0.35],
       },
     },
     "ccaa-line"
