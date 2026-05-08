@@ -242,7 +242,7 @@ export default function PrediccionPage() {
             <table className="prediccion__tabla">
               <thead>
                 <tr>
-                  <th className="prediccion__th prediccion__th--fijo" rowSpan={2}></th>
+                  <td className="prediccion__th prediccion__th--fijo" rowSpan={2} aria-hidden="true" />
                   {diasProcesados.map(({ dia, periodos }) => (
                     <th
                       key={dia.fecha}
@@ -259,8 +259,9 @@ export default function PrediccionPage() {
                       <th
                         key={`per-${dia.fecha}-${p}`}
                         className="prediccion__th prediccion__th--periodo"
+                        scope="col"
                       >
-                        {etiquetaPeriodo(p)}
+                        {p ? etiquetaPeriodo(p) : <span className="sr-only">Día completo</span>}
                       </th>
                     )),
                   )}
