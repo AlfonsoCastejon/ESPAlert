@@ -139,6 +139,29 @@ El TFG está vinculado al módulo DIW que valora explícitamente el uso de prepr
 
 Celery separa la API del polling. Si AEMET tarda 30 segundos en responder, el endpoint público no se bloquea. Beat aporta el cron de tareas periódicas (cada 2-5 minutos por conector). Redis sirve a la vez de broker y backend de resultados.
 
+### LoRa frente a 4G/Wi-Fi para el canal de respaldo
+
+4G y Wi-Fi dependen de infraestructura que puede caer en una emergencia. LoRa opera en bandas libres y nodo a nodo, sin necesidad de cobertura. Throughput bajo a cambio de alcance largo (5-15 km en rural) y consumo mínimo. Apta para texto y coordenadas, no para multimedia.
+
+### Meshtastic frente a LoRa puro
+
+LoRa es solo capa física. Meshtastic añade encaminamiento mesh, fragmentación y direccionamiento como firmware abierto sobre placas baratas. Aporta cifrado AES-256, app móvil oficial por Bluetooth y, fundamental aquí, puente MQTT que permite al nodo hablar con un broker externo.
+
+### MQTT frente a HTTP REST para el puente
+
+MQTT mantiene una conexión TCP persistente: el nodo recibe en cuanto se publica, sin polling. Cabeceras mínimas, ideal para enlaces con poca banda. Patrón pub/sub: el backend publica al topic y todos los nodos suscritos reciben sin que el backend conozca la lista. HTTP exigiría polling desde cada nodo o endpoints expuestos por nodo, ambas opciones costosas en batería y configuración.
+
+### Mosquitto propio frente a broker público
+
+Un broker público acelera el arranque pero los mensajes pasan por servidores de terceros y los topics son legibles si se conoce el nombre. Para un sistema de alertas no es aceptable. Mosquitto propio (`eclipse-mosquitto:2`) en el mismo droplet, con autenticación y canal privado, da control total sobre el transporte.
+
+### Decisiones de diseño del flujo mesh
+
+- **Filtrado por severidad**: solo se publican al mesh alertas nuevas con severidad `severe` o `extreme`, o existentes que escalan a esos niveles. La red tiene poco ancho de banda; inundarla con cada actualización menor la haría inútil.
+- **Antibucle**: si una alerta entra con `source=meshtastic` (origen radio), el backend no la republica. Evita que la misma alerta dé vueltas indefinidamente.
+- **Fallo silencioso**: si el broker MQTT no responde, la alerta se persiste igual en Postgres y el resto del sistema continúa. El canal mesh es complementario, nunca dependencia crítica.
+- **Independencia del medio físico del nodo**: el gateway se conecta al broker por TCP/IP. La forma de dar conectividad al nodo (Wi-Fi, 4G, solar) es ortogonal a ESPAlert y puede cambiar sin afectar al sistema.
+
 ## Dificultades encontradas y cómo se superaron
 
 ### Parseo CAP XML multi-idioma

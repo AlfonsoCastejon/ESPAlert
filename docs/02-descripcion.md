@@ -28,7 +28,13 @@ El navegador suscribe el dispositivo al endpoint `/api/push/subscribe` con clave
 
 ESPAlert opera un broker **Mosquitto propio** desplegado como servicio Docker en el mismo droplet, y un **nodo Meshtastic físico** que actúa de gateway entre la radio LoRa y MQTT.
 
-- **Entrada (mesh → ESPAlert)**: el cliente `paho-mqtt` se suscribe al topic del nodo y persiste los mensajes que llegan por radio en la tabla `mesh_messages` con coordenadas, SNR y RSSI. Si el mensaje es una alerta tipo SOS, se promociona a `alerts` con `source=meshtastic`.
+**LoRa** es una modulación de radio de bajo consumo y largo alcance que opera en bandas libres ISM (868 MHz en Europa). Envía paquetes pequeños a varios kilómetros con throughput bajo (entre 0.3 y 50 kbps según el factor de spreading) y latencia alta. Adecuada para texto y telemetría, no para multimedia.
+
+**Meshtastic** es un firmware abierto que monta sobre LoRa una capa mesh: cada nodo retransmite los paquetes de los demás sin servidor central. Aporta cifrado AES-256 por canal, app móvil oficial por Bluetooth y puente MQTT para enlazar la red con servicios TCP/IP. Las placas compatibles cuestan entre 20 y 60 €.
+
+**Encaje con ESPAlert**: la web depende de internet. Una emergencia que tumbe la red móvil deja a los usuarios sin avisos justo cuando más útiles serían. La mesh local sigue funcionando porque no usa infraestructura. ESPAlert tiende el puente: el backend publica al broker las alertas críticas y el nodo gateway las retransmite por LoRa al resto de nodos al alcance.
+
+- **Entrada (mesh → ESPAlert)**: el cliente `paho-mqtt` se suscribe al topic del nodo y persiste los mensajes que llegan por radio en la tabla `mesh_messages` con coordenadas, SNR y RSSI. Si el mensaje incluye texto, además se inserta como `Alert` con `source=meshtastic`, `severity=unknown` y geometría tomada de las coordenadas del nodo emisor o de su última posición conocida. Estas alertas mesh no pasan por validación de organismo oficial, así que se diferencian visualmente del resto: aparecen en color morado en el mapa y caducan automáticamente a los 7 días.
 - **Salida (ESPAlert → mesh)**: cuando se inserta una alerta nueva con severidad `severe` o `extreme`, o cuando una existente escala a esos niveles, el backend publica un resumen al broker. El nodo gateway lo retransmite por LoRa al resto de nodos al alcance, llegando finalmente a los móviles emparejados por Bluetooth con la app oficial de Meshtastic.
 
 Los administradores revisan los mensajes en `/admin/mesh` y pueden purgar el histórico.
