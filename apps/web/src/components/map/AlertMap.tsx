@@ -67,6 +67,7 @@ const URL_PROVINCIAS = "/data/provincias.geojson";
 
 const ESTILO_MAPA: maplibregl.StyleSpecification = {
   version: 8,
+  glyphs: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
   sources: {
     openmaptiles: {
       type: "vector",
@@ -85,6 +86,60 @@ const ESTILO_MAPA: maplibregl.StyleSpecification = {
       source: "openmaptiles",
       "source-layer": "water",
       paint: { "fill-color": "hsl(0, 0%, 94%)" },
+    },
+    {
+      id: "carreteras-mayores",
+      type: "line",
+      source: "openmaptiles",
+      "source-layer": "transportation",
+      filter: ["in", "class", "motorway", "trunk", "primary"],
+      minzoom: 6,
+      paint: {
+        "line-color": "hsl(0, 0%, 70%)",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 6, 0.4, 14, 3],
+      },
+    },
+    {
+      id: "carreteras-medias",
+      type: "line",
+      source: "openmaptiles",
+      "source-layer": "transportation",
+      filter: ["in", "class", "secondary", "tertiary"],
+      minzoom: 10,
+      paint: {
+        "line-color": "hsl(0, 0%, 78%)",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.3, 16, 2],
+      },
+    },
+    {
+      id: "carreteras-menores",
+      type: "line",
+      source: "openmaptiles",
+      "source-layer": "transportation",
+      filter: ["in", "class", "minor", "service"],
+      minzoom: 13,
+      paint: {
+        "line-color": "hsl(0, 0%, 85%)",
+        "line-width": ["interpolate", ["linear"], ["zoom"], 13, 0.2, 18, 1.5],
+      },
+    },
+    {
+      id: "etiquetas-ciudades",
+      type: "symbol",
+      source: "openmaptiles",
+      "source-layer": "place",
+      filter: ["in", "class", "city", "town"],
+      minzoom: 6,
+      layout: {
+        "text-field": ["coalesce", ["get", "name:es"], ["get", "name"]],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 6, 10, 14, 14],
+        "text-font": ["Noto Sans Regular"],
+      },
+      paint: {
+        "text-color": "hsl(0, 0%, 25%)",
+        "text-halo-color": "hsl(0, 0%, 100%)",
+        "text-halo-width": 1.5,
+      },
     },
   ],
 };
@@ -161,7 +216,7 @@ function actualizarAlertas(map: maplibregl.Map, geojson: GeoJSON.FeatureCollecti
       filter: ["==", "$type", "Polygon"],
       paint: {
         "fill-color": ["get", "color"],
-        "fill-opacity": 0.4,
+        "fill-opacity": 0.7,
       },
     },
     "ccaa-line"
@@ -257,7 +312,11 @@ async function cargarCapasEspana(map: maplibregl.Map) {
     id: "ccaa-fill",
     type: "fill",
     source: "ccaa",
-    paint: { "fill-color": "hsl(0, 0%, 83%)" },
+    paint: {
+      "fill-color": "hsl(0, 0%, 83%)",
+      // Desvanece el relleno gris al hacer zoom para revelar las carreteras.
+      "fill-opacity": ["interpolate", ["linear"], ["zoom"], 8, 1, 11, 0],
+    },
   });
   map.addLayer({
     id: "ccaa-line",
@@ -280,6 +339,15 @@ async function cargarCapasEspana(map: maplibregl.Map) {
       "line-width": 1,
     },
   });
+
+  // Forzar que las capas de alertas queden siempre encima de las CCAA y
+  // provincias. Esto evita el problema de orden cuando las alertas se cargan
+  // antes que el GeoJSON regional (carga asíncrona).
+  for (const capa of ["alertas-fill", "alertas-line", "alertas-point"]) {
+    if (map.getLayer(capa)) {
+      map.moveLayer(capa);
+    }
+  }
 
   // Click en CCAA para hacer zoom y ver provincias
   map.on("click", "ccaa-fill", (e) => {
