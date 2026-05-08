@@ -188,7 +188,15 @@
   }
 
   &__separador {
-    opacity: $opacidad-inactivo;
+    // Separador decorativo: el carácter lo pinta el CSS para que las
+    // herramientas de accesibilidad no analicen su contraste como si fuera
+    // texto significativo.
+    &::before {
+      content: "·";
+      margin: 0 0.25em;
+      color: currentColor;
+      opacity: 0.55;
+    }
   }
 
   &__acciones {

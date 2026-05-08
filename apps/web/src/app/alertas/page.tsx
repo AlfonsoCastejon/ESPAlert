@@ -253,9 +253,9 @@ export default function AlertasPage() {
                   <h3 className="alerta-fila__titulo">{a.headline}</h3>
                   <div className="alerta-fila__meta">
                     <span className="alerta-fila__fuente">{NOMBRE_FUENTE[a.source] || a.source}</span>
-                    <span className="alerta-fila__separador">·</span>
+                    <span className="alerta-fila__separador" aria-hidden="true" />
                     <span>{a.area_description || "España"}</span>
-                    <span className="alerta-fila__separador">·</span>
+                    <span className="alerta-fila__separador" aria-hidden="true" />
                     <span>{ETIQUETA_SEVERIDAD[a.severity] || a.severity}</span>
                   </div>
                 </div>
