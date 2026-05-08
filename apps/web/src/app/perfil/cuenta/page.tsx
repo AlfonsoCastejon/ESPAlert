@@ -138,16 +138,16 @@ export default function CuentaPage() {
 
             <ul className="perfil__requisitos">
               <li className={requisitos.longitud ? "perfil__requisito--ok" : "perfil__requisito--pendiente"}>
-                {requisitos.longitud ? <Check size={14} /> : <X size={14} />} Al menos 8 caracteres
+                {requisitos.longitud ? <Check size={14} aria-hidden="true" /> : <X size={14} aria-hidden="true" />} Al menos 8 caracteres
               </li>
               <li className={requisitos.mayuscula ? "perfil__requisito--ok" : "perfil__requisito--pendiente"}>
-                {requisitos.mayuscula ? <Check size={14} /> : <X size={14} />} Una letra mayúscula
+                {requisitos.mayuscula ? <Check size={14} aria-hidden="true" /> : <X size={14} aria-hidden="true" />} Una letra mayúscula
               </li>
               <li className={requisitos.minuscula ? "perfil__requisito--ok" : "perfil__requisito--pendiente"}>
-                {requisitos.minuscula ? <Check size={14} /> : <X size={14} />} Una letra minúscula
+                {requisitos.minuscula ? <Check size={14} aria-hidden="true" /> : <X size={14} aria-hidden="true" />} Una letra minúscula
               </li>
               <li className={requisitos.numero ? "perfil__requisito--ok" : "perfil__requisito--pendiente"}>
-                {requisitos.numero ? <Check size={14} /> : <X size={14} />} Un número
+                {requisitos.numero ? <Check size={14} aria-hidden="true" /> : <X size={14} aria-hidden="true" />} Un número
               </li>
             </ul>
 
@@ -163,7 +163,7 @@ export default function CuentaPage() {
             </label>
             {repetir.length > 0 && (
               <p className={coinciden ? "perfil__requisito--ok" : "perfil__requisito--pendiente"}>
-                {coinciden ? <Check size={14} /> : <X size={14} />} {coinciden ? "Las contraseñas coinciden" : "Las contraseñas no coinciden"}
+                {coinciden ? <Check size={14} aria-hidden="true" /> : <X size={14} aria-hidden="true" />} {coinciden ? "Las contraseñas coinciden" : "Las contraseñas no coinciden"}
               </p>
             )}
 

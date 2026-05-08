@@ -199,7 +199,7 @@ export default function PerfilPage() {
                     title="Quitar de favoritos"
                     aria-label="Quitar de favoritos"
                   >
-                    <X size={16} />
+                    <X size={16} aria-hidden="true" />
                   </button>
                 </div>
               ))}

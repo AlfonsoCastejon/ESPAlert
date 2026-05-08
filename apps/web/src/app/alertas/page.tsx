@@ -289,7 +289,7 @@ export default function AlertasPage() {
                       aria-label={favoritosIds.has(a.id) ? "Quitar de favoritos" : "Añadir a favoritos"}
                       aria-pressed={favoritosIds.has(a.id)}
                     >
-                      <Star size={18} fill={favoritosIds.has(a.id) ? "currentColor" : "none"} />
+                      <Star size={18} fill={favoritosIds.has(a.id) ? "currentColor" : "none"} aria-hidden="true" />
                     </button>
                   )}
                   <time className="alerta-fila__fecha">{formatearFecha(a.effective_at || a.created_at)}</time>
