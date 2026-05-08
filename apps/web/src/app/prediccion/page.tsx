@@ -198,11 +198,7 @@ export default function PrediccionPage() {
       </div>
 
       <div className="prediccion__buscador">
-        <label htmlFor="prediccion-buscador" className="sr-only">
-          Buscar municipio
-        </label>
         <input
-          id="prediccion-buscador"
           type="text"
           className="prediccion__input"
           placeholder="Escribe un municipio..."
