@@ -35,8 +35,6 @@ export default function PerfilPage() {
   const [notifSeveridades, setNotifSeveridades] = useState({
     extreme: true,
     severe: true,
-    moderate: true,
-    minor: false,
   });
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
@@ -122,7 +120,8 @@ export default function PerfilPage() {
 
       setPushActivo(true);
       setMensaje("Notificaciones activadas");
-    } catch {
+    } catch (err) {
+      console.error("Error al activar notificaciones:", err);
       setError("No se pudo activar las notificaciones.");
     } finally {
       setPushProcesando(false);
@@ -342,7 +341,7 @@ export default function PerfilPage() {
               Elige qué niveles de alerta quieres que te notifiquemos.
             </p>
             <div className="perfil__checks">
-              {(["extreme", "severe", "moderate", "minor"] as const).map((sev) => (
+              {(["extreme", "severe"] as const).map((sev) => (
                 <label key={sev} className="perfil__check-label">
                   <input
                     type="checkbox"
