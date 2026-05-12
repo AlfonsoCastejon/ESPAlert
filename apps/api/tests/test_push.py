@@ -12,9 +12,9 @@ def _payload():
     }
 
 
-def test_subscribe_devuelve_201_al_registrar(build_app, override_deps, mock_db_session):
+def test_subscribe_devuelve_201_al_registrar(build_app, override_deps, mock_db_session, fake_user):
     app = build_app(include_push=True)
-    override_deps(app, db=mock_db_session)
+    override_deps(app, db=mock_db_session, user=fake_user)
 
     with patch("app.routers.push.push_service") as svc:
         svc.subscribe = AsyncMock()
@@ -26,9 +26,9 @@ def test_subscribe_devuelve_201_al_registrar(build_app, override_deps, mock_db_s
     assert res.json()["ok"] is True
 
 
-def test_subscribe_con_payload_invalido_devuelve_422(build_app, override_deps, mock_db_session):
+def test_subscribe_con_payload_invalido_devuelve_422(build_app, override_deps, mock_db_session, fake_user):
     app = build_app(include_push=True)
-    override_deps(app, db=mock_db_session)
+    override_deps(app, db=mock_db_session, user=fake_user)
 
     client = TestClient(app)
     res = client.post("/api/push/subscribe", json={"endpoint": "falta-todo"})

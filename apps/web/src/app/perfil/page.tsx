@@ -42,11 +42,121 @@ export default function PerfilPage() {
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
 
+  // Estado de la suscripción push.
+  const [pushActivo, setPushActivo] = useState(false);
+  const [pushProcesando, setPushProcesando] = useState(false);
+  const [pushSoportado, setPushSoportado] = useState(true);
+
   useEffect(() => {
     if (!cargando && !usuario) {
       router.push("/login");
     }
   }, [cargando, usuario, router]);
+
+  // Detecta al cargar si el navegador ya tiene una suscripción push activa.
+  useEffect(() => {
+    async function comprobar() {
+      if (typeof window === "undefined") return;
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        setPushSoportado(false);
+        return;
+      }
+      try {
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (!reg) return;
+        const sub = await reg.pushManager.getSubscription();
+        setPushActivo(sub !== null);
+      } catch { /* silenciar */ }
+    }
+    if (usuario) comprobar();
+  }, [usuario]);
+
+  function urlBase64ToUint8Array(base64String: string): Uint8Array {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const raw = atob(base64);
+    const arr = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+    return arr;
+  }
+
+  async function activarNotificaciones() {
+    setPushProcesando(true);
+    setError("");
+    setMensaje("");
+    try {
+      if (!("Notification" in window)) {
+        setError("Tu navegador no soporta notificaciones.");
+        return;
+      }
+      const perm = await Notification.requestPermission();
+      if (perm !== "granted") {
+        setError("Permiso de notificaciones denegado.");
+        return;
+      }
+
+      const reg = await navigator.serviceWorker.register("/sw.js");
+      await navigator.serviceWorker.ready;
+
+      const res = await fetch(`${API_URL}/api/push/vapid-key`);
+      if (!res.ok) throw new Error();
+      const { public_key } = await res.json();
+
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(public_key),
+      });
+
+      const raw = sub.toJSON();
+      const guardar = await fetch(`${API_URL}/api/push/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          endpoint: sub.endpoint,
+          p256dh: raw.keys?.p256dh,
+          auth: raw.keys?.auth,
+        }),
+      });
+      if (!guardar.ok) throw new Error();
+
+      setPushActivo(true);
+      setMensaje("Notificaciones activadas");
+    } catch {
+      setError("No se pudo activar las notificaciones.");
+    } finally {
+      setPushProcesando(false);
+    }
+  }
+
+  async function desactivarNotificaciones() {
+    setPushProcesando(true);
+    setError("");
+    setMensaje("");
+    try {
+      const reg = await navigator.serviceWorker.getRegistration();
+      const sub = await reg?.pushManager.getSubscription();
+      if (!sub) {
+        setPushActivo(false);
+        setMensaje("No había suscripción activa");
+        return;
+      }
+      const endpoint = sub.endpoint;
+      await sub.unsubscribe();
+      await fetch(`${API_URL}/api/push/subscribe`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ endpoint }),
+      });
+      setPushActivo(false);
+      setMensaje("Notificaciones desactivadas");
+    } catch {
+      setError("No se pudo desactivar las notificaciones.");
+    } finally {
+      setPushProcesando(false);
+    }
+  }
 
   const cargarFavoritos = useCallback(async () => {
     setCargandoFav(true);
@@ -264,23 +374,25 @@ export default function PerfilPage() {
             <p className="perfil__bloque-desc">
               Recibe notificaciones en tu navegador cuando haya alertas en tu zona.
             </p>
-            <button
-              className="perfil__btn-guardar"
-              onClick={async () => {
-                if (!("Notification" in window)) {
-                  setError("Tu navegador no soporta notificaciones.");
-                  return;
-                }
-                const perm = await Notification.requestPermission();
-                if (perm === "granted") {
-                  setMensaje("Notificaciones activadas");
-                } else {
-                  setError("Permiso de notificaciones denegado.");
-                }
-              }}
-            >
-              Activar notificaciones
-            </button>
+            {!pushSoportado ? (
+              <p className="perfil__error">Tu navegador no soporta notificaciones push.</p>
+            ) : pushActivo ? (
+              <button
+                className="perfil__btn-danger"
+                onClick={desactivarNotificaciones}
+                disabled={pushProcesando}
+              >
+                {pushProcesando ? "Procesando..." : "Desactivar notificaciones"}
+              </button>
+            ) : (
+              <button
+                className="perfil__btn-guardar"
+                onClick={activarNotificaciones}
+                disabled={pushProcesando}
+              >
+                {pushProcesando ? "Procesando..." : "Activar notificaciones"}
+              </button>
+            )}
           </div>
 
           <div className="perfil__bloque">
