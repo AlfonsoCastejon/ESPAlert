@@ -3,6 +3,7 @@
 import asyncio
 import json
 import logging
+import uuid
 from typing import Any, Dict
 
 from pywebpush import webpush, WebPushException
@@ -20,21 +21,30 @@ from app.schemas.push_subscription import SubscriptionCreate
 logger = logging.getLogger(__name__)
 
 
-async def subscribe(db: AsyncSession, data: SubscriptionCreate) -> PushSubscription:
+async def subscribe(
+    db: AsyncSession,
+    data: SubscriptionCreate,
+    user_id: uuid.UUID | None = None,
+) -> PushSubscription:
     """
     Guarda o actualiza una suscripción de notificaciones push en la base de datos.
     Se utiliza un upsert para actualizar las claves en caso de que el endpoint ya exista.
     """
-    stmt = insert(PushSubscription).values(
-        endpoint=data.endpoint,
-        p256dh=data.p256dh,
-        auth=data.auth
-    ).on_conflict_do_update(
+    valores = {
+        "endpoint": data.endpoint,
+        "p256dh": data.p256dh,
+        "auth": data.auth,
+    }
+    if user_id is not None:
+        valores["user_id"] = user_id
+
+    set_dict = {"p256dh": data.p256dh, "auth": data.auth}
+    if user_id is not None:
+        set_dict["user_id"] = user_id
+
+    stmt = insert(PushSubscription).values(**valores).on_conflict_do_update(
         index_elements=["endpoint"],
-        set_={
-            "p256dh": data.p256dh,
-            "auth": data.auth
-        }
+        set_=set_dict,
     ).returning(PushSubscription)
 
     result = await db.execute(stmt)
@@ -102,15 +112,72 @@ async def send_notification(subscription: PushSubscription, payload: Dict[str, A
 
 async def broadcast_critical_alert(db: AsyncSession, alert: Alert) -> None:
     """
-    Filtra y envía notificaciones automáticas a todos los suscriptores.
-    IMPORTANTE: Solo notifica sobre alertas catalogadas como graves o extremas.
-    Limpia automáticamente los endpoints que rechacen con 404 o 410.
+    Envía notificaciones a las suscripciones cuyo usuario tenga la severidad y la
+    región solicitadas. Las suscripciones sin usuario asociado (legacy) reciben
+    todas las alertas severas o extremas. Limpia endpoints caducados (404/410).
     """
     if alert.severity not in (AlertSeverity.SEVERE, AlertSeverity.EXTREME):
         return
 
-    result = await db.execute(select(PushSubscription))
-    subscriptions = result.scalars().all()
+    from app.models.user_preferences import UserPreferences
+    from app.utils.regions import REGION_BBOX, Region
+    from geoalchemy2.functions import ST_Intersects, ST_MakeEnvelope
+    from sqlalchemy.orm import selectinload
+
+    stmt = select(PushSubscription).options(
+        selectinload(PushSubscription.user).selectinload("preferences"),
+    ) if False else select(PushSubscription)
+
+    result = await db.execute(stmt)
+    todas = result.scalars().all()
+    if not todas:
+        return
+
+    # Cargar preferencias de los usuarios afectados (los que tienen user_id).
+    user_ids = [s.user_id for s in todas if s.user_id is not None]
+    prefs_por_usuario: dict = {}
+    if user_ids:
+        pref_rows = await db.execute(
+            select(UserPreferences).where(UserPreferences.user_id.in_(user_ids))
+        )
+        for p in pref_rows.scalars().all():
+            prefs_por_usuario[p.user_id] = p
+
+    # Decide a qué suscripciones notificar.
+    severidad_actual = alert.severity.value
+    subscriptions = []
+    for sub in todas:
+        if sub.user_id is None:
+            # Suscripción legacy sin usuario: comportamiento previo, recibe.
+            subscriptions.append(sub)
+            continue
+        prefs = prefs_por_usuario.get(sub.user_id)
+        if prefs is None:
+            subscriptions.append(sub)
+            continue
+
+        # Filtro de severidades del usuario (si está definido).
+        sevs = (prefs.filters or {}).get("severidades")
+        if isinstance(sevs, dict):
+            permitido = bool(sevs.get(severidad_actual, False))
+            if not permitido:
+                continue
+
+        # Filtro de región: si el usuario eligió región, la alerta debe intersectar su bbox.
+        if prefs.region:
+            try:
+                region = Region(prefs.region)
+                min_lon, min_lat, max_lon, max_lat = REGION_BBOX[region]
+                envelope = ST_MakeEnvelope(min_lon, min_lat, max_lon, max_lat, 4326)
+                intersecta = await db.scalar(
+                    select(ST_Intersects(alert.geometry, envelope))
+                )
+                if not intersecta:
+                    continue
+            except (ValueError, KeyError):
+                pass  # Región desconocida: no filtrar por región.
+
+        subscriptions.append(sub)
 
     if not subscriptions:
         return

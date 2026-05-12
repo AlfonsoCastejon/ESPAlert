@@ -1,7 +1,8 @@
 """Endpoints de suscripciones push: alta, baja y clave pública VAPID."""
 
 from fastapi import APIRouter, HTTPException, status
-from app.dependencies import DBSessionDep
+from app.config import get_settings
+from app.dependencies import CurrentUserDep, DBSessionDep
 from app.schemas.push_subscription import (
     SubscriptionCreate,
     PushSubscribeResponse,
@@ -10,6 +11,15 @@ from app.schemas.push_subscription import (
 from app.services import push_service
 
 router = APIRouter(prefix="/push", tags=["push"])
+
+
+@router.get(
+    "/vapid-key",
+    summary="Clave pública VAPID",
+    description="Devuelve la clave pública VAPID que el navegador necesita para suscribirse.",
+)
+async def get_vapid_public_key() -> dict[str, str]:
+    return {"public_key": get_settings().VAPID_PUBLIC_KEY}
 
 @router.post(
     "/subscribe",
@@ -29,8 +39,9 @@ router = APIRouter(prefix="/push", tags=["push"])
 async def subscribe(
     body: SubscriptionCreate,
     db: DBSessionDep,
+    user: CurrentUserDep,
 ) -> PushSubscribeResponse:
-    await push_service.subscribe(db, body)
+    await push_service.subscribe(db, body, user_id=user.id)
     return PushSubscribeResponse(ok=True, message="Suscripción registrada o actualizada correctamente")
 
 @router.delete(
@@ -55,5 +66,5 @@ async def unsubscribe(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="No existe ninguna suscripción para ese endpoint"
         )
-        
+
     return PushSubscribeResponse(ok=True, message="Suscripción eliminada correctamente")
