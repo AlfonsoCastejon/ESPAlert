@@ -1,6 +1,6 @@
-# 11. Evidencias de despliegue
+# 8b. Evidencias del despliegue
 
-Evidencias agrupadas en dos bloques: gestión de ficheros y artefactos del despliegue, y verificación básica de red.
+Complemento del documento [08-despliegue.md](08-despliegue.md). Aquí se recogen las evidencias empíricas en dos bloques: gestión de ficheros y artefactos del despliegue, y verificación básica de red.
 
 ## Gestión de ficheros y artefactos
 

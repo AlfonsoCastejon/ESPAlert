@@ -77,7 +77,7 @@ La carpeta `docs/` contiene la memoria técnica completa:
 5. [Diseño](docs/05-diseno.md)
 6. [Desarrollo](docs/06-desarrollo.md)
 7. [Pruebas](docs/07-pruebas.md)
-8. [Despliegue](docs/08-despliegue.md)
+8. [Despliegue](docs/08-despliegue.md) — y [evidencias](docs/08-despliegue-eval.md)
 9. [Manual de usuario](docs/09-manual-usuario.md)
 10. [Conclusiones](docs/10-conclusiones.md)
 
