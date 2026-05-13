@@ -167,9 +167,20 @@ Cada icono interactivo lleva `aria-label` describiendo la acción. Los decorativ
 - GeoJSON de regiones: simplificado al 5 por ciento con `mapshaper` y comprimido con gzip por Caddy.
 - No se usan vídeos pesados ni audio. La aplicación es text-first y los recursos visuales (mapa, iconos, badges) son vectoriales.
 
-## Mockups
+## Mockups del prototipo
 
-Capturas de las pantallas principales:
+Exportaciones del prototipo de Figma antes de la implementación. Sirven como referencia visual del diseño previsto:
+
+![Mockup de la home](assets/home-mockup.png)
+![Mockup del listado de alertas](assets/alertas-mockup.png)
+![Mockup de la predicción](assets/prediccion-mockup.png)
+![Mockup del formulario de registro](assets/formulario-mockup.png)
+![Aviso legal](assets/avisoLegal.png)
+![Política de cookies](assets/PoliticaCookies.png)
+
+## Capturas de la implementación
+
+Capturas reales de las pantallas principales una vez desplegadas:
 
 ![Home](assets/home.png)
 ![Listado de alertas](assets/alertas.png)
