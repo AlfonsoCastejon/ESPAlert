@@ -115,9 +115,9 @@ El `docker-compose.yml` declara:
 
 - **Red interna**: Docker crea automáticamente una red bridge `espalert_default`. Los servicios se comunican por nombre (`db`, `redis`, `api`, `web`) sin exponer puertos al host. Solo `caddy` (80/443) y, en desarrollo, `api` (8000) y `web` (3000) publican puertos.
 - **Volúmenes con nombre**:
-  - `postgres_data` → `/var/lib/postgresql/data`. Persiste la base de datos entre reinicios.
-  - `web_node_modules` → `/app/node_modules`. Aisla `node_modules` del bind mount del código.
-  - `caddy_data` → certificados Let's Encrypt y estado ACME.
+  - `postgres_data` -> `/var/lib/postgresql/data`. Persiste la base de datos entre reinicios.
+  - `web_node_modules` -> `/app/node_modules`. Aisla `node_modules` del bind mount del código.
+  - `caddy_data` -> certificados Let's Encrypt y estado ACME.
 - **Healthchecks**:
   - `db`: `pg_isready` cada 10 s.
   - `redis`: `redis-cli ping` cada 10 s.

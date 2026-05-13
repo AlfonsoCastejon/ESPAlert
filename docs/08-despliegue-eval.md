@@ -127,12 +127,12 @@ Ambos subdominios resuelven a `207.154.195.224`, la IP pública del droplet de D
 
 | Ruta | Servicio que responde | Atravesando |
 |---|---|---|
-| `/` | `web` (Next.js) | Caddy → web:3000 |
-| `/api/*` | `api` (FastAPI) | Caddy → api:8000 |
-| `/ws` | `api` (FastAPI WebSocket) | Caddy → api:8000 |
-| `/api/health` | `api` (endpoint de healthcheck) | Caddy → api:8000 |
-| `/api/docs` | `api` (Swagger UI) | Caddy → api:8000 |
-| `/sitemap.xml` | `web` (sitemap dinámico) | Caddy → web:3000 |
+| `/` | `web` (Next.js) | Caddy -> web:3000 |
+| `/api/*` | `api` (FastAPI) | Caddy -> api:8000 |
+| `/ws` | `api` (FastAPI WebSocket) | Caddy -> api:8000 |
+| `/api/health` | `api` (endpoint de healthcheck) | Caddy -> api:8000 |
+| `/api/docs` | `api` (Swagger UI) | Caddy -> api:8000 |
+| `/sitemap.xml` | `web` (sitemap dinámico) | Caddy -> web:3000 |
 
 ### Comprobaciones con curl
 
@@ -198,7 +198,7 @@ La respuesta es un JSON con un total acumulado de 170 247 alertas (desde la pues
 
 ![Listado de alertas](assets/Listado.png)
 
-Redirección HTTP → HTTPS (verifica configuración de Caddy):
+Redirección HTTP -> HTTPS (verifica configuración de Caddy):
 
 ```powershell
 curl.exe -I http://espalert.app
@@ -215,7 +215,7 @@ Date: Tue, 05 May 2026 20:02:11 GMT
 
 Caddy redirige todo el tráfico HTTP a HTTPS con un 308 Permanent Redirect, lo que garantiza que ningún cliente pueda acceder en plano una vez ha visitado la web por primera vez. Combinado con `Strict-Transport-Security`, el navegador recordará durante un año que debe ir directo a HTTPS.
 
-![Redirección HTTP → HTTPS](assets/Redireccion.png)
+![Redirección HTTP -> HTTPS](assets/Redireccion.png)
 
 ### Estado de los contenedores en el droplet
 
@@ -290,7 +290,7 @@ api-1 | INFO:     127.0.0.1:43712 - "GET /api/health HTTP/1.1" 200 OK
 api-1 | INFO:     127.0.0.1:43154 - "GET /api/health HTTP/1.1" 200 OK
 ```
 
-Caddy arranca con autoTLS para los dos dominios y redirección HTTP→HTTPS automática. La API recibe dos tipos de tráfico: peticiones desde `127.0.0.1` (healthcheck interno) y peticiones desde `172.18.0.8` (el contenedor `web`) consultando `/api/alerts` por cada una de las cinco fuentes. El frontend habla con el backend solo por la red interna de Docker, sin pasar por internet.
+Caddy arranca con autoTLS para los dos dominios y redirección HTTP->HTTPS automática. La API recibe dos tipos de tráfico: peticiones desde `127.0.0.1` (healthcheck interno) y peticiones desde `172.18.0.8` (el contenedor `web`) consultando `/api/alerts` por cada una de las cinco fuentes. El frontend habla con el backend solo por la red interna de Docker, sin pasar por internet.
 
 ![Logs en vivo de Caddy y la API](assets/Logs.png)
 

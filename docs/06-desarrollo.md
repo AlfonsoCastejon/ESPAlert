@@ -16,7 +16,7 @@ El proyecto se construyó por capas, desde la infraestructura hacia la interfaz,
 10. **Push web** (sprint 5). Generación VAPID, service worker, suscripción desde el frontend, envío con `pywebpush` desde un worker Celery.
 11. **Panel admin** (sprint 6). Roles (`user`/`admin`), dependencia `get_current_admin`, CRUD limitado.
 12. **CI/CD** (sprint 6). GitHub Actions con `ci.yml` (typecheck + tests + build) y `deploy.yml` (push a ghcr.io + SSH al droplet).
-13. **Optimización Lighthouse** (sprint 7). Simplificación GeoJSON con mapshaper, defer del init MapLibre con `requestIdleCallback`, resultado: 64 → 93 desktop y 45 → 66 móvil.
+13. **Optimización Lighthouse** (sprint 7). Simplificación GeoJSON con mapshaper, defer del init MapLibre con `requestIdleCallback`, resultado: 64 -> 93 desktop y 45 -> 66 móvil.
 14. **Endurecimiento de seguridad** (sprint 7). Rate limit con slowapi en endpoints de auth, headers de seguridad en Caddy, autenticación previa en `/ws`, restricción de CORS, lock en cache de municipios.
 15. **Accesibilidad y SEO** (sprint 7). Skip-link, focus-visible global, sitemap dinámico, manifest, OpenGraph y Twitter Card, robots con sitemap.
 
@@ -176,7 +176,7 @@ La home arrancaba con TBT (Total Blocking Time) altísimo: 3 segundos en móvil.
 - Diferir la creación del mapa con `requestIdleCallback` para no bloquear el hilo principal durante el TTI.
 - Diferir la carga de capas adicionales tras la primera interacción.
 
-Resultado: Lighthouse desktop 64 → 93, móvil 45 → 66.
+Resultado: Lighthouse desktop 64 -> 93, móvil 45 -> 66.
 
 ### Race en cache de municipios
 

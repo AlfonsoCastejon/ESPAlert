@@ -16,19 +16,19 @@ Las pruebas se ejecutan localmente y en CI (GitHub Actions, workflow `ci.yml`) e
 
 Ficheros (`apps/api/tests/`):
 
-- `test_auth.py` — registro, login, logout, `me`, cambio de contraseña, validación de fortaleza, rate limit.
-- `test_alerts.py` — listado, filtros, paginación, detalle, histórico.
-- `test_admin.py` — protección por rol, cambio de rol, eliminación de alertas, gestión mesh.
-- `test_user.py` — favoritos y preferencias.
-- `test_push.py` — alta y baja de suscripción VAPID.
-- `test_aemet.py` — cliente AEMET con mocks de HTTPX.
-- `test_dgt.py` — parseo del feed DGT.
-- `test_xml_parser.py` — CAP multi-idioma con XMLs reales abreviados.
-- `test_connectors.py` — base común de conectores.
-- `test_health.py` — endpoint de salud.
-- `test_tasks.py` — tareas Celery (sin broker real, llamada directa a la función).
-- `test_ws.py` — autenticación previa al `accept()` en el WebSocket.
-- `test_config.py` — carga de variables de entorno.
+- `test_auth.py` - registro, login, logout, `me`, cambio de contraseña, validación de fortaleza, rate limit.
+- `test_alerts.py` - listado, filtros, paginación, detalle, histórico.
+- `test_admin.py` - protección por rol, cambio de rol, eliminación de alertas, gestión mesh.
+- `test_user.py` - favoritos y preferencias.
+- `test_push.py` - alta y baja de suscripción VAPID.
+- `test_aemet.py` - cliente AEMET con mocks de HTTPX.
+- `test_dgt.py` - parseo del feed DGT.
+- `test_xml_parser.py` - CAP multi-idioma con XMLs reales abreviados.
+- `test_connectors.py` - base común de conectores.
+- `test_health.py` - endpoint de salud.
+- `test_tasks.py` - tareas Celery (sin broker real, llamada directa a la función).
+- `test_ws.py` - autenticación previa al `accept()` en el WebSocket.
+- `test_config.py` - carga de variables de entorno.
 
 Total: 65 tests verdes.
 

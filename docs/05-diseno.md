@@ -256,65 +256,65 @@ La API expone recursos REST bajo el prefijo `/api`. Toda la documentación inter
 
 ### Autenticación
 
-- `POST /api/auth/register` — crear cuenta. Limitado a 5 por hora por IP.
-- `POST /api/auth/login` — iniciar sesión. Limitado a 10 por minuto por IP.
-- `POST /api/auth/logout` — cerrar sesión.
-- `GET /api/auth/me` — perfil del usuario autenticado.
-- `PATCH /api/auth/password` — cambiar contraseña.
+- `POST /api/auth/register` - crear cuenta. Limitado a 5 por hora por IP.
+- `POST /api/auth/login` - iniciar sesión. Limitado a 10 por minuto por IP.
+- `POST /api/auth/logout` - cerrar sesión.
+- `GET /api/auth/me` - perfil del usuario autenticado.
+- `PATCH /api/auth/password` - cambiar contraseña.
 
 ### Alertas (públicas)
 
-- `GET /api/alerts` — listado activo con filtros (`source`, `severity`, `region`, `order_by`, `limit`, `offset`).
-- `GET /api/alerts/history` — histórico expirado.
-- `GET /api/alerts/{alert_id}` — detalle.
+- `GET /api/alerts` - listado activo con filtros (`source`, `severity`, `region`, `order_by`, `limit`, `offset`).
+- `GET /api/alerts/history` - histórico expirado.
+- `GET /api/alerts/{alert_id}` - detalle.
 
 ### Predicción
 
-- `GET /api/forecast/municipios?q={texto}` — búsqueda de municipios.
-- `GET /api/forecast/{codigo_ine}` — predicción diaria.
+- `GET /api/forecast/municipios?q={texto}` - búsqueda de municipios.
+- `GET /api/forecast/{codigo_ine}` - predicción diaria.
 
 ### Usuario autenticado
 
-- `GET /api/user/favorites` — listar favoritos.
-- `POST /api/user/favorites/{alert_id}` — añadir favorito.
-- `DELETE /api/user/favorites/{alert_id}` — quitar favorito.
-- `GET /api/user/preferences` — leer preferencias.
-- `PUT /api/user/preferences` — guardar preferencias.
+- `GET /api/user/favorites` - listar favoritos.
+- `POST /api/user/favorites/{alert_id}` - añadir favorito.
+- `DELETE /api/user/favorites/{alert_id}` - quitar favorito.
+- `GET /api/user/preferences` - leer preferencias.
+- `PUT /api/user/preferences` - guardar preferencias.
 
 ### Notificaciones push
 
-- `POST /api/push/subscribe` — registrar suscripción VAPID.
-- `DELETE /api/push/subscribe` — eliminar suscripción.
+- `POST /api/push/subscribe` - registrar suscripción VAPID.
+- `DELETE /api/push/subscribe` - eliminar suscripción.
 
 ### Mesh
 
-- `GET /api/mesh/messages` — listado público de mensajes mesh recientes.
+- `GET /api/mesh/messages` - listado público de mensajes mesh recientes.
 
 ### Administración
 
-- `GET /api/admin/users` — listar usuarios.
-- `PATCH /api/admin/users/{user_id}/role` — cambiar rol.
-- `DELETE /api/admin/alerts/{alert_id}` — eliminar alerta.
-- `GET /api/admin/mesh` — listar mensajes mesh.
-- `DELETE /api/admin/mesh/{message_id}` — eliminar mensaje.
-- `DELETE /api/admin/mesh` — purgar todos los mensajes.
+- `GET /api/admin/users` - listar usuarios.
+- `PATCH /api/admin/users/{user_id}/role` - cambiar rol.
+- `DELETE /api/admin/alerts/{alert_id}` - eliminar alerta.
+- `GET /api/admin/mesh` - listar mensajes mesh.
+- `DELETE /api/admin/mesh/{message_id}` - eliminar mensaje.
+- `DELETE /api/admin/mesh` - purgar todos los mensajes.
 
 ### WebSocket
 
-- `WS /ws` — canal de tiempo real. Requiere cookie de sesión válida; responde con código 1008 si la cookie falta o el usuario está inactivo. Empuja eventos `alert.created`, `alert.updated` y `alert.deleted`.
+- `WS /ws` - canal de tiempo real. Requiere cookie de sesión válida; responde con código 1008 si la cookie falta o el usuario está inactivo. Empuja eventos `alert.created`, `alert.updated` y `alert.deleted`.
 
 ### Códigos HTTP usados
 
-- `200 OK` — lectura exitosa.
-- `201 Created` — registro de usuario, alta de favorito.
-- `204 No Content` — logout, cambio de contraseña, eliminación.
-- `400 Bad Request` — JSON malformado.
-- `401 Unauthorized` — falta cookie o credenciales inválidas.
-- `403 Forbidden` — usuario autenticado pero sin rol suficiente.
-- `404 Not Found` — recurso inexistente.
-- `409 Conflict` — email ya registrado.
-- `422 Unprocessable Content` — validación Pydantic falla.
-- `429 Too Many Requests` — rate limit superado en login/registro.
+- `200 OK` - lectura exitosa.
+- `201 Created` - registro de usuario, alta de favorito.
+- `204 No Content` - logout, cambio de contraseña, eliminación.
+- `400 Bad Request` - JSON malformado.
+- `401 Unauthorized` - falta cookie o credenciales inválidas.
+- `403 Forbidden` - usuario autenticado pero sin rol suficiente.
+- `404 Not Found` - recurso inexistente.
+- `409 Conflict` - email ya registrado.
+- `422 Unprocessable Content` - validación Pydantic falla.
+- `429 Too Many Requests` - rate limit superado en login/registro.
 
 Las respuestas de error siguen el formato estándar de FastAPI: `{"detail": "mensaje"}` o, en caso de validación, una lista de errores por campo.
 
