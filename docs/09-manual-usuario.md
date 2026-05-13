@@ -64,7 +64,7 @@ Los push se reciben aunque la pestaña esté cerrada, siempre que el navegador e
 
 ## Preguntas frecuentes
 
-- **No me llegan notificaciones push.** Comprueba en los ajustes del navegador que `espalert.app` tiene permiso de notificaciones. En Chrome: candado junto a la URL → Notificaciones → Permitir. Si has cambiado de equipo, tienes que volver a suscribirte.
+- **No me llegan notificaciones push.** Comprueba en los ajustes del navegador que `espalert.app` tiene permiso de notificaciones. En Chrome: candado junto a la URL -> Notificaciones -> Permitir. Si has cambiado de equipo, tienes que volver a suscribirte.
 - **No veo Canarias en el mapa.** El mapa arranca centrado en la península. Selecciona "Canarias" en el filtro de comunidad autónoma y el mapa volará automáticamente al archipiélago.
 - **El listado no muestra alertas antiguas.** El mapa filtra por las últimas 24 horas y el listado activo solo muestra alertas no expiradas. El histórico expirado está disponible vía API (`GET /api/alerts/history`) y se purga a los 14 días.
 - **He olvidado mi contraseña.** En esta versión no hay recuperación automática por email. Contacta con el administrador del servicio.
