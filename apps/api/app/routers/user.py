@@ -138,10 +138,9 @@ async def guardar_preferencias(
     prefs = result.scalar_one_or_none()
 
     if prefs:
-        if data.region is not None:
-            prefs.region = data.region
-        if data.filters is not None:
-            prefs.filters = data.filters
+        # PUT sobrescribe el estado completo de preferencias.
+        prefs.region = data.region
+        prefs.filters = data.filters
         if data.theme is not None:
             prefs.theme = data.theme
     else:

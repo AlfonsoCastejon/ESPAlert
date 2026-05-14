@@ -7,7 +7,7 @@ El proyecto se construyó por capas, desde la infraestructura hacia la interfaz,
 1. **Andamiaje y stack** (sprint 1). Estructura monorepo con `apps/api` y `apps/web`. Dockerfiles base, `docker-compose.yml`, integración Postgres + PostGIS, Redis, FastAPI minimal y Next 16 vacío.
 2. **Modelo y migraciones** (sprint 1). Modelos SQLAlchemy 2.0 con async, alembic para migraciones, primeras tablas (`users`, `alerts`).
 3. **Conector AEMET** (sprint 2). Cliente HTTPX, parseo CAP XML multi-idioma, tarea Celery `fetch_aemet_task`, persistencia con upsert por `external_id`.
-4. **Router de alertas y frontend listado** (sprint 2). Endpoint `/api/alerts` con paginación y filtros, página `/alertas` con tabla, badges de severidad y filtros.
+4. **Router de alertas y frontend listado** (sprint 2). Endpoint `/api/alerts` con paginación y filtros, página `/alertas` con tabla, indicador vertical de severidad y filtros.
 5. **Mapa MapLibre** (sprint 3). Tiles OpenFreeMap, capas GeoJSON de comunidades autónomas y provincias, leyenda, marcadores con color por severidad, popup al clic.
 6. **Auth con JWT en cookie** (sprint 3). Registro, login, logout, dependencia `get_current_user`, hashing bcrypt con passlib, validación Pydantic, formularios en cliente.
 7. **Favoritos y preferencias** (sprint 4). Tablas `user_favorites` y `user_preferences`, endpoints REST, integración en el listado.
@@ -66,12 +66,9 @@ El frontend está escrito íntegramente en TypeScript estricto (ES2022) sobre Re
 
 El frontend define los siguientes tipos propios:
 
-- **Interfaces TypeScript** en `src/types/` (`Alert`, `User`, `UserPreferences`, `MeshMessage`, `ForecastDay`) que tipan tanto la respuesta de la API como las props de los componentes.
+- **Interfaces TypeScript** en `src/types/` (`Alert`, `Filters`, etc.) que tipan tanto la respuesta de la API como las props de los componentes.
 - **Tipos unión literal** para enums: `type Severity = "minor" | "moderate" | "severe" | "extreme"`.
-- **Componentes funcionales** como funciones tipadas: `function AlertCard({ alert }: AlertCardProps): JSX.Element`.
-- **Custom hooks** que encapsulan lógica reutilizable: `useAlerts`, `useAlertsWebSocket`, `useTheme`, `useDebounce`, `usePushSubscription`.
-- **Contextos React** (`ThemeContext`, `AuthContext`) implementados con clases lógicas (provider + consumer) para inyección dependencias sin prop-drilling.
-- **Servicios cliente** en `src/lib/api.ts` y `src/lib/auth.ts` que actúan como capa de acceso a la API.
+- **Contextos React** (`ThemeContext`, `AuthContext`, `AlertsContext`, `FiltersContext`) implementados con provider y consumer para inyectar estado sin prop-drilling.
 
 ### Librerías de actualización dinámica incorporadas
 
@@ -80,7 +77,7 @@ El frontend define los siguientes tipos propios:
 - **Sass (Dart Sass)** como preprocesador CSS.
 - **`pywebpush`** y **`web-push`** (CLI) en backend para Push API con cifrado VAPID.
 
-Para fetch y estado de la API se usan las APIs nativas del navegador (`fetch`, `WebSocket`, `Cache API` vía Service Worker), evitando dependencias innecesarias en el bundle. La actualización en vivo combina polling con `setInterval` y push por WebSocket, ambas mecanismos asíncronos del propio navegador.
+Para fetch y estado de la API se usan las APIs nativas del navegador (`fetch`, `Service Worker`, `Push API`), evitando dependencias innecesarias en el bundle. La actualización en vivo del mapa se hace con polling cada 60 segundos vía `setInterval`.
 
 ### Manejo de eventos y validación de formularios
 
@@ -93,11 +90,12 @@ La validación de formularios (registro, login, cambio de contraseña) se hace e
 
 ### Comunicación asíncrona
 
-Tres mecanismos coexisten:
+Dos mecanismos coexisten:
 
 - **`fetch`** con `credentials: "include"` para todas las llamadas REST. Devuelve JSON tipado contra interfaces TypeScript declaradas en `src/types/`.
-- **WebSocket nativo** (`new WebSocket(url)`) en `useAlertsWebSocket`. Reconecta con backoff exponencial al cerrar.
 - **Service Worker + Push API** para notificaciones, registrado en `public/sw.js` y suscrito vía `navigator.serviceWorker.ready` y `pushManager.subscribe`.
+
+La actualización del listado de alertas en la home se hace por polling con `setInterval` cada 60 segundos. El backend tiene un endpoint WebSocket `/ws` autenticado por cookie, preparado para futuras integraciones, pero la versión actual del frontend no lo consume.
 
 ### Manipulación del DOM y objetos predefinidos
 
@@ -139,28 +137,33 @@ El TFG está vinculado al módulo DIW que valora explícitamente el uso de prepr
 
 Celery separa la API del polling. Si AEMET tarda 30 segundos en responder, el endpoint público no se bloquea. Beat aporta el cron de tareas periódicas (cada 2-5 minutos por conector). Redis sirve a la vez de broker y backend de resultados.
 
-### LoRa frente a 4G/Wi-Fi para el canal de respaldo
+### Por qué LoRa en el canal de respaldo
 
-4G y Wi-Fi dependen de infraestructura que puede caer en una emergencia. LoRa opera en bandas libres y nodo a nodo, sin necesidad de cobertura. Throughput bajo a cambio de alcance largo (5-15 km en rural) y consumo mínimo. Apta para texto y coordenadas, no para multimedia.
+LoRa es la única tecnología que cubre el caso de "se ha caído internet". 4G y Wi-Fi dependen de infraestructura (operador, router) que en una emergencia puede no estar disponible. LoRa, en cambio, va de nodo a nodo por radio en banda libre, así que la red entre nodos vecinos sigue funcionando aunque la torre del móvil esté caída. A cambio el ancho de banda es muy bajo y la latencia entre saltos puede ser de varios segundos, pero para texto corto sirve de sobra. Por eso entró desde el primer diseño del proyecto como canal complementario, no como sustituto de la web.
 
-### Meshtastic frente a LoRa puro
+### Por qué Meshtastic y no LoRa a pelo
 
-LoRa es solo capa física. Meshtastic añade encaminamiento mesh, fragmentación y direccionamiento como firmware abierto sobre placas baratas. Aporta cifrado AES-256, app móvil oficial por Bluetooth y, fundamental aquí, puente MQTT que permite al nodo hablar con un broker externo.
+LoRa solo aporta el canal de radio. Para tener una red usable hay que añadir encima encaminamiento, fragmentación, direccionamiento y cifrado. Meshtastic resuelve todo eso como firmware abierto sobre placas de 20-60 €. La pieza decisiva para integrarlo con la web es que el firmware trae un puente MQTT incorporado: el nodo puede hablar con un broker por internet además de con otros nodos por radio. Sin esa pieza la integración con el backend habría sido mucho más complicada.
 
-### MQTT frente a HTTP REST para el puente
+### Por qué MQTT y no HTTP REST
 
-MQTT mantiene una conexión TCP persistente: el nodo recibe en cuanto se publica, sin polling. Cabeceras mínimas, ideal para enlaces con poca banda. Patrón pub/sub: el backend publica al topic y todos los nodos suscritos reciben sin que el backend conozca la lista. HTTP exigiría polling desde cada nodo o endpoints expuestos por nodo, ambas opciones costosas en batería y configuración.
+MQTT encaja mejor que HTTP para el canal mesh por tres motivos. Primero, mantiene la conexión TCP abierta de forma persistente: el nodo recibe los mensajes nada más se publican, sin tener que hacer polling cada X segundos (y gastar batería innecesariamente). Segundo, las cabeceras son muy ligeras, lo que importa cuando el mensaje acaba viajando por una radio con poca banda. Y tercero, el patrón pub/sub: el backend publica al topic y se olvida; los nodos suscritos reciben automáticamente. Con HTTP habría que mantener una lista de qué nodo está vivo y mandar peticiones una a una.
 
-### Mosquitto propio frente a broker público
+### Por qué Mosquitto propio en vez de un broker público
 
-Un broker público acelera el arranque pero los mensajes pasan por servidores de terceros y los topics son legibles si se conoce el nombre. Para un sistema de alertas no es aceptable. Mosquitto propio (`eclipse-mosquitto:2`) en el mismo droplet, con autenticación y canal privado, da control total sobre el transporte.
+Los brokers MQTT públicos (`test.mosquitto.org`, `broker.hivemq.com`...) son cómodos para empezar, pero para un sistema de alertas no son aceptables: los mensajes pasarían por servidores de terceros y cualquiera que conozca el topic puede leerlos. La opción que tiene sentido es Mosquitto propio en el mismo droplet (servicio Docker, imagen `eclipse-mosquitto:2`) con usuario y contraseña, y canal privado. Cuesta una tarde de configuración inicial y a cambio el transporte queda bajo control del proyecto.
 
-### Decisiones de diseño del flujo mesh
+### Decisiones del flujo mesh
 
-- **Filtrado por severidad**: solo se publican al mesh alertas nuevas con severidad `severe` o `extreme`, o existentes que escalan a esos niveles. La red tiene poco ancho de banda; inundarla con cada actualización menor la haría inútil.
-- **Antibucle**: si una alerta entra con `source=meshtastic` (origen radio), el backend no la republica. Evita que la misma alerta dé vueltas indefinidamente.
-- **Fallo silencioso**: si el broker MQTT no responde, la alerta se persiste igual en Postgres y el resto del sistema continúa. El canal mesh es complementario, nunca dependencia crítica.
-- **Independencia del medio físico del nodo**: el gateway se conecta al broker por TCP/IP. La forma de dar conectividad al nodo (Wi-Fi, 4G, solar) es ortogonal a ESPAlert y puede cambiar sin afectar al sistema.
+Hay tres cosas que decidí explícitamente para que el sistema no se rompa solo:
+
+La primera es **no inundar la red con cualquier cosa**. Una mesh LoRa tiene tan poco ancho de banda que si publicas cada alerta menor o cada actualización trivial, los nodos no dan abasto y los mensajes importantes se pierden. Por eso solo publico al mesh las alertas nuevas con severidad severa o extrema, o las que escalan desde una severidad menor.
+
+La segunda es **evitar bucles**. Si una alerta entra al sistema con `source=meshtastic` (porque llegó por radio desde algún nodo), el backend no la republica al mesh. Si no, daría vueltas indefinidamente entre nodos.
+
+La tercera es **que el mesh nunca pueda romper la web**. Si el broker MQTT no responde por cualquier motivo (cae el contenedor, problemas de red), las alertas se guardan igual en Postgres y la web sigue funcionando. El canal mesh es siempre un extra, nunca una dependencia crítica.
+
+Aparte, el nodo gateway se comunica con el broker exclusivamente por TCP/IP. Cómo le llegue conectividad al nodo (un router Wi-Fi de casa, un módem 4G, un panel solar con cualquiera de los anteriores) es algo que puede cambiar sin que ESPAlert se entere. Lo único que pide el sistema es que el nodo se autentique contra Mosquitto y mantenga la conexión viva.
 
 ## Dificultades encontradas y cómo se superaron
 

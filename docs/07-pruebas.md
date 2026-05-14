@@ -35,7 +35,7 @@ Total: 65 tests verdes.
 ### Frontend
 
 - Framework: Vitest sobre `jsdom`, con `@testing-library/react` y `@testing-library/user-event`.
-- Cobertura: componentes (`AlertCard`, `AlertBadge`, `Filters`, `CookieBanner`, `Header`), hooks de fetch y reductores de estado.
+- Cobertura: componente `Header`, contexto de autenticación (`AuthContext`) y las páginas principales (`home`, `alertas`, `prediccion`, `login`, `registro`, `perfil`, `perfil/cuenta`, `admin`, `admin/mesh`).
 - Total: 59 tests verdes.
 
 ### Cobertura
@@ -46,7 +46,7 @@ Reportada con `pytest-cov`:
 cd apps/api && pytest --cov
 ```
 
-Cobertura actual: 66 por ciento de líneas en `app/`. Las áreas con menor cobertura son los workers Celery (difíciles de medir por su naturaleza asíncrona externa) y el cliente MQTT (depende de un broker).
+Cobertura actual: 64 por ciento de líneas en `app/`. Las áreas con menor cobertura son los workers Celery (difíciles de medir por su naturaleza asíncrona externa) y el cliente MQTT (depende de un broker).
 
 ### Pruebas manuales E2E
 
@@ -57,7 +57,7 @@ Flujo completo verificado a mano antes de cada release:
 3. Buscar municipio en `/prediccion`, ver predicción.
 4. Marcar una alerta como favorita.
 5. Activar permisos de notificación, suscribirse a push.
-6. Forzar una alerta de prueba en BD y comprobar que llega push y aparece en el mapa por WebSocket.
+6. Forzar una alerta de prueba en BD y comprobar que llega push y aparece en el mapa tras el siguiente ciclo de polling.
 
 ### Verificaciones extra
 

@@ -130,7 +130,7 @@ WHERE expires_at < NOW() - INTERVAL '14 days'
 RETURNING id;
 ```
 
-Ejecutada por una tarea Celery Beat diaria; los `id` devueltos se publican por WebSocket para que los clientes limpien su caché local.
+Ejecutada por una tarea Celery Beat diaria. Los clientes refrescan su listado en el siguiente ciclo de polling.
 
 ## Casos de uso
 
@@ -168,7 +168,6 @@ sequenceDiagram
     participant Worker as Celery Worker
     participant API as API externa (AEMET/IGN/DGT/MA)
     participant DB as PostgreSQL
-    participant WS as WebSocket /ws
 
     Beat->>Worker: trigger fetch cada 2-5 min
     Worker->>API: GET feed CAP/JSON
@@ -176,7 +175,6 @@ sequenceDiagram
     Worker->>Worker: parse + normalizar a Alert
     Worker->>DB: upsert por external_id
     DB-->>Worker: filas insertadas/actualizadas
-    Worker->>WS: broadcast a clientes activos
 ```
 
 ### Flujo de registro y login
@@ -252,7 +250,7 @@ graph TB
 
 ## Diseño de la API
 
-La API expone recursos REST bajo el prefijo `/api`. Toda la documentación interactiva está en `/docs` (Swagger UI) y `/redoc`. El esquema OpenAPI puro está en `/openapi.json`.
+La API expone recursos REST bajo el prefijo `/api`. La documentación interactiva (Swagger UI en `/docs`, ReDoc en `/redoc` y esquema JSON en `/openapi.json`) está disponible directamente cuando se accede al contenedor de la API en desarrollo (puerto 8000). En producción no se enruta por Caddy para no exponer la superficie de la API públicamente.
 
 ### Autenticación
 
@@ -301,7 +299,7 @@ La API expone recursos REST bajo el prefijo `/api`. Toda la documentación inter
 
 ### WebSocket
 
-- `WS /ws` - canal de tiempo real. Requiere cookie de sesión válida; responde con código 1008 si la cookie falta o el usuario está inactivo. Empuja eventos `alert.created`, `alert.updated` y `alert.deleted`.
+- `WS /ws` - canal autenticado por cookie de sesión. Si la cookie falta o el usuario está inactivo, el backend cierra con código 1008. Actualmente solo emite eventos `ping` periódicos como heartbeat para mantener vivas las conexiones; queda preparado para difundir eventos de alertas en futuras iteraciones.
 
 ### Códigos HTTP usados
 
@@ -333,7 +331,7 @@ Ejemplos reales para verificar la API tras un despliegue:
 ```bash
 # Health check
 curl https://espalert.app/api/health
-# {"status":"ok"}
+# {"api":"ok","sources":[{"source":"aemet","status":"running",...},...]}
 
 # Registro
 curl -X POST https://espalert.app/api/auth/register \
@@ -368,4 +366,4 @@ curl -X POST https://espalert.app/api/user/favorites/<alert-id> -b cookies.txt
 curl https://espalert.app/api/admin/users -b cookies-admin.txt
 ```
 
-Para importar a Postman o Insomnia, descarga directamente `https://espalert.app/openapi.json` desde la opción "Import from URL" de cualquiera de las dos herramientas.
+Para importar a Postman o Insomnia, levanta el entorno local con `docker compose up` y usa `http://localhost:8000/openapi.json` desde la opción "Import from URL" de cualquiera de las dos herramientas.

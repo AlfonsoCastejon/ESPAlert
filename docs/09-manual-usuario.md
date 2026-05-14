@@ -33,7 +33,7 @@ Este manual recorre las funcionalidades principales desde el punto de vista de l
 2. Introduce email y contraseña (mínimo ocho caracteres, mayúscula, minúscula y número). El indicador de fortaleza es orientativo.
 3. Tras el registro, sesión iniciada automáticamente.
 4. En el listado, haz clic en el icono de estrella de cualquier alerta para marcarla como favorita.
-5. En `/perfil` puedes ver el conjunto completo de favoritos y abrirlos en el mapa.
+5. En `/perfil`, pestaña "Favoritos", puedes ver el conjunto completo y quitar los que ya no te interesen.
 
 ### Activar notificaciones push
 
@@ -47,7 +47,7 @@ Los push se reciben aunque la pestaña esté cerrada, siempre que el navegador e
 ### Consultar predicción meteorológica
 
 1. Ve a `/prediccion`.
-2. Escribe al menos dos caracteres del municipio. La búsqueda es con debounce: espera medio segundo a que aparezcan sugerencias.
+2. Escribe al menos dos caracteres del municipio. La búsqueda es con debounce: tras dejar de teclear, espera 300 milisegundos antes de pedir sugerencias.
 3. Selecciona uno y verás máximas, mínimas, sensación térmica, humedad, probabilidad de precipitación, viento, racha máxima, cota de nieve provincial e índice UV.
 
 ### Cambiar tema claro u oscuro

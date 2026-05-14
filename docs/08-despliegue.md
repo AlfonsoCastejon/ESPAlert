@@ -209,7 +209,7 @@ docker compose exec api alembic upgrade head
 curl -I https://espalert.app
 # Debe incluir Strict-Transport-Security: max-age=...
 curl https://espalert.app/api/health
-# {"status":"ok"}
+# {"api":"ok","sources":[{"source":"aemet",...},{"source":"ign",...},...]}
 ```
 
 Comprobar visualmente: el mapa carga, el listado pagina, el registro funciona.
@@ -220,18 +220,22 @@ El `Caddyfile` se versiona en el repositorio y centraliza los headers de segurid
 
 ```caddy
 {$CADDY_DOMAIN} {
-    encode gzip zstd
     header {
         Strict-Transport-Security "max-age=31536000; includeSubDomains"
         X-Content-Type-Options "nosniff"
-        X-Frame-Options "DENY"
+        X-Frame-Options "SAMEORIGIN"
         Referrer-Policy "strict-origin-when-cross-origin"
-        Permissions-Policy "geolocation=(self), camera=(), microphone=()"
+        Permissions-Policy "geolocation=(self), microphone=(), camera=(), payment=()"
         -Server
     }
-    handle /api/* { reverse_proxy api:8000 }
-    handle /ws*   { reverse_proxy api:8000 }
-    handle        { reverse_proxy web:3000 }
+
+    reverse_proxy /api/* api:8000
+    reverse_proxy /ws/*  api:8000
+    reverse_proxy /*     web:3000
+}
+
+mqtt.espalert.app {
+    respond "MQTT broker en puerto 8883" 200
 }
 ```
 
