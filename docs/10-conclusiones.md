@@ -54,6 +54,6 @@ Lo que **cambiaría**:
 - Polling cada 2-5 minutos frente a webhooks: AEMET no expone webhooks; el polling es la única opción y el coste de latencia es asumible para alertas meteorológicas.
 - Mosquitto propio con canal privado frente a broker público: gano control, privacidad y soberanía sobre el transporte; pierdo la inmediatez de no tener que mantener un servicio extra. Asumido a cambio de no depender de infraestructura ajena.
 - GeoJSON simplificado al 5 por ciento: gano 28× en tamaño, pierdo precisión de fronteras (irrelevante para una vista de severidad por región).
-- Tests al 66 por ciento de cobertura: por encima del umbral típico del 60 por ciento que se pide en proyectos académicos, sin caer en tests de relleno solo para inflar el número.
+- Tests al 64 por ciento de cobertura: por encima del umbral típico del 60 por ciento que se pide en proyectos académicos, sin caer en tests de relleno solo para inflar el número.
 
 ESPAlert termina siendo un proyecto pequeño en alcance pero coherente en ejecución: cumple todos los objetivos planteados, despliega de forma reproducible, está cubierto por pruebas y documentado para que cualquiera pueda continuarlo.

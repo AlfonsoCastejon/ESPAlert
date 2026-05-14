@@ -56,9 +56,9 @@ Esto crea las tablas y la extensión PostGIS necesarias.
 curl http://localhost:8000/api/health
 ```
 
-Debe responder con `{"status": "ok"}`. Abre el frontend en [http://localhost:3000](http://localhost:3000) y comprueba que se carga el mapa.
+Debe responder con un JSON tipo `{"api":"ok","sources":[...]}` que indica que la API está viva y muestra el estado de los cinco conectores. Abre el frontend en [http://localhost:3000](http://localhost:3000) y comprueba que se carga el mapa.
 
-La documentación interactiva de la API está disponible en [http://localhost:8000/docs](http://localhost:8000/docs) (Swagger UI) y [http://localhost:8000/redoc](http://localhost:8000/redoc).
+La documentación interactiva de la API está disponible en desarrollo local en [http://localhost:8000/docs](http://localhost:8000/docs) (Swagger UI) y [http://localhost:8000/redoc](http://localhost:8000/redoc). En producción no se expone a través del dominio público.
 
 ## Variables de entorno
 

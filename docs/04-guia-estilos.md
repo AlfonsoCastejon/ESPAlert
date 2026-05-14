@@ -39,13 +39,21 @@ El cambio de tema se hace mediante el atributo `data-theme="light|dark"` en `<ht
 
 ### Severidades
 
-Los colores de severidad son consistentes entre claro y oscuro, con variantes claras (badges) y oscuras (puntos sobre el mapa):
+Cada severidad tiene tres tonos del mismo color que se aplican según el contexto:
 
-- Rojo extremo: `hsl(0, 100%, 75%)` claro / `hsl(349, 100%, 35%)` oscuro
-- Naranja severo: `hsl(37, 100%, 70%)` claro / `hsl(36, 100%, 35%)` oscuro
-- Amarillo moderado: `hsl(65, 100%, 80%)` claro / `hsl(60, 100%, 27%)` oscuro
-- Verde menor: `hsl(149, 100%, 86%)` claro / `hsl(151, 46%, 33%)` oscuro
-- Morado mesh: `hsl(266, 100%, 68%)` claro / `hsl(264, 72%, 39%)` oscuro
+- **Medio**: el indicador vertical de severidad en el listado de alertas cuando el tema es claro. Tiene saturación suficiente para destacar sobre el fondo claro.
+- **Pastel**: el mismo indicador en el tema oscuro. Los pastel destacan sobre fondo oscuro porque son más luminosos.
+- **Oscuro**: bordes y detalles puntuales de énfasis (por ejemplo, en algunos componentes del panel admin).
+
+Los círculos sobre el mapa son un caso aparte: usan un tono fijo definido en `AlertMap.tsx`, pensado para contrastar con el gris del fondo del mapa, independientemente del tema.
+
+Valores HSL:
+
+- Rojo extremo: pastel `hsl(0, 100%, 75%)` / medio `hsl(0, 78%, 55%)` / oscuro `hsl(349, 100%, 35%)`
+- Naranja severo: pastel `hsl(37, 100%, 70%)` / medio `hsl(28, 95%, 55%)` / oscuro `hsl(36, 100%, 35%)`
+- Amarillo moderado: pastel `hsl(65, 100%, 80%)` / medio `hsl(48, 95%, 50%)` / oscuro `hsl(60, 100%, 27%)`
+- Verde menor: pastel `hsl(149, 100%, 86%)` / medio `hsl(149, 65%, 42%)` / oscuro `hsl(151, 46%, 33%)`
+- Morado mesh: pastel `hsl(266, 100%, 68%)` / medio `hsl(266, 70%, 58%)` / oscuro `hsl(264, 72%, 39%)`
 
 ## Tipografía
 
@@ -87,14 +95,14 @@ El diseño es mobile-first: las reglas base aplican a móvil y los `@media` aña
 
 - `$borde-radio`: 4 px (botones, inputs, tarjetas)
 - `$borde-radio-lg`: 8 px (modales, contenedores grandes)
-- `$borde-radio-pill`: 1000 px (badges redondeadas)
+- `$borde-radio-pill`: 1000 px (elementos con forma de pastilla totalmente redondeada)
 
 ## Arquitectura SCSS (ITCSS)
 
 Estructura de capas, de genérica a específica, en `apps/web/src/styles/`:
 
 - `settings/_variables.scss`: tokens.
-- `tools/_mixins.scss`: mixins reutilizables (`desde`, `hasta`, `oculto-visualmente`, `truncar`, `flex-centro`).
+- `tools/_mixins.scss`: mixins reutilizables (`desde`, `hasta`, `solo-movil`, `solo-escritorio`, `oculto-visualmente`, `truncar`, `flex-centro`).
 - `generic/_reset.scss`: reset CSS.
 - `elements/_base.scss`: estilos de etiquetas HTML, `:focus-visible` global, skip-link.
 - `objects/_layouts.scss`: contenedores estructurales.
@@ -106,8 +114,8 @@ El punto de entrada es `apps/web/src/styles/main.scss` que hace `@use` de cada c
 ### Uso avanzado de SCSS
 
 - **Variables y tokens**: definidos en `settings/_variables.scss` y consumidos por todo el proyecto, evitando hardcodear valores.
-- **Mixins reutilizables** (`tools/_mixins.scss`): `@mixin desde($bp)` y `@mixin hasta($bp)` para media queries; `@mixin oculto-visualmente` para texto accesible solo a lectores de pantalla; `@mixin truncar` para texto con ellipsis; `@mixin flex-centro` para centrado rápido.
-- **Imports modulares con `@use`** en lugar de `@import` (deprecado en Dart Sass), con namespaces explícitos. `@forward` se usa en agregadores intermedios.
+- **Mixins reutilizables** (`tools/_mixins.scss`): `@mixin desde($bp)`, `@mixin hasta($bp)`, `@mixin solo-movil` y `@mixin solo-escritorio` para media queries; `@mixin oculto-visualmente` para texto accesible solo a lectores de pantalla; `@mixin truncar` para texto con ellipsis; `@mixin flex-centro` para centrado rápido.
+- **Imports modulares con `@use`** en lugar de `@import`, con namespaces explícitos. `@forward` se usa en agregadores intermedios.
 - **Nesting controlado**: máximo dos niveles de anidamiento siguiendo BEM, evitando especificidad inflada. Selector de modificador con `&--modificador`.
 - **Funciones nativas**: `color.adjust()`, `math.div()` y `map.get()` en lugar de las funciones globales obsoletas.
 - **Placeholder selectors** (`%`) con `@extend` para reglas comunes sin generar duplicación de clases.
@@ -135,24 +143,20 @@ Componentes con SCSS dedicado y nomenclatura BEM:
 
 - `Header` (`.cabecera`) y `Footer` con navegación, logo y toggle de tema.
 - `CookieBanner` (`.banner-cookies`) con cierre por Escape y rol `region`.
-- `AlertCard` y `AlertBadge` para tarjetas y etiquetas de severidad.
-- `Filters` para los selects de fuente, severidad, región y orden.
-- `MeshIndicator` para mostrar el estado de la red mesh.
-- `Notification` para toasts contextuales.
+- `Filters` (`.filtros`) para los selects de fuente, severidad, región y orden.
 
 Todos los botones usan `:focus-visible` con outline naranja. Los iconos provienen de `lucide-react` y siempre van acompañados de `aria-label` cuando son interactivos.
 
 ## Animaciones e interactividad
 
-Las transiciones se aplican con la propiedad `transition` y duraciones cortas (150-300 ms) para no entorpecer la interacción:
+Las transiciones se aplican con duraciones cortas (150-300 ms) para no entorpecer la interacción:
 
-- Botones e inputs: `transition: background-color 150ms ease, border-color 150ms ease, transform 100ms ease`. En `:hover` los botones desplazan 1 px hacia arriba (`transform: translateY(-1px)`) y al pulsar vuelven al sitio.
-- Banner de cookies: aparece con `slide-in-up` (animación SCSS de 250 ms) y se oculta con `opacity` y `transform`. Cierra con tecla Escape.
-- Marcadores del mapa: aumentan un 15 por ciento al pasar el ratón (`transform: scale(1.15)`).
-- Skip-link: `transform: translateY(-150%)` por defecto y `translateY(0)` al recibir foco con teclado, con transición de 200 ms.
-- Toggle de tema: el atributo `data-theme` se cambia con una transición global de `background-color` y `color` de 200 ms para evitar el flash entre claro y oscuro.
-
-Todas las animaciones respetan `prefers-reduced-motion: reduce`, deshabilitándose para usuarios con esa preferencia configurada en el sistema.
+- Enlaces de la cabecera y botones de navegación: cambio de `background-color` al pasar el ratón usando la variable de fondo suave del tema activo.
+- Botones primarios: `opacity` reducida en `:hover` (variable `$opacidad-hover`).
+- Skip-link: `transform: translateY(-150%)` por defecto y `translateY(0)` al recibir foco con teclado, con transición de 150 ms.
+- Cursor del mapa: cambia a `pointer` al pasar el ratón sobre un marcador o polígono, mediante el evento `mouseenter` de MapLibre.
+- Indicador de carga en la búsqueda de predicción: animación de rotación con `@keyframes spin` durante el debounce.
+- Toast de notificaciones del listado: aparición y desaparición con `@keyframes toast-fade`.
 
 ## Iconografía
 
@@ -165,7 +169,7 @@ Cada icono interactivo lleva `aria-label` describiendo la acción. Los decorativ
 - Imágenes: optimizadas con `next/image` cuando aplica, `loading="lazy"` por defecto y `width`/`height` declarados para evitar CLS.
 - Tiles del mapa: vectoriales (no rasterizadas) y servidos por OpenFreeMap, con cache HTTP del navegador.
 - GeoJSON de regiones: simplificado al 5 por ciento con `mapshaper` y comprimido con gzip por Caddy.
-- No se usan vídeos pesados ni audio. La aplicación es text-first y los recursos visuales (mapa, iconos, badges) son vectoriales.
+- No se usan vídeos pesados ni audio. La aplicación es text-first y los recursos visuales (mapa, iconos) son vectoriales.
 
 ## Mockups del prototipo
 

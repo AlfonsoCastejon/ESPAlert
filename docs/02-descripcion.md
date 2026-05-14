@@ -6,11 +6,11 @@
 
 La página principal muestra un mapa de España (peninsular, Baleares, Canarias, Ceuta y Melilla) con MapLibre GL sobre tiles de OpenFreeMap. Las alertas activas se representan con marcadores cuyo color corresponde a su severidad (rojo para extrema, naranja para severa, amarillo para moderada y verde para menor). El mapa carga las capas de comunidades autónomas y provincias en un GeoJSON simplificado para mantener un peso aceptable y muestra una leyenda visual con la escala de severidad y la diferencia entre punto de localización y polígono de área afectada. Cuando el usuario elige una comunidad autónoma en el filtro lateral, el mapa hace `flyTo` automático a su encuadre, lo que evita tener que hacer scroll manual hasta Canarias o Baleares.
 
-Las nuevas alertas llegan por dos vías: polling cada minuto al endpoint `/api/alerts` y un canal WebSocket `/ws` que empuja los cambios en cuanto los conectores los persisten.
+Las nuevas alertas aparecen en el mapa por polling al endpoint `/api/alerts` cada 60 segundos.
 
 ### Listado con filtros y paginación
 
-La ruta `/alertas` ofrece la vista de listado completo. Permite filtrar por fuente (AEMET, IGN, DGT, MeteoAlarm, Meshtastic), severidad y comunidad autónoma. El orden es configurable por fecha o severidad y se devuelve paginado (20 por página). Cada fila muestra título, fuente, área, severidad y fecha, y se expande al hacer clic para ver descripción, fecha de expiración y metadatos. Los usuarios autenticados pueden marcar favoritos y los administradores pueden eliminar alertas individualmente.
+La ruta `/alertas` ofrece la vista de listado completo. Permite filtrar por fuente (AEMET, IGN, DGT, MeteoAlarm, Meshtastic), severidad y comunidad autónoma. El orden es configurable por fecha o severidad y se devuelve paginado (20 por página). Cada fila muestra título, fuente, área, severidad y fecha, y se expande al hacer clic para ver descripción, fecha de expiración y metadatos. Los usuarios autenticados pueden marcar favoritos y los administradores además pueden eliminar alertas individualmente.
 
 ### Predicción meteorológica por municipio
 
@@ -26,7 +26,7 @@ El navegador suscribe el dispositivo al endpoint `/api/push/subscribe` con clave
 
 ### Conector Meshtastic bidireccional
 
-ESPAlert opera un broker **Mosquitto propio** desplegado como servicio Docker en el mismo droplet, y un **nodo Meshtastic físico** que actúa de gateway entre la radio LoRa y MQTT.
+Hay un broker **Mosquitto propio** desplegado como servicio Docker en el mismo droplet, y un **nodo Meshtastic físico** que actúa de gateway entre la radio LoRa y MQTT.
 
 **LoRa** es una modulación de radio de bajo consumo y largo alcance que opera en bandas libres ISM (868 MHz en Europa). Envía paquetes pequeños a varios kilómetros con throughput bajo (entre 0.3 y 50 kbps según el factor de spreading) y latencia alta. Adecuada para texto y telemetría, no para multimedia.
 

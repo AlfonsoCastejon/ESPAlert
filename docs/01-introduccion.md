@@ -14,7 +14,6 @@ La motivación personal del proyecto añade un segundo eje: el interés por las 
 - Enviar notificaciones push web a los suscriptores.
 - Recibir y publicar mensajes mesh a través de Meshtastic vía MQTT.
 - Ofrecer un panel de administración para moderar alertas y mensajes.
-- Servir como TFG completo: frontend, backend, base de datos espacial, despliegue dockerizado y CI/CD.
 
 ## Antecedentes y comparativa
 
