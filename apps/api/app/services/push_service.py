@@ -110,6 +110,56 @@ async def send_notification(subscription: PushSubscription, payload: Dict[str, A
     return success
 
 
+_NOMBRE_FUENTE = {
+    "aemet": "AEMET",
+    "ign": "IGN",
+    "dgt": "DGT",
+    "meteoalarm": "MeteoAlarm",
+    "meshtastic": "Meshtastic",
+}
+
+_NOMBRE_SEVERIDAD = {
+    "severe": "severa",
+    "extreme": "extrema",
+}
+
+_NOMBRE_REGION = {
+    "andalucia": "Andalucía", "aragon": "Aragón", "asturias": "Asturias",
+    "baleares": "Baleares", "canarias": "Canarias", "cantabria": "Cantabria",
+    "castilla-la-mancha": "Castilla-La Mancha", "castilla-y-leon": "Castilla y León",
+    "cataluna": "Cataluña", "ceuta": "Ceuta", "extremadura": "Extremadura",
+    "galicia": "Galicia", "la-rioja": "La Rioja", "madrid": "Madrid",
+    "melilla": "Melilla", "murcia": "Murcia", "navarra": "Navarra",
+    "pais-vasco": "País Vasco", "valencia": "Comunidad Valenciana",
+}
+
+
+async def _describir_zona(db: AsyncSession, alert: Alert) -> str:
+    """Devuelve una descripción de la zona de la alerta: el área que indica la
+    fuente si existe, o la comunidad autónoma deducida del centroide.
+    """
+    if alert.area_description:
+        return alert.area_description
+
+    if alert.geometry is None:
+        return "España"
+
+    from sqlalchemy import func
+    from app.utils.regions import REGION_BBOX
+
+    try:
+        punto = await db.scalar(func.ST_AsText(func.ST_Centroid(alert.geometry)))
+        # Formato "POINT(lon lat)"
+        coords = punto.replace("POINT(", "").replace(")", "").split()
+        lon, lat = float(coords[0]), float(coords[1])
+        for region, (min_lon, min_lat, max_lon, max_lat) in REGION_BBOX.items():
+            if min_lon <= lon <= max_lon and min_lat <= lat <= max_lat:
+                return _NOMBRE_REGION.get(region.value, region.value)
+    except Exception:
+        pass
+    return "España"
+
+
 async def broadcast_critical_alert(db: AsyncSession, alert: Alert) -> None:
     """
     Envía notificaciones a las suscripciones cuyo usuario tenga la severidad y la
@@ -182,12 +232,16 @@ async def broadcast_critical_alert(db: AsyncSession, alert: Alert) -> None:
     if not subscriptions:
         return
 
+    zona = await _describir_zona(db, alert)
+    fuente = _NOMBRE_FUENTE.get(alert.source.value, alert.source.value.upper()) if alert.source else "Fuente desconocida"
+    severidad = _NOMBRE_SEVERIDAD.get(alert.severity.value, alert.severity.value)
+
     payload = {
-        "title": f"¡Alerta {alert.severity.value.upper()} reportada!",
-        "body": alert.headline if alert.headline else "Nueva alerta de riesgo detectada.",
-        "url": f"/alerts/{alert.id}",
-        "icon": "/logo192.png", 
-        "badge": "/badge.png"
+        "titulo": f"Nueva alerta {severidad}",
+        "cuerpo": f"{zona} - {fuente}: {alert.headline}" if alert.headline else f"{zona} - {fuente}",
+        "url": "/alertas",
+        "icon": "/icon.png",
+        "badge": "/icon.png",
     }
 
     # Enviar notificaciones de forma concurrente para mayor escalabilidad
