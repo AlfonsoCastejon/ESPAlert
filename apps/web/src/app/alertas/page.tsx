@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Star } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { REGIONES } from "@/types/filters";
+import { comunidadDe } from "@/lib/comunidad";
 import type { Alerta, FuenteAlerta, ColorAlerta } from "@/types/alert";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -254,7 +255,7 @@ export default function AlertasPage() {
                   <div className="alerta-fila__meta">
                     <span className="alerta-fila__fuente">{NOMBRE_FUENTE[a.source] || a.source}</span>
                     <span className="alerta-fila__separador" aria-hidden="true" />
-                    <span>{a.area_description || "España"}</span>
+                    <span>{a.area_description || comunidadDe(a.geometry) || "España"}</span>
                     <span className="alerta-fila__separador" aria-hidden="true" />
                     <span>{ETIQUETA_SEVERIDAD[a.severity] || a.severity}</span>
                   </div>
