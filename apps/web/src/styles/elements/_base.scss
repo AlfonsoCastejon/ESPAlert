@@ -102,6 +102,7 @@ button {
   cursor: pointer;
   border: 1px solid var(--color-texto);
   background: transparent;
+  color: var(--color-texto);
   padding: $espacio-sm $espacio-md;
   border-radius: $borde-radio;
   font-size: $texto-sm;
