@@ -131,6 +131,7 @@ async def upsert_alert(db: AsyncSession, alert_data: AlertCreate) -> Alert:
         db.add(alert)
         await db.flush()
         _notificar_mesh_si_procede(alert, es_nueva=True)
+        await _notificar_push_si_procede(db, alert)
         return alert
 
     existente = await db.scalar(
@@ -164,8 +165,20 @@ async def upsert_alert(db: AsyncSession, alert_data: AlertCreate) -> Alert:
         )
         if es_nueva or escalada:
             _notificar_mesh_si_procede(result, es_nueva=es_nueva)
+            await _notificar_push_si_procede(db, result)
 
     return result
+
+
+async def _notificar_push_si_procede(db: AsyncSession, alert: Alert) -> None:
+    # Envía push web a los suscriptores. broadcast_critical_alert filtra por
+    # severidad y preferencias. Falla en silencio para no romper el upsert.
+    try:
+        from app.services import push_service
+
+        await push_service.broadcast_critical_alert(db, alert)
+    except Exception as exc:
+        logger.warning(f"No se pudieron enviar notificaciones push: {exc}")
 
 
 def _notificar_mesh_si_procede(alert: Alert, *, es_nueva: bool) -> None:
