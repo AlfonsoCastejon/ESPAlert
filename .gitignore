@@ -29,6 +29,10 @@ sdist/
 var/
 wheels/
 *.egg-info/
+
+# El frontend tiene una carpeta src/lib con codigo fuente, no es la lib/ de Python.
+!apps/web/src/lib/
+!apps/web/src/lib/**
 .installed.cfg
 *.egg
 venv/
