@@ -187,6 +187,7 @@ function construirGeoJSON(alertas: Alerta[]): GeoJSON.FeatureCollection {
           properties: {
             id: a.id,
             color: COLORES[a.color] || COLORES.green,
+            colorNombre: a.color,
             headline: a.headline,
             description: a.description || "",
             area_description: a.area_description || "",
@@ -213,7 +214,9 @@ function actualizarAlertas(map: maplibregl.Map, geojson: GeoJSON.FeatureCollecti
       id: "alertas-fill",
       type: "fill",
       source: "alertas",
-      filter: ["==", "$type", "Polygon"],
+      // Excluye los avisos verdes (severidad menor): MeteoAlarm emite muchos por
+      // región y al solaparse apilan opacidad hasta verse como una masa opaca.
+      filter: ["all", ["==", "$type", "Polygon"], ["!=", ["get", "colorNombre"], "green"]],
       paint: {
         "fill-color": ["get", "color"],
         // Más opacidad cuando el fondo gris CCAA está activo (zoom bajo) y
@@ -229,7 +232,7 @@ function actualizarAlertas(map: maplibregl.Map, geojson: GeoJSON.FeatureCollecti
       id: "alertas-line",
       type: "line",
       source: "alertas",
-      filter: ["==", "$type", "Polygon"],
+      filter: ["all", ["==", "$type", "Polygon"], ["!=", ["get", "colorNombre"], "green"]],
       paint: {
         "line-color": ["get", "color"],
         "line-width": 2,
