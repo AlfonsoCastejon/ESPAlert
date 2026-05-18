@@ -40,10 +40,16 @@ _ORDEN_SEVERIDAD = case(
 
 
 def _aplicar_orden(stmt, order_by: str | None):
-    """Aplica el criterio de ordenación. 'severity' usa un CASE y desempata por fecha."""
+    """Aplica el criterio de ordenación. 'severity' usa un CASE y desempata por fecha.
+
+    Se ordena por la fecha de entrada en vigor (`effective_at`), que es la que se
+    muestra en el listado; si falta, se usa `created_at`. Así el orden coincide
+    siempre con la fecha visible.
+    """
+    orden_fecha = func.coalesce(Alert.effective_at, Alert.created_at).desc()
     if order_by == "severity":
-        return stmt.order_by(_ORDEN_SEVERIDAD.asc(), Alert.created_at.desc())
-    return stmt.order_by(Alert.created_at.desc())
+        return stmt.order_by(_ORDEN_SEVERIDAD.asc(), orden_fecha)
+    return stmt.order_by(orden_fecha)
 
 
 def _construir_select_listado():
