@@ -8,7 +8,7 @@ El prototipo completo (wireframes, mockups, componentes y guía de tokens) está
 
 El prototipo incluye:
 
-- Pantallas mobile, tablet y escritorio.
+- Pantallas mobile y escritorio.
 - Componentes reutilizables con auto-layout.
 - Variables de Figma para color, espaciado y tipografía.
 - Estados de los componentes interactivos (hover, focus, disabled).
