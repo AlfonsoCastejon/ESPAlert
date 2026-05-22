@@ -33,7 +33,7 @@ Reglas de exclusión en [.gitignore](../.gitignore): `.env`, `__pycache__/`, `no
 
 ### Imágenes Docker publicadas
 
-Las imágenes propias del proyecto se construyen en GitHub Actions y se publican en GitHub Container Registry tras cada merge a `main`. Cada imagen lleva dos tags: `latest` (puntero móvil al último commit verde) y el SHA del commit (inmutable, sirve para rollback).
+Las imágenes propias del proyecto se construyen en GitHub Actions y se publican en GitHub Container Registry tras cada push a `main`. Cada imagen lleva dos tags: `latest` (puntero móvil al último commit pusheado a `main`) y el SHA del commit (inmutable, sirve para rollback).
 
 | Imagen | Tag | Origen |
 |---|---|---|

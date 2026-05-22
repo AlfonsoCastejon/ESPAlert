@@ -187,7 +187,7 @@ El endpoint `/ws` aceptaba cualquier conexión sin validar la cookie. Vector de 
 
 - Repositorio en GitHub: ramas `feature/*` que se mergean a `main` por pull request.
 - Convención de mensajes: `feat:`, `fix:`, `perf:`, `chore:`, `docs:` (commits convencionales).
-- Branch `main` siempre desplegable. CI obligatoria antes del merge.
+- Branch `main` siempre desplegable. El CI corre en cada push, pero su resultado no bloquea el deploy automático: es una limitación conocida documentada en `08-despliegue.md`.
 - GitHub Projects con tablero kanban: campos Estado, Sprint, Prioridad, Estimación, Categoría.
 - Sprint Review cada dos semanas con vídeo demo de menos de cinco minutos.
 

@@ -4,7 +4,7 @@
 
 Estrategia híbrida: TDD parcial en los routers críticos (auth, alerts, admin) y pruebas manuales para la interfaz. La regla práctica fue escribir test antes del código solo cuando el contrato (entrada/salida HTTP) estaba claro; en componentes UI con iteración visual rápida, los tests se añadieron después de estabilizar la pantalla.
 
-Las pruebas se ejecutan localmente y en CI (GitHub Actions, workflow `ci.yml`) en cada pull request y en cada push a `main`. Si fallan, el merge se bloquea.
+Las pruebas se ejecutan localmente y en CI (GitHub Actions, workflow `ci.yml`) en cada pull request y en cada push a `main`. El resultado se publica como check en GitHub; actualmente no bloquea el deploy automático (ver limitación en `08-despliegue.md`).
 
 ## Tipos de prueba
 
@@ -30,7 +30,7 @@ Ficheros (`apps/api/tests/`):
 - `test_ws.py` - autenticación previa al `accept()` en el WebSocket.
 - `test_config.py` - carga de variables de entorno.
 
-Total: 65 tests verdes.
+Total: 64 tests verdes.
 
 ### Frontend
 
@@ -81,6 +81,6 @@ Frontend:
 
 ```bash
 cd apps/web
-pnpm test                  # ejecución única
-pnpm test --watch          # modo desarrollo
+npm test                   # ejecución única
+npm test -- --watch        # modo desarrollo
 ```
