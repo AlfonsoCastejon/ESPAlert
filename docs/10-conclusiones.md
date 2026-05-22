@@ -11,7 +11,7 @@ El proyecto partía con seis objetivos concretos. Repaso del estado real:
 - **Predicción por municipio.** Conseguido. Búsqueda con debounce y proxy autenticado contra AEMET con detalle diario completo.
 - **Panel de administración.** Conseguido. Listado y cambio de rol de usuarios, eliminación de alertas y gestión de mensajes mesh, todo protegido por la dependencia `get_current_admin`.
 
-Más allá de los objetivos iniciales, se incorporaron en el camino: cobertura de pruebas con `pytest-cov`, endurecimiento de seguridad (rate limit, headers, autenticación previa al `accept()` del WebSocket), accesibilidad con skip-link y `:focus-visible` global, SEO (sitemap dinámico, OpenGraph, Twitter Card, manifest PWA) y optimización de Lighthouse (de 64 a 93 en escritorio).
+Sobre la marcha entraron también cosas que no estaban en la lista inicial: cobertura de pruebas con `pytest-cov`, rate limit y cabeceras de seguridad, autenticación previa al `accept()` del WebSocket, skip-link y foco visible, sitemap dinámico con OpenGraph y manifest PWA, y la subida de Lighthouse de 64 a 93 en escritorio.
 
 ## Mejoras futuras
 
@@ -44,7 +44,7 @@ Lo que **repetiría** sin dudar:
 
 Lo que **cambiaría**:
 
-- **Next.js 16 era demasiado reciente.** Salió pocas semanas antes de empezar y trajo cambios incompatibles (`next lint` eliminado, requisitos nuevos en `metadata`). Habría sido más sensato fijarse a Next 15 LTS y migrar más adelante.
+- **Arrancar con Next.js 16 nada más salir.** En cuanto saqué la primera versión empezaron los breaking changes: `next lint` desaparecido, cambios en cómo se exporta `metadata`. Si lo hago otra vez me quedo en Next 15 hasta que pasen un par de meses.
 - **Quizá tRPC en lugar de REST tradicional.** El frontend y el backend están en el mismo monorepo, comparten esquemas Pydantic/Zod implícitamente y tendría sentido compartirlos explícitamente con tRPC. La OpenAPI cumple, pero tRPC eliminaría las discrepancias de tipos manuales.
 - **Plantear el broker propio antes.** Al final el sistema corre con Mosquitto propio y canal privado, pero llegué ahí tras descartar la opción del broker público. Si lo planteo desde el día uno habría evitado rehacer la configuración del nodo y los topics.
 
@@ -56,4 +56,4 @@ Lo que **cambiaría**:
 - GeoJSON simplificado al 5 por ciento: gano 28× en tamaño, pierdo precisión de fronteras (irrelevante para una vista de severidad por región).
 - Tests al 64 por ciento de cobertura: por encima del umbral típico del 60 por ciento que se pide en proyectos académicos, sin caer en tests de relleno solo para inflar el número.
 
-ESPAlert termina siendo un proyecto pequeño en alcance pero coherente en ejecución: cumple todos los objetivos planteados, despliega de forma reproducible, está cubierto por pruebas y documentado para que cualquiera pueda continuarlo.
+El proyecto cumple lo que se planteaba, se despliega solo desde un push a `main` y está acompañado de pruebas y de esta documentación. No es enorme, pero lo que hay funciona y se puede continuar.

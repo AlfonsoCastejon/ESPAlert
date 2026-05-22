@@ -54,13 +54,7 @@ Esto evita duplicar checks y permite añadir roles nuevos cambiando una sola dep
 
 ## Frontend: sintaxis moderna y comunicación asíncrona
 
-El frontend está escrito íntegramente en TypeScript estricto (ES2022) sobre React 18 con Next.js 16. Características modernas usadas de forma sistemática:
-
-- `async/await` en toda llamada a la API.
-- *Optional chaining* y *nullish coalescing* (`?.`, `??`) para acceder a estructuras opcionales sin condicionales anidados.
-- Desestructuración con valores por defecto en props y respuestas de API.
-- *Template literals* para construir URLs (`/api/alerts?source=${source}`).
-- Módulos ES nativos con imports relativos resueltos por TypeScript.
+El frontend está en TypeScript estricto (ES2022) sobre React 18 y Next.js 16. Todas las llamadas a la API son `async/await`; los accesos a campos opcionales del backend usan `?.` y `??` para no anidar condicionales; las props se desestructuran con valores por defecto; las URLs se construyen con template literals (`/api/alerts?source=${source}`); y los imports son módulos ES nativos que TypeScript resuelve por su `tsconfig`.
 
 ### Estructuras definidas por el usuario
 
@@ -70,7 +64,7 @@ El frontend define los siguientes tipos propios:
 - **Tipos unión literal** para enums: `type Severity = "minor" | "moderate" | "severe" | "extreme"`.
 - **Contextos React** en `src/context/` (`ThemeContext`, `AuthContext`) implementados con provider y consumer para inyectar estado sin prop-drilling.
 
-### Librerías de actualización dinámica incorporadas
+### Librerías externas
 
 - **MapLibre GL JS** para renderizado vectorial del mapa con animaciones (`flyTo`), capas dinámicas y eventos sobre features.
 - **Lucide React** para iconografía SVG inline con tree-shaking.
