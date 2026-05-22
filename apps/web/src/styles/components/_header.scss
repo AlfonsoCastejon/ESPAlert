@@ -92,8 +92,8 @@
     }
 
     &--admin {
-      border: 1px solid var(--color-naranja-marca);
-      background: var(--color-naranja-marca);
+      border: 1px solid $color-naranja-marca;
+      background: $color-naranja-marca;
       color: #fff;
       font-weight: 600;
     }
