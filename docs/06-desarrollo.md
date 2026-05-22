@@ -26,7 +26,7 @@ El backend respeta una separación estricta en cuatro capas inspirada en MVC, co
 
 - **Modelo** (`app/models/`): clases SQLAlchemy 2.0 que definen las tablas (`User`, `Alert`, `UserFavorite`, `UserPreferences`, `PushSubscription`, `MeshMessage`). Aquí viven las relaciones y los tipos de columna, incluida la geometría PostGIS.
 - **Schemas** (`app/schemas/`): clases Pydantic que validan entrada y serializan salida. Funcionan como el contrato público de la API y permiten generar OpenAPI automáticamente.
-- **Servicios** (`app/services/`): lógica de negocio. `AuthService` se encarga del hash bcrypt y de la emisión y verificación de JWT; `AlertService` orquesta filtros, paginación y consultas espaciales; `PushService` envía notificaciones; `MeshService` persiste mensajes MQTT. Los servicios reciben la sesión de BD por inyección, nunca la abren directamente.
+- **Servicios** (`app/services/`): lógica de negocio expuesta como funciones de módulo (`auth_service`, `alert_service`, `push_service`, `mesh_service`). `auth_service` se encarga del hash bcrypt y de la emisión y verificación de JWT; `alert_service` orquesta filtros, paginación y consultas espaciales; `push_service` envía notificaciones; `mesh_service` persiste mensajes MQTT. Los servicios reciben la sesión de BD por parámetro, nunca la abren directamente.
 - **Controladores** (`app/routers/`): cada router agrupa endpoints por dominio (`auth.py`, `alerts.py`, `admin.py`, `user.py`, `forecast.py`, `push.py`, `mesh.py`, `ws.py`). Solo orquestan: validan con el schema, delegan en el servicio y devuelven el modelo serializado. Cero lógica de negocio en los routers.
 
 Esta separación se traduce literalmente en el sistema de carpetas, lo que facilita encontrar dónde tocar al añadir o modificar funcionalidades. Los tests siguen la misma división: `test_alerts.py` cubre el router, los servicios se cubren a través de los tests del router con la sesión mockeada.
@@ -68,14 +68,14 @@ El frontend define los siguientes tipos propios:
 
 - **Interfaces TypeScript** en `src/types/` (`Alert`, `Filters`, etc.) que tipan tanto la respuesta de la API como las props de los componentes.
 - **Tipos unión literal** para enums: `type Severity = "minor" | "moderate" | "severe" | "extreme"`.
-- **Contextos React** (`ThemeContext`, `AuthContext`, `AlertsContext`, `FiltersContext`) implementados con provider y consumer para inyectar estado sin prop-drilling.
+- **Contextos React** en `src/context/` (`ThemeContext`, `AuthContext`) implementados con provider y consumer para inyectar estado sin prop-drilling.
 
 ### Librerías de actualización dinámica incorporadas
 
-- **MapLibre GL JS** para renderizado vectorial del mapa con animaciones (`flyTo`, `easeTo`), capas dinámicas y eventos sobre features.
+- **MapLibre GL JS** para renderizado vectorial del mapa con animaciones (`flyTo`), capas dinámicas y eventos sobre features.
 - **Lucide React** para iconografía SVG inline con tree-shaking.
 - **Sass (Dart Sass)** como preprocesador CSS.
-- **`pywebpush`** y **`web-push`** (CLI) en backend para Push API con cifrado VAPID.
+- **`pywebpush`** en backend para enviar notificaciones Push API con cifrado VAPID.
 
 Para fetch y estado de la API se usan las APIs nativas del navegador (`fetch`, `Service Worker`, `Push API`), evitando dependencias innecesarias en el bundle. La actualización en vivo del mapa se hace con polling cada 60 segundos vía `setInterval`.
 

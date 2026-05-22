@@ -46,7 +46,7 @@ Decisiones:
 
 ### `apps/web/Dockerfile`
 
-Para producción, build multi-stage con `node:20-alpine` para `pnpm install --frozen-lockfile && pnpm build`, y luego una segunda fase con solo el output de Next y `node_modules` de runtime. En desarrollo el `docker-compose.yml` monta el código como volumen y ejecuta `pnpm dev`.
+Para producción, build multi-stage con `node:20-alpine`: la primera fase ejecuta `npm ci && npm run build`, la segunda fase copia solo el output de Next (modo `standalone`) y el usuario no privilegiado `nextjs:1001`. En desarrollo el `docker-compose.yml` monta el código como volumen y ejecuta `pnpm dev`.
 
 ### Imágenes oficiales
 
@@ -130,31 +130,29 @@ Dos workflows en `.github/workflows/`:
 
 ### `ci.yml`
 
-Se dispara en cada pull request y en cada push a cualquier rama. Pasos:
+Se dispara en cada push a `main` y en pull requests contra `main`. Tiene tres jobs paralelos:
 
-1. Checkout del repositorio.
-2. Setup de Python 3.12 y Node 20 con cache de dependencias.
-3. Instalación: `pip install -r requirements.txt` y `pnpm install --frozen-lockfile`.
-4. Typecheck: `tsc --noEmit` en `apps/web`.
-5. Tests: `pytest` y `pnpm test`.
-6. Build: `pnpm build` en el frontend para detectar errores de producción.
+1. **`web-typecheck`** sobre `apps/web`: setup de Node 20, `npm ci`, `npx tsc --noEmit` para verificar tipos y `npm test` (Vitest).
+2. **`api-tests`** sobre `apps/api`: setup de Python 3.12 con cache de pip, `pip install -r requirements.txt` y `pytest`.
+3. **`docker-build`** (depende de los dos anteriores): construye las imágenes Docker del API y el web con `docker buildx` sin publicarlas, como verificación de que la build de producción también funciona.
 
 ### `deploy.yml`
 
-Se dispara solo en `main`. Pasos:
+Se dispara solo en push a `main`. Tiene dos jobs en cadena:
 
-1. Login en `ghcr.io` con `GITHUB_TOKEN`.
-2. Build de las imágenes `api` y `web` con `docker buildx`, etiquetas `latest` y SHA.
-3. Push a `ghcr.io/alfonsocastejon/espalert-api` y `ghcr.io/alfonsocastejon/espalert-web`.
-4. SSH al droplet con `appleboy/ssh-action`.
-5. En el droplet: `git pull`, `docker compose pull`, `docker compose up -d` y `docker compose exec api alembic upgrade head`.
+1. **`build-and-push`**:
+   - Login en `ghcr.io` usando el `GITHUB_TOKEN` automático del workflow.
+   - Build de las imágenes `api` y `web` con `docker buildx`, etiquetas `latest` y SHA del commit.
+   - Push a `ghcr.io/alfonsocastejon/espalert-api` y `ghcr.io/alfonsocastejon/espalert-web`.
+2. **`deploy`** (depende del anterior): SSH al droplet con `appleboy/ssh-action`, hace `git pull`, `docker compose -f docker-compose.prod.yml pull`, `docker compose -f docker-compose.prod.yml up -d` y `docker system prune -f` para limpiar imágenes viejas.
+
+Las migraciones de la base de datos **no se ejecutan automáticamente** en el deploy. Si una versión nueva incluye una migración Alembic, hay que aplicarla a mano por SSH con `docker compose exec api alembic upgrade head`. Es una limitación conocida del workflow actual.
 
 ### Secretos necesarios en GitHub
 
-- `SSH_PRIVATE_KEY`: clave privada con acceso al droplet.
-- `DROPLET_HOST`: IP o dominio del droplet.
-- `DROPLET_USER`: usuario SSH (típicamente `deploy` o `root`).
-- `GHCR_TOKEN`: token de acceso al registry (se autogenera con `GITHUB_TOKEN`).
+- `DO_HOST`: IP o dominio del droplet de DigitalOcean.
+- `DO_SSH_KEY`: clave privada SSH con acceso al droplet.
+- El token del registry (`GITHUB_TOKEN`) lo provee GitHub Actions automáticamente, no hay que configurarlo.
 
 ## Despliegue desde cero
 

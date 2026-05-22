@@ -115,10 +115,9 @@ El punto de entrada es `apps/web/src/styles/main.scss` que hace `@use` de cada c
 
 - **Variables y tokens**: definidos en `settings/_variables.scss` y consumidos por todo el proyecto, evitando hardcodear valores.
 - **Mixins reutilizables** (`tools/_mixins.scss`): `@mixin desde($bp)`, `@mixin hasta($bp)`, `@mixin solo-movil` y `@mixin solo-escritorio` para media queries; `@mixin oculto-visualmente` para texto accesible solo a lectores de pantalla; `@mixin truncar` para texto con ellipsis; `@mixin flex-centro` para centrado rápido.
-- **Imports modulares con `@use`** en lugar de `@import`, con namespaces explícitos. `@forward` se usa en agregadores intermedios.
+- **Imports modulares con `@use`** en lugar de `@import`, con namespaces explícitos. Cada archivo declara sus dependencias explícitamente, sin depender de un orden global.
 - **Nesting controlado**: máximo dos niveles de anidamiento siguiendo BEM, evitando especificidad inflada. Selector de modificador con `&--modificador`.
-- **Funciones nativas**: `color.adjust()`, `math.div()` y `map.get()` en lugar de las funciones globales obsoletas.
-- **Placeholder selectors** (`%`) con `@extend` para reglas comunes sin generar duplicación de clases.
+- **Variables CSS personalizadas** (`var(--color-...)`) sobre las variables SCSS, lo que permite que los tokens se sobrescriban dinámicamente al cambiar el atributo `data-theme` sin recompilar.
 
 Ejemplo de uso típico:
 
@@ -130,7 +129,7 @@ Ejemplo de uso típico:
   padding: $espacio-md;
   border-radius: $borde-radio;
 
-  &--severa { border-color: $color-naranja; }
+  &--severa { border-color: $color-naranja-medio; }
   &__titulo { @include truncar; font-size: $texto-lg; }
 
   @include desde($bp-tablet) { padding: $espacio-lg; }
